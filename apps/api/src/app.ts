@@ -10,6 +10,8 @@ import express, {
 import cors from 'cors';
 import { PORT } from './config';
 import { SampleRouter } from './routers/sample.router';
+import { ResponseError } from './error/response-error';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export default class App {
   private app: Express;
@@ -28,23 +30,24 @@ export default class App {
   }
 
   private handleError(): void {
-    // not found
-    this.app.use((req: Request, res: Response, next: NextFunction) => {
-      if (req.path.includes('/api/')) {
-        res.status(404).send('Not found !');
-      } else {
-        next();
-      }
-    });
-
     // error
     this.app.use(
       (err: Error, req: Request, res: Response, next: NextFunction) => {
-        if (req.path.includes('/api/')) {
-          console.error('Error : ', err.stack);
-          res.status(500).send('Error !');
+        if (err instanceof ResponseError) {
+          res.status(err.status).send({
+            status: 'fail',
+            message: err.message
+          });
+        } else if (err instanceof PrismaClientKnownRequestError) {
+          res.status(400).send({
+            status: 'fail',
+            message: err.message
+          });
         } else {
-          next();
+          res.status(500).send({
+            status: 'fail',
+            message: err.message
+          });
         }
       },
     );
@@ -54,7 +57,7 @@ export default class App {
     const sampleRouter = new SampleRouter();
 
     this.app.get('/', (req: Request, res: Response) => {
-      res.send(`Hello, Purwadhika Student !`);
+      res.send(`Restful API is already !`);
     });
 
     this.app.use('/samples', sampleRouter.getRouter());
