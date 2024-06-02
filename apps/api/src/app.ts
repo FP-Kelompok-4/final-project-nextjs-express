@@ -5,8 +5,8 @@ import express, {
   Request,
   Response,
   NextFunction,
-  Router,
 } from 'express';
+import path from 'path';
 import cors from 'cors';
 import { PORT } from './config';
 import { SampleRouter } from './routers/sample.router';
@@ -27,6 +27,7 @@ export default class App {
     this.app.use(cors());
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
+    this.app.use(express.static(path.join(__dirname, '../public')));
   }
 
   private handleError(): void {
