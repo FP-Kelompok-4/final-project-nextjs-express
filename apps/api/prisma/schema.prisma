@@ -19,3 +19,114 @@ model Sample {
 
   @@map("samples") // if you want to use snake_case format
 }
+
+model User {
+  id         String   @id @db.VarChar(255)
+  name       String   @db.VarChar(255)
+  email      String   @unique @db.VarChar(100)
+  password   String   @db.VarChar(100)
+  image      String?  @db.VarChar(100)
+  role       String   @db.VarChar(50)
+  isVerified Boolean  @default(false)
+  createAt   DateTime @default(now())
+  updateAt   DateTime @updatedAt
+
+  properties Property[]
+  oders      Order[]
+
+  @@map("users")
+}
+
+model Property {
+  id          String   @id @db.VarChar(255)
+  name        String   @db.VarChar(255)
+  description String   @db.Text
+  image       String   @db.VarChar(100)
+  createAt    DateTime @default(now())
+  updateAt    DateTime @updatedAt
+
+  userId             String           @db.VarChar(255)
+  user               User             @relation(fields: [userId], references: [id])
+  propertyCategoryId Int              @unique
+  propertyCategory   PropertyCategory @relation(fields: [propertyCategoryId], references: [id])
+  rooms              Room[]
+
+  @@map("properties")
+}
+
+model PropertyCategory {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+
+  properties Property[]
+
+  @@map("propertyCategory")
+}
+
+model Room {
+  id          String   @id @db.VarChar(255)
+  type        String   @db.VarChar(255)
+  description String   @db.Text
+  image       String   @db.VarChar(100)
+  createAt    DateTime @default(now())
+  updateAt    DateTime @updatedAt
+
+  propertyId String      @db.VarChar(255)
+  property   Property    @relation(fields: [propertyId], references: [id])
+  roomPrices RoomPrice[]
+  orderRooms OrderRoom[]
+
+  @@map("rooms")
+}
+
+model RoomPrice {
+  id    Int      @id @default(autoincrement())
+  date  DateTime
+  price Float
+
+  roomId String @db.VarChar(255)
+  room   Room   @relation(fields: [roomId], references: [id])
+
+  @@map("roomPrices")
+}
+
+model Order {
+  id           String   @id @db.VarChar(255)
+  expDateTime  DateTime
+  status       String   @default("pending") @db.VarChar(100)
+  totalPayment Float
+  urlPayment   String   @db.VarChar(255)
+  checkIn      DateTime
+  checkOut     DateTime
+  createAt     DateTime @default(now())
+  updateAt     DateTime @updatedAt
+
+  userId     String      @db.VarChar(255)
+  user       User        @relation(fields: [userId], references: [id])
+  review     Review?
+  orderRooms OrderRoom[]
+
+  @@map("orders")
+}
+
+model Review {
+  id      Int    @id @default(autoincrement())
+  point   Float
+  comment String @db.Text
+
+  orderId String @unique @db.VarChar(255)
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  @@map("reviews")
+}
+
+model OrderRoom {
+  id Int @id @default(autoincrement())
+
+  orderId String @db.VarChar(255)
+  order   Order  @relation(fields: [orderId], references: [id])
+  roomId  String @db.VarChar(255)
+  room    Room   @relation(fields: [roomId], references: [id])
+
+  @@map("orderRooms")
+}
