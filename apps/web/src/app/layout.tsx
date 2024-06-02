@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn('font-sans antialiased', inter.variable)}>
         <ReduxProvider>
-          <Header />
+          <Header className="fixed top-0" />
           {children}
           <Footer />
         </ReduxProvider>
