@@ -42,6 +42,7 @@ model Property {
   name        String   @db.VarChar(255)
   description String   @db.Text
   image       String   @db.VarChar(100)
+  location    String   @db.Text
   createAt    DateTime @default(now())
   updateAt    DateTime @updatedAt
 
