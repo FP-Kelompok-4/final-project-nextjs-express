@@ -20,9 +20,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('font-sans antialiased', inter.variable)}>
+      <body
+        className={cn(
+          'flex flex-col gap-10 font-sans antialiased',
+          inter.variable,
+        )}
+      >
         <ReduxProvider>
-          <Header className="fixed top-0 bg-white border-b-[1px]" />
+          <Header className="fixed top-0 z-50 border-b-[1px] bg-white" />
           {children}
           <Footer />
         </ReduxProvider>

@@ -68,11 +68,11 @@ const ListTopRateProperty = () => {
                   sizes="100%"
                   alt={`slide-${index}`}
                 />
-                <div className="flex h-full w-full flex-col justify-end px-6 pb-6 opacity-0 [.swiper-slide-active__&]:opacity-100">
-                  <p className="text-2xl tracking-tight text-white">
+                <div className="flex h-full w-full flex-col justify-end gap-2 px-6 pb-6 opacity-0 [.swiper-slide-active__&]:opacity-100">
+                  <p className="text-xl tracking-tight text-white md:text-2xl">
                     Grand Mega Hotel
                   </p>
-                  <div className="flex items-center gap-4 text-white">
+                  <div className="flex flex-col gap-1 text-sm text-white md:flex-row md:items-center md:gap-4 md:text-base">
                     <span>Denpasar</span>
                     <div className="flex items-center gap-2">
                       <Star size={16} /> <span>4</span>
