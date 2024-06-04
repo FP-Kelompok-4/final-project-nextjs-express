@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          'flex flex-col gap-10 font-sans antialiased',
+          'font-sans antialiased',
           inter.variable,
         )}
       >
