@@ -1,11 +1,14 @@
 import Hero from '@/components/Hero';
 import ListTopRateProperty from '@/components/List-TopRateProperty';
+import MainLayout from './(main)/layout';
 
 export default function Home() {
   return (
-    <main className="flex flex-col gap-10 pt-[78px]">
-      <Hero />
-      <ListTopRateProperty />
-    </main>
+    <MainLayout>
+      <main className="flex flex-col gap-10 pt-[78px]">
+        <Hero />
+        <ListTopRateProperty />
+      </main>
+    </MainLayout>
   );
 }
