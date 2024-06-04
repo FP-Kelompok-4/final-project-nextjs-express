@@ -10,7 +10,7 @@ export class SampleService {
 
   static async getSampleDataById(req: {id: string}) {
     const sample = await prisma.sample.findUnique({
-      where: { id: Number(req.id) },
+      where: { id: req.id },
     });
 
     if (!sample) {
