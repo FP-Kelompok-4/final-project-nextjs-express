@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import FormSearchProperty from './form/Form-Search-Property';
 import FormSearchPropertyMobile from './form/Form-Search-Property-mobile';
 import LinkBrand from './Link-Brand';
+import Link from 'next/link';
 
 export const Header = ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
@@ -46,8 +47,13 @@ export const Header = ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
           </SheetContent>
         </Sheet>
 
-        <Button className="bg-gossamer-500 hover:bg-gossamer-500/90 rounded-full">
-          Sign In
+        <Button
+          className="bg-gossamer-500 hover:bg-gossamer-500/90 rounded-full"
+          asChild
+        >
+          <Link href='/signin'>
+            Sign In
+          </Link>
         </Button>
       </div>
     </div>
