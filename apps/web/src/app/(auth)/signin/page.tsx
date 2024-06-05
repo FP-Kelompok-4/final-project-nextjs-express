@@ -1,21 +1,18 @@
-import React from 'react'
-import AuthLayout from '../layout'
-import AuthHero from '../_components/auth-hero'
-import SigninWrapper from '../_components/signin-wrapper'
+import React from 'react';
+import AuthHero from '../_components/auth-hero';
+import SigninWrapper from '../_components/signin-wrapper';
 
 const page = () => {
   return (
-    <AuthLayout>
-      <main className='min-h-svh relative flex md:flex-row flex-col bg-gossamer-950'>
-        <div className='md:flex-1'>
-          <AuthHero />
-        </div>
-        <div className='flex-1 xl:pl-[calc(100%-91%)] md:pl-24'>
-          <SigninWrapper />
-        </div>
-      </main>
-    </AuthLayout>
-  )
-}
+    <main className="bg-gossamer-950 relative flex min-h-screen flex-col md:flex-row">
+      <div className=":w-[60%] md:flex-1">
+        <AuthHero />
+      </div>
+      <div className="min-h-screen w-full lg:w-[40%] flex flex-1 justify-center items-center">
+        <SigninWrapper />
+      </div>
+    </main>
+  );
+};
 
-export default page
+export default page;
