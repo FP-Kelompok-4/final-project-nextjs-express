@@ -11,6 +11,7 @@ import SignupForm from './signup-form';
 import { singup } from '@/actions/auth';
 import { useTransition } from 'react';
 import { useToast } from '@/components/ui/use-toast';
+import { Home, UserRound } from 'lucide-react';
 
 const SignupTab = () => {
   const { toast } = useToast();
@@ -42,15 +43,19 @@ const SignupTab = () => {
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger
             value="user"
+            className="items-center gap-2 align-middle"
             onClick={() => form.setValue('role', 'user')}
           >
+            <UserRound size={20} />
             User
           </TabsTrigger>
           <TabsTrigger
-            value="admin"
-            onClick={() => form.setValue('role', 'admin')}
+            value="tenant"
+            className="items-center gap-2 align-middle"
+            onClick={() => form.setValue('role', 'tenant')}
           >
-            Admin
+            <Home size={20} />
+            Tenant
           </TabsTrigger>
         </TabsList>
         <TabsContent value="user">
@@ -62,7 +67,7 @@ const SignupTab = () => {
             <SignupForm form={form} onSubmit={onSubmit} isPending={isPending} />
           </CardWrapper>
         </TabsContent>
-        <TabsContent value="admin">
+        <TabsContent value="tenant">
           <CardWrapper
             backButtonLabel="Login now!"
             backButtonLink="/signin"
