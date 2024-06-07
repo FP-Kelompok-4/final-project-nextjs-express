@@ -13,8 +13,11 @@ import FormSearchProperty from './form/Form-Search-Property';
 import FormSearchPropertyMobile from './form/Form-Search-Property-mobile';
 import LinkBrand from './Link-Brand';
 import Link from 'next/link';
+import HeaderAccountDropdown from './Header-Account-Dropdown';
 
 export const Header = ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
+  const isSignIn = true;
+
   return (
     <div
       className={cn(
@@ -31,7 +34,7 @@ export const Header = ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
         <Sheet>
           <SheetTrigger asChild>
             <Button
-              className="bg-athens-gray-50 hover:bg-athens-gray-50/90 text-athens-gray-950 flex aspect-square items-center justify-center rounded-full p-0 lg:hidden"
+              className="bg-athens-gray-50 hover:bg-athens-gray-50/90 text-athens-gray-950 flex aspect-square items-center justify-center rounded-full h-fit p-[18px] lg:hidden"
               variant={'outline'}
             >
               <Search size={16} />
@@ -46,15 +49,16 @@ export const Header = ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
             <FormSearchPropertyMobile />
           </SheetContent>
         </Sheet>
-
-        <Button
-          className="bg-gossamer-500 hover:bg-gossamer-500/90 rounded-full"
-          asChild
-        >
-          <Link href='/signin'>
-            Sign In
-          </Link>
-        </Button>
+        {isSignIn ? (
+          <HeaderAccountDropdown />
+        ) : (
+          <Button
+            className="bg-gossamer-500 hover:bg-gossamer-500/90 rounded-full"
+            asChild
+          >
+            <Link href="/signin">Sign In</Link>
+          </Button>
+        )}
       </div>
     </div>
   );
