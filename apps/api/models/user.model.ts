@@ -17,3 +17,19 @@ export const toAddUserRes = (user: User) => {
     isVerified: user.isVerified
   }
 }
+
+export type GetUserReq = {
+  email: string;
+  password?: string;
+}
+
+export const toUserRes = (user: User) => {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    image: user.image,
+    role: user.role,
+    isVerified: user.isVerified
+  }
+}

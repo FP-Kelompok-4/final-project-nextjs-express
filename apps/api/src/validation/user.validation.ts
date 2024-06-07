@@ -20,3 +20,21 @@ export const validatePostUser = [
     next();
   }
 ]
+
+export const validateGetUser = [
+  body('email').trim().isEmail().notEmpty().withMessage('Email is required'),
+  body('password').if((value) => value).trim().isLength({ min: 1 }).withMessage('Password is required'),
+
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        status: 'fail',
+        message: errors.array()
+      })
+    }
+
+    next();
+  }
+]

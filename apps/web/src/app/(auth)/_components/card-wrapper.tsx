@@ -22,7 +22,7 @@ const CardWrapper = ({
   showSocial
 } : CardWrapperProps) => {
   return (
-    <Card>
+    <Card className="md:w-[400px] w-full">
       <CardContent className="space-y-2 pt-6">
         {children}
       </CardContent>
