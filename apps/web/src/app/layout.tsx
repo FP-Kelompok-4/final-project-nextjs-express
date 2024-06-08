@@ -20,12 +20,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('font-sans antialiased', inter.variable)}>
-        <ReduxProvider>
-          <Header className="fixed top-0" />
-          {children}
-          <Footer />
-        </ReduxProvider>
+      <body
+        className={cn(
+          'font-sans antialiased',
+          inter.variable,
+        )}
+      >
+        <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>
   );

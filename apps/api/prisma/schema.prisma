@@ -63,7 +63,7 @@ model PropertyCategory {
 
   properties Property[]
 
-  @@map("propertyCategory")
+  @@map("propertyCategories")
 }
 
 model Room {
