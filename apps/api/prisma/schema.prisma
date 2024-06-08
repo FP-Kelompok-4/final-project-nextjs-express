@@ -28,6 +28,8 @@ model User {
   image      String?  @db.VarChar(100)
   role       String   @db.VarChar(50)
   isVerified Boolean  @default(false)
+  birthdate  DateTime?
+  gender     String? @db.VarChar(1)
   createAt   DateTime @default(now())
   updateAt   DateTime @updatedAt
 
