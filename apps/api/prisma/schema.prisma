@@ -21,17 +21,17 @@ model Sample {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  name       String   @db.VarChar(255)
-  email      String   @unique @db.VarChar(100)
-  password   String   @db.VarChar(100)
-  image      String?  @db.VarChar(100)
-  role       String   @db.VarChar(50)
-  isVerified Boolean  @default(false)
+  id         String    @id @default(uuid())
+  name       String    @db.VarChar(255)
+  email      String    @unique @db.VarChar(100)
+  password   String    @db.VarChar(100)
+  image      String?   @db.VarChar(100)
+  role       String    @db.VarChar(50)
+  isVerified Boolean   @default(false)
   birthdate  DateTime?
-  gender     String? @db.VarChar(1)
-  createAt   DateTime @default(now())
-  updateAt   DateTime @updatedAt
+  gender     String?   @db.VarChar(1)
+  createAt   DateTime  @default(now())
+  updateAt   DateTime  @updatedAt
 
   properties Property[]
   oders      Order[]
