@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { body, validationResult } from 'express-validator';
+import { body, param, validationResult } from 'express-validator';
 
 export const validatePostUser = [
   body('name').trim().notEmpty().withMessage('Name is required'),
@@ -22,6 +22,8 @@ export const validatePostUser = [
 ]
 
 export const validatePutAccountUser = [
+  param('id').trim().notEmpty().withMessage('Id is required'),
+
   body('name').trim().notEmpty().withMessage('Name is required'),
   body('email').trim().isEmail().notEmpty().withMessage('Email is required'),
   body('gender').trim().notEmpty().withMessage('Gender is required'),
