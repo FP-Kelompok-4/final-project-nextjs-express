@@ -20,3 +20,23 @@ export const validatePostUser = [
     next();
   }
 ]
+
+export const validatePutAccountUser = [
+  body('name').trim().notEmpty().withMessage('Name is required'),
+  body('email').trim().isEmail().notEmpty().withMessage('Email is required'),
+  body('gender').trim().notEmpty().withMessage('Gender is required'),
+  body('birthdate').trim().notEmpty().withMessage('Birthdate is required'),
+
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        status: 'fail',
+        message: errors.array()
+      })
+    }
+
+    next();
+  }
+]
