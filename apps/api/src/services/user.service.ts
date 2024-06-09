@@ -31,10 +31,20 @@ export class UserService {
     return toAddUserRes(user);
   }
 
-  static async updateAccountUser(req: UpdateAccountUserReq) {
+  static async updateAccountUser(id: string, req: UpdateAccountUserReq) {
+    const existingAccount = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!existingAccount) {
+      throw new ResponseError(404, 'Account is not exist!');
+    }
+
     const user = await prisma.user.update({
       where: {
-        email: req.email,
+        id,
       },
       data: { name: req.name, gender: req.gender, birthdate: req.birthdate },
     });
