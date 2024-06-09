@@ -61,7 +61,7 @@ const SignupTab = () => {
         </TabsList>
         <TabsContent value="user">
           <CardWrapper
-            backButtonLabel="Login now!"
+            backButtonLabel="Sign In now!"
             backButtonLink="/signin"
             showSocial
           >
@@ -70,9 +70,9 @@ const SignupTab = () => {
         </TabsContent>
         <TabsContent value="tenant">
           <CardWrapper
-            backButtonLabel="Login now!"
+            backButtonLabel="Sign In now!"
             backButtonLink="/signin"
-            showSocial
+            // showSocial
           >
             <SignupForm form={form} onSubmit={onSubmit} isPending={isPending} />
           </CardWrapper>

@@ -7,7 +7,8 @@ import {
   authRoute,
   userRoute,
   DEFAULT_LOGIN_REDIRECT_AS_USER
-} from "@/routes"
+  } from "@/routes"
+import { generateAccessToken } from "./lib/jwt";
 
 const { auth } = NextAuth(authConfig);
 
@@ -17,7 +18,13 @@ export default auth(async function middleware(req) {
 
   const session = await authSession();
 
-  console.log(session);
+  if (session) {
+    const accessToken = await generateAccessToken(session)
+    
+    console.log("ACCESS TOKEN: ", accessToken);
+  }
+
+  console.log("MIDDLEWARE: ", session);
 
   const isUserRoute = userRoute.includes(nextUrl.pathname);
   const isAuthRoute = authRoute.includes(nextUrl.pathname);

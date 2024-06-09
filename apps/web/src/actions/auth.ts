@@ -2,7 +2,7 @@
 
 import * as z from 'zod'
 import { AuthError, CredentialsSignin } from "next-auth"
-import { signIn } from "@/auth"
+import { signIn, signOut } from "@/auth"
 import { SigninSchema, SignupSchema } from '@/schemas/auth-schema'
 import { api } from '@/lib/axios'
 import axios, { AxiosError } from 'axios'
@@ -38,4 +38,8 @@ export const signin = async (values: z.infer<typeof SigninSchema>) => {
     }
     throw e;
   }
+}
+
+export const signout = async () => {
+  await signOut();
 }

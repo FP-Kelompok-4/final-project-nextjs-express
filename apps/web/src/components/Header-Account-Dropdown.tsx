@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react';
 import { LogOut, Menu, Settings, User } from 'lucide-react';
 
@@ -17,8 +19,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { signout } from "@/actions/auth";
 
-const HeaderAccountDropdown = () => {
+const HeaderAccountDropdown = (props: { image: string | null }) => {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
@@ -30,7 +33,7 @@ const HeaderAccountDropdown = () => {
             <Menu size={16} />
           </div>
           <Avatar className="aspect-square h-9 w-fit">
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src={props.image ? props.image as string : "https://github.com/shadcn.png"} />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </Button>
@@ -49,7 +52,9 @@ const HeaderAccountDropdown = () => {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={async() => await signout()}
+        >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

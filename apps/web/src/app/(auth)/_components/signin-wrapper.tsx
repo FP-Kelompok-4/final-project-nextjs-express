@@ -44,7 +44,7 @@ const SigninWrapper = () => {
   return (
     <div className='mx-8 flex flex-1 min-h-svh items-center justify-center py-[61.46px] md:mx-12'>
       <CardWrapper
-        backButtonLabel='Create your account now!'
+        backButtonLabel="Don't have an account?"
         backButtonLink='/signup'
         showSocial
       >
