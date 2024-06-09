@@ -8,6 +8,8 @@ import {
   toUpdateAccountUserRes,
   GetUserReq,
   toUserRes,
+  GetAccountUserReq,
+  toAccountUserRes,
 } from 'models/user.model';
 
 export class UserService {
@@ -82,5 +84,17 @@ export class UserService {
     }
 
     return toUserRes(user);
+  }
+
+  static async getAccountUserById(id: string) {
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) throw new ResponseError(404, 'Id is wrong!');
+
+    return toUpdateAccountUserRes(user);
   }
 }

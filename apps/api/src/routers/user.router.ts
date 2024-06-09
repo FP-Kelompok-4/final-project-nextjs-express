@@ -3,6 +3,7 @@ import {
   validatePostUser,
   validateGetUser,
   validatePutAccountUser,
+  validateGetAccountUser,
 } from '@/validation/user.validation';
 import { Router } from 'express';
 
@@ -18,6 +19,11 @@ export class UserRouter {
 
   private initializeRoutes(): void {
     this.router.post('/', validatePostUser, this.userController.postUser);
+    this.router.get(
+      '/account/:id',
+      validateGetAccountUser,
+      this.userController.getAccountUserById,
+    );
     this.router.put(
       '/account/:id',
       validatePutAccountUser,

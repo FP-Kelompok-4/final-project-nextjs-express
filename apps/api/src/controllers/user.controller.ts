@@ -50,4 +50,18 @@ export class UserController {
       next(e);
     }
   }
+
+  async getAccountUserById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+
+      const user = await UserService.getAccountUserById(id);
+
+      res.status(200).send({
+        data: user,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
 }

@@ -92,3 +92,20 @@ export const validateGetUser = [
     next();
   },
 ];
+
+export const validateGetAccountUser = [
+  param('id').trim().notEmpty().withMessage('Id is required'),
+
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        status: 'fail',
+        message: errors.array(),
+      });
+    }
+
+    next();
+  },
+];

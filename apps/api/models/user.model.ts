@@ -16,6 +16,17 @@ export type UpdateAccountUserReq = {
   gender: string;
 };
 
+export type GetUserReq = {
+  email: string;
+  password?: string;
+};
+
+export type GetAccountUserReq = {
+  name: string;
+  birthdate: string;
+  gender: string;
+};
+
 export const toAddUserRes = (user: User) => {
   return {
     id: user.id,
@@ -35,11 +46,6 @@ export const toUpdateAccountUserRes = (user: User) => {
   };
 };
 
-export type GetUserReq = {
-  email: string;
-  password?: string;
-};
-
 export const toUserRes = (user: User) => {
   return {
     id: user.id,
@@ -49,5 +55,13 @@ export const toUserRes = (user: User) => {
     image: user.image,
     role: user.role,
     isVerified: user.isVerified,
+  };
+};
+
+export const toAccountUserRes = (user: User) => {
+  return {
+    name: user.name,
+    gender: user.gender,
+    birthdate: user.birthdate,
   };
 };
