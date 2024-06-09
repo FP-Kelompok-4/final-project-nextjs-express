@@ -10,8 +10,6 @@ export const updateAccountThunk = createAsyncThunk(
     try {
       const res = await api.put('users/account', values);
 
-      console.log(res.data);
-
       return { success: 'Success Account Update!', data: res.data };
     } catch (e) {
       if (axios.isAxiosError(e)) {
