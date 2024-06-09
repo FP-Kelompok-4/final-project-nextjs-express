@@ -19,7 +19,7 @@ export class UserRouter {
       this.userController.postUser
     )
     this.router.put(
-      '/account',
+      '/account/:id',
       validatePutAccountUser,
       this.userController.putAccountUser
     )
