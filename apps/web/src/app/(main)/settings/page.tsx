@@ -3,6 +3,7 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SecurityContent from './_components/Security-Content';
+import AccountContent from './_components/Account-Content';
 
 const page = () => {
   const tabValues = ['account', 'security'];
@@ -27,6 +28,7 @@ const page = () => {
             value={data}
             className="py-5 md:px-5"
           >
+            {data === 'account' && <AccountContent />}
             {data === 'security' && <SecurityContent />}
           </TabsContent>
         ))}
