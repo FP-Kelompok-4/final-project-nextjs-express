@@ -8,7 +8,7 @@ export const updateAccountThunk = createAsyncThunk(
   'settings/updateAccount',
   async (values: z.infer<typeof AccountSchema>) => {
     try {
-      const res = await api.put('users/account', values);
+      const res = await api.put('users/account/1003b815-6cb2-4437-a060-c05d27cd85d0', values);
 
       return { success: 'Success Account Update!', data: res.data };
     } catch (e) {
