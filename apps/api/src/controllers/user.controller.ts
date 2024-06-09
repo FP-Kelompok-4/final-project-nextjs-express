@@ -1,6 +1,10 @@
 import { UserService } from '@/services/user.service';
 import { NextFunction, Request, Response } from 'express';
-import { AddUserReq, UpdateAccountUserReq } from 'models/user.model';
+import {
+  AddUserReq,
+  UpdateAccountUserReq,
+  GetUserReq,
+} from 'models/user.model';
 
 export class UserController {
   async postUser(req: Request, res: Response, next: NextFunction) {
@@ -26,6 +30,20 @@ export class UserController {
       const user = await UserService.updateAccountUser(id, request);
 
       res.status(201).send({
+        data: user,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async getUserByEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const request = req.body as GetUserReq;
+
+      const user = await UserService.getUserByEmail(request);
+
+      res.status(200).send({
         data: user,
       });
     } catch (e) {

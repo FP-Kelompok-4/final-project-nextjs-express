@@ -14,10 +14,12 @@ import FormSearchPropertyMobile from './form/Form-Search-Property-mobile';
 import LinkBrand from './Link-Brand';
 import Link from 'next/link';
 import HeaderAccountDropdown from './Header-Account-Dropdown';
+import { auth } from "@/auth";
 
-export const Header = ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
-  const isSignIn = true;
+export const Header = async ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
+  const session = await auth();
 
+  const isSignIn = session?.user;
   return (
     <div
       className={cn(
@@ -30,7 +32,7 @@ export const Header = ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
       </div>
       <FormSearchProperty className="hidden h-fit w-full flex-row items-center justify-center gap-1 rounded-full border-[1px] focus:bg-red-400 lg:flex xl:w-fit" />
 
-      <div className="flex w-fit justify-end gap-3 md:w-[20%]">
+      <div className="flex w-fit justify-end items-center gap-3 md:w-[20%]">
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -50,7 +52,7 @@ export const Header = ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
           </SheetContent>
         </Sheet>
         {isSignIn ? (
-          <HeaderAccountDropdown />
+          <HeaderAccountDropdown image={session?.user.image} />
         ) : (
           <Button
             className="bg-gossamer-500 hover:bg-gossamer-500/90 rounded-full"

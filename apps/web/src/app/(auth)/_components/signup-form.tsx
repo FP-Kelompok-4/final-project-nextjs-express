@@ -7,10 +7,10 @@ import * as z from 'zod'
 
 interface SignupFormProps {
   form: UseFormReturn<{
-    name?: string | undefined;
-    email?: string | undefined;
-    password?: string | undefined;
-    role?: string | undefined;
+    role: string;
+    name: string;
+    email: string;
+    password: string;
   }, any, undefined>;
   onSubmit: (values: z.infer<typeof SignupSchema>) => void;
   isPending: boolean;
