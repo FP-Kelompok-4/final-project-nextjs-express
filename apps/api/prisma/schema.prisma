@@ -25,9 +25,10 @@ model User {
   name       String   @db.VarChar(255)
   email      String   @unique @db.VarChar(100)
   password   String?  @db.VarChar(100)
+  provider   String?  @db.VarChar(50)
   image      String?  @db.VarChar(100)
   role       String   @db.VarChar(50)
-  isVerified Boolean  @default(false)
+  isVerified Boolean
   createAt   DateTime @default(now())
   updateAt   DateTime @updatedAt
 

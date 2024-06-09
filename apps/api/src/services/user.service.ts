@@ -17,6 +17,14 @@ export class UserService {
 
     (req.password) ? req.password = await bcrypt.hash(req.password, 10) : req.password = null;
 
+    if (req.provider) {
+      req.isVerified = true;
+    } else {
+      req.provider = null;
+      req.image = null;
+      req.isVerified = false;
+    }
+
     const user = await prisma.user.create({
       data: req
     })
