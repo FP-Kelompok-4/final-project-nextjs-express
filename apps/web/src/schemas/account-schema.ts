@@ -2,12 +2,6 @@ import * as z from 'zod';
 
 export const AccountSchema = z
   .object({
-    email: z
-      .string()
-      .email({
-        message: 'Invalid email address',
-      })
-      .trim(),
     name: z
       .string()
       .min(3, {

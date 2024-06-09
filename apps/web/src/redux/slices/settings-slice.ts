@@ -10,7 +10,6 @@ type InitialState = {
 
 const initialState: InitialState = {
   account: {
-    email: 'johndoe@gmail.com',
     name: '',
     gender: '',
     birthdate: undefined,

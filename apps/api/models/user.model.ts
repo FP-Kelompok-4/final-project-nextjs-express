@@ -8,7 +8,6 @@ export type AddUserReq = {
 };
 
 export type UpdateAccountUserReq = {
-  email: string;
   name: string;
   birthdate: string;
   gender: string;
@@ -28,7 +27,6 @@ export const toAddUserRes = (user: User) => {
 export const toUpdateAccountUserRes = (user: User) => {
   return {
     name: user.name,
-    email: user.email,
     gender: user.gender,
     birthdate: user.birthdate,
   };

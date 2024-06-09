@@ -25,7 +25,6 @@ export const validatePutAccountUser = [
   param('id').trim().notEmpty().withMessage('Id is required'),
 
   body('name').trim().notEmpty().withMessage('Name is required'),
-  body('email').trim().isEmail().notEmpty().withMessage('Email is required'),
   body('gender').trim().notEmpty().withMessage('Gender is required'),
   body('birthdate').trim().notEmpty().withMessage('Birthdate is required'),
 

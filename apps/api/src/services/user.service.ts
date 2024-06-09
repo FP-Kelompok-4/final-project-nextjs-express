@@ -46,7 +46,7 @@ export class UserService {
       where: {
         id,
       },
-      data: { name: req.name, gender: req.gender, birthdate: req.birthdate },
+      data: req,
     });
 
     return toUpdateAccountUserRes(user);
