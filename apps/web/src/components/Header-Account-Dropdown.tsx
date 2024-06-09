@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import React from 'react';
 import { LogOut, Menu, Settings, User } from 'lucide-react';
@@ -10,16 +10,12 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { signout } from "@/actions/auth";
+import { signout } from '@/actions/auth';
+import Link from 'next/link';
 
 const HeaderAccountDropdown = (props: { image: string | null }) => {
   return (
@@ -33,7 +29,13 @@ const HeaderAccountDropdown = (props: { image: string | null }) => {
             <Menu size={16} />
           </div>
           <Avatar className="aspect-square h-9 w-fit">
-            <AvatarImage src={props.image ? props.image as string : "https://github.com/shadcn.png"} />
+            <AvatarImage
+              src={
+                props.image
+                  ? (props.image as string)
+                  : 'https://github.com/shadcn.png'
+              }
+            />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </Button>
@@ -46,15 +48,15 @@ const HeaderAccountDropdown = (props: { image: string | null }) => {
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
-          </DropdownMenuItem>
+          <Link href={'/settings'}>
+            <DropdownMenuItem>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={async() => await signout()}
-        >
+        <DropdownMenuItem onClick={async () => await signout()}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>
