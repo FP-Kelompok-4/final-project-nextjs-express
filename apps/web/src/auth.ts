@@ -36,6 +36,7 @@ export const {
     },
     async session({ token, session }) {
       if (session.user) {
+        session.user.id = token.sub as string
         session.user.role = token.role
         session.user.isVerified = token.isVerified
       }
@@ -44,6 +45,9 @@ export const {
     },
     async jwt({ token, user, account, profile }) {
       if (account?.provider === "google") {
+        const res = await api.post("users/by-email", { email: user.email })
+
+        token.sub = res.data.data.id;
         token.isVerified = profile?.email_verified as boolean | undefined;
         token.role = "USER";
 
