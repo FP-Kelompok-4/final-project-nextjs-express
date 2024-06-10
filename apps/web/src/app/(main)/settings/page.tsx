@@ -1,12 +1,20 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SecurityContent from './_components/Security-Content';
 import AccountContent from './_components/Account-Content';
+import { useAppDispatch } from '@/redux/hook';
+import { getAccountThunk } from '@/redux/slices/settings-thunk';
 
 const page = () => {
   const tabValues = ['account', 'security'];
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(getAccountThunk());
+  }, []);
 
   return (
     <div className="mt-5 flex flex-col gap-10 px-6 md:px-10 xl:px-20">

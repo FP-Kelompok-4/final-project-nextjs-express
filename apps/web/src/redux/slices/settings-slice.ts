@@ -1,20 +1,24 @@
 import { AccountSchema } from '@/schemas/account-schema';
 import { createSlice } from '@reduxjs/toolkit';
-import { updateAccountThunk } from './settings-thunk';
+import { getAccountThunk, updateAccountThunk } from './settings-thunk';
 import { z } from 'zod';
 
 type InitialState = {
-  account: z.infer<typeof AccountSchema>;
+  account: {
+    name?: string | undefined;
+    birthdate?: string | undefined;
+    gender?: string | undefined;
+  };
   isAccountLoading: boolean;
 };
 
 const initialState: InitialState = {
   account: {
-    name: '',
-    gender: '',
+    name: undefined,
+    gender: undefined,
     birthdate: undefined,
   },
-  isAccountLoading: false,
+  isAccountLoading: true,
 };
 
 const settingsSlice = createSlice({
@@ -26,6 +30,15 @@ const settingsSlice = createSlice({
       state.isAccountLoading = true;
     });
     builder.addCase(updateAccountThunk.fulfilled, (state, action) => {
+      if (action.payload) state.account = action.payload.data;
+
+      state.isAccountLoading = false;
+    });
+
+    builder.addCase(getAccountThunk.pending, (state) => {
+      state.isAccountLoading = true;
+    });
+    builder.addCase(getAccountThunk.fulfilled, (state, action) => {
       if (action.payload) state.account = action.payload.data;
 
       state.isAccountLoading = false;

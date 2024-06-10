@@ -12,8 +12,8 @@ export type AddUserReq = {
 
 export type UpdateAccountUserReq = {
   name: string;
-  birthdate: string;
-  gender: string;
+  birthdate?: Date | null;
+  gender?: string | null;
 };
 
 export type GetUserReq = {
@@ -23,8 +23,8 @@ export type GetUserReq = {
 
 export type GetAccountUserReq = {
   name: string;
-  birthdate: string;
-  gender: string;
+  birthdate?: Date | null;
+  gender?: string | null;
 };
 
 export const toAddUserRes = (user: User) => {

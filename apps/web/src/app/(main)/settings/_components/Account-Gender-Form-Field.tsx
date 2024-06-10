@@ -15,13 +15,13 @@ const AccountGenderFormField = (
     >
       <FormItem className="flex items-center space-x-3 space-y-0">
         <FormControl>
-          <RadioGroupItem value="L" />
+          <RadioGroupItem value="L" checked={field.value === 'L'} />
         </FormControl>
         <FormLabel className="font-normal">laki-Laki</FormLabel>
       </FormItem>
       <FormItem className="flex items-center space-x-3 space-y-0">
         <FormControl>
-          <RadioGroupItem value="P" />
+          <RadioGroupItem value="P" checked={field.value === 'P'} />
         </FormControl>
         <FormLabel className="font-normal">Perempuan</FormLabel>
       </FormItem>
