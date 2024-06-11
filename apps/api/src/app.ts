@@ -13,6 +13,7 @@ import { SampleRouter } from './routers/sample.router';
 import { ResponseError } from './error/response-error';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UserRouter } from './routers/user.router';
+import { VerificationTokenRouter } from "./routers/verificationToken.route";
 
 export default class App {
   private app: Express;
@@ -58,6 +59,7 @@ export default class App {
   private routes(): void {
     const sampleRouter = new SampleRouter();
     const userRouter = new UserRouter();
+    const verificationToken = new VerificationTokenRouter();
 
     this.app.get('/api/', (req: Request, res: Response) => {
       res.send(`Restful API is already !`);
@@ -65,6 +67,7 @@ export default class App {
 
     this.app.use('/api/samples', sampleRouter.getRouter());
     this.app.use('/api/users', userRouter.getRouter());
+    this.app.use('/api/verification-token', verificationToken.getRouter());
   }
 
   public start(): void {

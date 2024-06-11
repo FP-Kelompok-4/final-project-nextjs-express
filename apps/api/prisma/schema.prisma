@@ -134,3 +134,12 @@ model OrderRoom {
 
   @@map("orderRooms")
 }
+
+model VerificationToken {
+  id      String   @id @default(cuid())
+  email   String   @unique
+  token   String   @unique
+  expires DateTime
+
+  @@map("verificationTokens")
+}
