@@ -22,19 +22,21 @@ const CardWrapper = ({
   showSocial
 } : CardWrapperProps) => {
   return (
-    <Card>
+    <Card className="md:w-[400px] w-full">
       <CardContent className="space-y-2 pt-6">
         {children}
       </CardContent>
-      <CardFooter>
-        <Separator className='flex-1 bg-gray-400'/>
-        <p className='px-4'>Atau</p>
-        <Separator className='flex-1 bg-gray-400'/>
-      </CardFooter>
       {showSocial && (
-        <CardFooter>
-          <SocialButton />
-        </CardFooter>
+        <>
+          <CardFooter>
+            <Separator className='flex-1 bg-gray-400'/>
+            <p className='px-4'>Atau</p>
+            <Separator className='flex-1 bg-gray-400'/>
+          </CardFooter>
+          <CardFooter>
+            <SocialButton />
+          </CardFooter>
+        </>
       )}
       <CardFooter>
         <BackButton

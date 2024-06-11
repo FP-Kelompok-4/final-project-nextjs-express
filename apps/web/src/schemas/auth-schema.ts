@@ -25,4 +25,19 @@ export const SignupSchema = z.object({
     .string()
     .toUpperCase()
     .trim()
-}).partial();
+});
+
+export const SigninSchema = z.object({
+  email: z
+    .string()
+    .email({
+      message: 'Invalid email address'
+    })
+    .trim(),
+  password: z
+    .string()
+    .min(1, {
+      message: 'Password is required'
+    })
+    .trim()
+});

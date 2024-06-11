@@ -1,5 +1,5 @@
 import { UserController } from '@/controllers/user.controller';
-import { validatePostUser } from '@/validation/user.validation';
+import { validateGetUser, validatePostUser } from '@/validation/user.validation';
 import { Router } from 'express';
 
 export class UserRouter {
@@ -17,6 +17,11 @@ export class UserRouter {
       '/',
       validatePostUser,
       this.userController.postUser
+    )
+    this.router.post(
+      '/by-email',
+      validateGetUser,
+      this.userController.getUserByEmail
     )
   }
 
