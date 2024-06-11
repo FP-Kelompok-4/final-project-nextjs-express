@@ -1,5 +1,5 @@
 import { UserController } from '@/controllers/user.controller';
-import { validateGetUser, validatePostUser } from '@/validation/user.validation';
+import { validateGetUser, validatePostUser, validateVerificationUser } from '@/validation/user.validation';
 import { Router } from 'express';
 
 export class UserRouter {
@@ -22,6 +22,11 @@ export class UserRouter {
       '/by-email',
       validateGetUser,
       this.userController.getUserByEmail
+    )
+    this.router.post(
+      '/verification-by-token',
+      validateVerificationUser,
+      this.userController.verificationUserByToken
     )
   }
 
