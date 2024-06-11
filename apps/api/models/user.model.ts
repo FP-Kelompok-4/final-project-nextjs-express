@@ -8,7 +8,24 @@ export type AddUserReq = {
   image?: string | null;
   role: string;
   isVerified: boolean;
-}
+};
+
+export type UpdateAccountUserReq = {
+  name: string;
+  birthdate?: Date | null;
+  gender?: string | null;
+};
+
+export type GetUserReq = {
+  email: string;
+  password?: string;
+};
+
+export type GetAccountUserReq = {
+  name: string;
+  birthdate?: Date | null;
+  gender?: string | null;
+};
 
 export const toAddUserRes = (user: User) => {
   return {
@@ -17,14 +34,17 @@ export const toAddUserRes = (user: User) => {
     email: user.email,
     image: user.image,
     role: user.role,
-    isVerified: user.isVerified
-  }
-}
+    isVerified: user.isVerified,
+  };
+};
 
-export type GetUserReq = {
-  email: string;
-  password?: string;
-}
+export const toUpdateAccountUserRes = (user: User) => {
+  return {
+    name: user.name,
+    gender: user.gender,
+    birthdate: user.birthdate,
+  };
+};
 
 export const toUserRes = (user: User) => {
   return {
@@ -34,6 +54,14 @@ export const toUserRes = (user: User) => {
     provider: user.provider,
     image: user.image,
     role: user.role,
-    isVerified: user.isVerified
-  }
-}
+    isVerified: user.isVerified,
+  };
+};
+
+export const toAccountUserRes = (user: User) => {
+  return {
+    name: user.name,
+    gender: user.gender,
+    birthdate: user.birthdate,
+  };
+};
