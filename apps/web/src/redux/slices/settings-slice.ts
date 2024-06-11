@@ -6,7 +6,7 @@ import { z } from 'zod';
 type InitialState = {
   account: {
     name?: string | undefined;
-    birthdate?: string | undefined;
+    birthdate?: Date | undefined;
     gender?: string | undefined;
   };
   isAccountLoading: boolean;

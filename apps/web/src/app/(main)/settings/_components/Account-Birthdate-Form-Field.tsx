@@ -19,6 +19,7 @@ import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
+import { id } from 'date-fns/locale';
 
 const AccountBirthdateFormField = (
   field: ControllerRenderProps<FieldValues, 'birthdate'>,
@@ -47,7 +48,19 @@ const AccountBirthdateFormField = (
         <Calendar
           mode="single"
           selected={field.value}
-          onSelect={field.onChange}
+          locale={id}
+          onSelect={(date) => {
+            let newDate;
+
+            if (date) {
+              const year = date.getUTCFullYear();
+              const month = date.getMonth();
+              const day = date.getDate();
+              newDate = new Date(Date.UTC(year, month, day, 0, 0, 0));
+            }
+
+            field.onChange(date ? newDate : date);
+          }}
           disabled={(date) =>
             date > new Date() || date < new Date('1900-01-01')
           }

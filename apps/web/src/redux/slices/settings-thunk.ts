@@ -6,12 +6,9 @@ import { z } from 'zod';
 
 export const updateAccountThunk = createAsyncThunk(
   'settings/updateAccount',
-  async (values: z.infer<typeof AccountSchema>) => {
-    try {      
-      const res = await api.put(
-        'users/account/1003b815-6cb2-4437-a060-c05d27cd85d0',
-        values,
-      );
+  async (input: { id: string; values: z.infer<typeof AccountSchema> }) => {
+    try {
+      const res = await api.put(`users/account/${input.id}`, input.values);
 
       return { success: 'Success Account Update!', data: res.data.data };
     } catch (e) {
@@ -26,11 +23,9 @@ export const updateAccountThunk = createAsyncThunk(
 
 export const getAccountThunk = createAsyncThunk(
   'settings/getAccount',
-  async () => {
+  async (id: string) => {
     try {
-      const res = await api.get(
-        'users/account/1003b815-6cb2-4437-a060-c05d27cd85d0',
-      );
+      const res = await api.get(`users/account/${id}`);
 
       return { success: 'Success Get Account!', data: res.data.data };
     } catch (e) {

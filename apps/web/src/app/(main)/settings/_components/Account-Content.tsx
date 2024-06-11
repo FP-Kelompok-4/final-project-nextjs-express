@@ -18,12 +18,10 @@ import AccountGenderFormField from './Account-Gender-Form-Field';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import {
-  getAccountThunk,
-  updateAccountThunk,
-} from '@/redux/slices/settings-thunk';
+import { updateAccountThunk } from '@/redux/slices/settings-thunk';
+import { Session } from 'next-auth';
 
-const AccountContent = () => {
+const AccountContent = ({ session }: { session: Session | null }) => {
   const { toast } = useToast();
 
   const defaultValues = useAppSelector(
@@ -38,27 +36,25 @@ const AccountContent = () => {
 
   const form = useForm<z.infer<typeof AccountSchema>>({
     resolver: zodResolver(AccountSchema),
-    defaultValues: {
-      name: undefined,
-      gender: undefined,
-      birthdate: undefined,
-    },
-    values: {
-      ...defaultValues,
-      birthdate: defaultValues.birthdate
-        ? new Date(defaultValues.birthdate)
-        : undefined,
-    },
   });
 
   const onSubmit = (values: z.infer<typeof AccountSchema>) => {
-    dispatch(updateAccountThunk(values)).then((data: any) => {
+    dispatch(
+      updateAccountThunk({ id: session ? session.user.id : '', values }),
+    ).then((data: any) => {
       toast({
         variant: data.payload.error ? 'destructive' : 'default',
         title: data.payload.error ? data.payload.error : data.payload.success,
       });
     });
   };
+
+  useEffect(() => {
+    form.reset({
+      ...defaultValues,
+      birthdate: defaultValues.birthdate && new Date(defaultValues.birthdate),
+    });
+  }, [defaultValues]);
 
   return (
     <>
