@@ -1,16 +1,8 @@
-export const publicRoute = [
-  "/"
-];
+export const publicRoute = ['/'];
 
-export const userRoute = [
-  "/profile/user"
-];
+export const userRoute = ['/profile/user', '/settings'];
 
-export const authRoute = [
-  "/signup",
-  "/signin",
-  "/auth/error"
-];
+export const authRoute = ['/signup', '/signin', '/auth/error'];
 
 export const verificationRoute = "/verification"
 
