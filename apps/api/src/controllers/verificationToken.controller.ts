@@ -1,7 +1,7 @@
 import { UserService } from "@/services/user.service";
 import { VerificationTokenService } from "@/services/verificationToken.service";
 import { NextFunction, Request, Response } from "express";
-import { ResendManager } from "lib/resendManager";
+import { templateNodemailer, transporter } from "lib/nodeMailer";
 
 export class VerificationTokenController {
   async postVerificationTokenByEmail(req: Request, res: Response, next: NextFunction) {
@@ -12,13 +12,10 @@ export class VerificationTokenController {
 
       const verificationToken = await VerificationTokenService.addVerificationToken({ email });
 
-      const { data, error } = await ResendManager.sendEmail(email, verificationToken.token);
-
-      if (error) res.status(400).send({ status: "fail", message: error.message });
+      templateNodemailer(email, verificationToken.token);
 
       res.status(201).send({
-        data: verificationToken,
-        resend: data
+        data: verificationToken
       })
     } catch (e) {
       next(e)
