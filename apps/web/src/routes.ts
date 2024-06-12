@@ -12,4 +12,6 @@ export const authRoute = [
   "/auth/error"
 ];
 
+export const verificationRoute = "/verification"
+
 export const DEFAULT_LOGIN_REDIRECT_AS_USER = "/";
