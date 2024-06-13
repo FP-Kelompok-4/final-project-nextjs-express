@@ -35,10 +35,6 @@ export default auth(async function middleware(req) {
   const isVerificationRoute = nextUrl.pathname.startsWith(verificationRoute);
   const isTenantRoute = nextUrl.pathname.startsWith(tenantRoute);
 
-  // if (isAuthRoute && isLoggedIn && session?.user.role === "USER") {
-  //   return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_USER, nextUrl));
-  // }
-
   if (
     isLoggedIn &&
     (session?.user.isVerified === true || session?.user.isVerified === false) &&
@@ -56,6 +52,14 @@ export default auth(async function middleware(req) {
   ) {
     if (session.user.role === "TENANT") return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_TENANT, nextUrl));
 
+    return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_USER, nextUrl));
+  }
+
+  if (
+    isLoggedIn &&
+    session?.user.isVerified === false &&
+    isUserRoute
+  ) {
     return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_USER, nextUrl));
   }
 
