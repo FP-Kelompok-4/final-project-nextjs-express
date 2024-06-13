@@ -45,7 +45,7 @@ const SignupTab = () => {
           <TabsTrigger
             value="user"
             className="items-center gap-2 align-middle"
-            onClick={() => form.setValue('role', 'user')}
+            onFocus={() => form.setValue('role', 'user')}
           >
             <UserRound size={20} />
             User
@@ -53,7 +53,7 @@ const SignupTab = () => {
           <TabsTrigger
             value="tenant"
             className="items-center gap-2 align-middle"
-            onClick={() => form.setValue('role', 'tenant')}
+            onFocus={() => form.setValue('role', 'tenant')}
           >
             <Home size={20} />
             Tenant
