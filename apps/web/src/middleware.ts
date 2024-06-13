@@ -7,7 +7,9 @@ import {
   authRoute,
   userRoute,
   DEFAULT_LOGIN_REDIRECT_AS_USER,
-  verificationRoute
+  verificationRoute,
+  tenantRoute,
+  DEFAULT_LOGIN_REDIRECT_AS_TENANT
   } from "@/routes"
 import { generateAccessToken } from "./lib/jwt";
 
@@ -31,16 +33,42 @@ export default auth(async function middleware(req) {
   const isAuthRoute = authRoute.includes(nextUrl.pathname);
   const isPublicRoute = publicRoute.includes(nextUrl.pathname);
   const isVerificationRoute = nextUrl.pathname.startsWith(verificationRoute);
+  const isTenantRoute = nextUrl.pathname.startsWith(tenantRoute);
 
-  if (isAuthRoute && isLoggedIn) {
+  // if (isAuthRoute && isLoggedIn && session?.user.role === "USER") {
+  //   return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_USER, nextUrl));
+  // }
+
+  if (
+    isLoggedIn &&
+    (session?.user.isVerified === true || session?.user.isVerified === false) &&
+    session.user.role === "TENANT" &&
+    (isPublicRoute || isUserRoute || isAuthRoute)
+  ) {
+    return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_TENANT, nextUrl));
+  }
+
+  if (
+    isLoggedIn &&
+    session?.user.isVerified === true &&
+    (session.user.role === "USER" || session.user.role === "TENANT") &&
+    isVerificationRoute
+  ) {
+    if (session.user.role === "TENANT") return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_TENANT, nextUrl));
+
     return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_USER, nextUrl));
   }
 
-  if (isLoggedIn && session?.user.isVerified === true && session.user.role === "USER" && isVerificationRoute) {
+  if (
+    isLoggedIn &&
+    (session?.user.isVerified === true || session?.user.isVerified === false) &&
+    session.user.role === "USER" &&
+    (isTenantRoute || isAuthRoute)
+  ) {
     return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_USER, nextUrl));
   }
 
-  if (!isLoggedIn && (isUserRoute || isVerificationRoute)) {
+  if (!isLoggedIn && (isUserRoute || isVerificationRoute || isTenantRoute)) {
     return Response.redirect(new URL("/signin", nextUrl))
   }
 });

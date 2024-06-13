@@ -15,16 +15,16 @@ const VerificationWrapper = () => {
   const token = searchParams.get("token");
 
   const onSubmit = useCallback(async () => {
-    api.post("users/verification-by-token", { token })
-      .then((res) => {
-        setSucccess(res.data);
-        setTimeout(() => {
+    if (!success && !error) {
+      api.post("users/verification-by-token", { token })
+        .then((res) => {
           update({...session?.user, isVerified: true});
-        }, 800);
-      })
-      .catch((e) => {
-        setError(e.response.data.message);
-      })
+          setSucccess(res.data);
+        })
+        .catch((e) => {
+          setError(e.response.data.message);
+        })
+    }
   }, [token]);
         
   useEffect(() => {
@@ -35,7 +35,7 @@ const VerificationWrapper = () => {
     <main className="min-h-svh px-8 flex justify-center items-center">
       <CardWrapper
         backButtonLabel={session?.user.role === "USER" ? "Back to home" : "Back to dashboard"}
-        backButtonLink={session?.user.role === "USER" ? "/" : "/admin/dashboard"}
+        backButtonLink={session?.user.role === "USER" ? "/" : "/tenant/dashboard"}
       >
         <h2 className="font-semibold text-xl text-center">VERIFICATION</h2>
         <p className="pb-4 text-sm text-center">Confirming your email</p>
