@@ -6,7 +6,8 @@ import {
   publicRoute,
   authRoute,
   userRoute,
-  DEFAULT_LOGIN_REDIRECT_AS_USER
+  DEFAULT_LOGIN_REDIRECT_AS_USER,
+  verificationRoute
   } from "@/routes"
 import { generateAccessToken } from "./lib/jwt";
 
@@ -29,12 +30,17 @@ export default auth(async function middleware(req) {
   const isUserRoute = userRoute.includes(nextUrl.pathname);
   const isAuthRoute = authRoute.includes(nextUrl.pathname);
   const isPublicRoute = publicRoute.includes(nextUrl.pathname);
+  const isVerificationRoute = nextUrl.pathname.startsWith(verificationRoute);
 
   if (isAuthRoute && isLoggedIn) {
     return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_USER, nextUrl));
   }
 
-  if (!isLoggedIn && isUserRoute) {
+  if (isLoggedIn && session?.user.isVerified === true && session.user.role === "USER" && isVerificationRoute) {
+    return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_USER, nextUrl));
+  }
+
+  if (!isLoggedIn && (isUserRoute || isVerificationRoute)) {
     return Response.redirect(new URL("/signin", nextUrl))
   }
 });

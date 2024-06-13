@@ -33,10 +33,12 @@ const SigninWrapper = () => {
   const onSubmit = (values: z.infer<typeof SigninSchema>) => {
     startTransition(() => {
       signin(values).then((data) => {
-        toast({
-          variant: data?.error ? 'destructive' : 'default',
-          title: data?.error && data?.error,
-        });
+        if (data?.error) {
+          toast({
+            variant: data.error ? 'destructive' : 'default',
+            title: data.error && data.error,
+          });
+        }
       });
     });
   };

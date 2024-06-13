@@ -86,6 +86,27 @@ export class UserService {
     return toUserRes(user);
   }
 
+  static async verificationUser(req: { email: string }) {
+    await prisma.user.update({
+      where: {
+        email: req.email
+      },
+      data: {
+        isVerified: true
+      }
+    })
+  }
+
+  static async verifyUserByEmail(req: { email: string }) {
+    const user = await prisma.user.findUnique({
+      where: {
+        email: req.email
+      }
+    })
+
+    if (!user) throw new ResponseError(404, "User is not exist.");
+  }
+
   static async getAccountUserById(id: string) {
     const user = await prisma.user.findUnique({
       where: {

@@ -10,7 +10,7 @@ export const {
 } = NextAuth({
   ...authConfig,
   callbacks: {
-    async signIn({ account, profile }) {
+    async signIn({ account, profile, user }) {
       if (account?.provider === "google") {
         try {
           const isExistEmail = await api.post("users/by-email", { email: profile?.email })
@@ -32,6 +32,11 @@ export const {
           return true;
         }
       }
+
+      if (!user.isVerified) {
+        await api.post("verification-token/", { email: user.email });
+      }
+
       return true;
     },
     async session({ token, session }) {
@@ -43,7 +48,7 @@ export const {
 
       return session
     },
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user, account, profile, trigger, session }) {
       if (account?.provider === "google") {
         const res = await api.post("users/by-email", { email: user.email })
 
@@ -58,6 +63,11 @@ export const {
         token.role = user.role;
         token.isVerified = user.isVerified;
       }
+
+      if (trigger === "update" && session) {
+        token = {...token, ...session}
+        return token;
+      };
 
       return token;
     }
