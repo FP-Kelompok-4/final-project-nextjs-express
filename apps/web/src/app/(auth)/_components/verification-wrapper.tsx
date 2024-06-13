@@ -20,7 +20,7 @@ const VerificationWrapper = () => {
         setSucccess(res.data);
         setTimeout(() => {
           update({...session?.user, isVerified: true});
-        }, 500);
+        }, 800);
       })
       .catch((e) => {
         setError(e.response.data.message);
