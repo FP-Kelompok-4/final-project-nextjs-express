@@ -18,8 +18,8 @@ const VerificationWrapper = () => {
     if (!success && !error) {
       api.post("users/verification-by-token", { token })
         .then((res) => {
-          update({...session?.user, isVerified: true});
           setSucccess(res.data);
+          update({...session?.user, isVerified: true});
         })
         .catch((e) => {
           setError(e.response.data.message);
