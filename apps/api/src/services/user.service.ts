@@ -10,6 +10,7 @@ import {
   toUserRes,
   GetAccountUserReq,
   toAccountUserRes,
+  UpdateUserToNotVerifiedAndPasswordReq,
 } from 'models/user.model';
 
 export class UserService {
@@ -89,22 +90,22 @@ export class UserService {
   static async verificationUser(req: { email: string }) {
     await prisma.user.update({
       where: {
-        email: req.email
+        email: req.email,
       },
       data: {
-        isVerified: true
-      }
-    })
+        isVerified: true,
+      },
+    });
   }
 
   static async verifyUserByEmail(req: { email: string }) {
     const user = await prisma.user.findUnique({
       where: {
-        email: req.email
-      }
-    })
+        email: req.email,
+      },
+    });
 
-    if (!user) throw new ResponseError(404, "User is not exist.");
+    if (!user) throw new ResponseError(404, 'User is not exist.');
   }
 
   static async getAccountUserById(id: string) {
@@ -117,5 +118,31 @@ export class UserService {
     if (!user) throw new ResponseError(404, 'Id is wrong!');
 
     return toUpdateAccountUserRes(user);
+  }
+
+  static async changeUserToNotVerifiedByEmail(req: { email: string }) {
+    await prisma.user.update({
+      where: {
+        email: req.email,
+      },
+      data: {
+        isVerified: false,
+      },
+    });
+  }
+
+  static async changeUserPasswordByEmail(
+    req: UpdateUserToNotVerifiedAndPasswordReq,
+  ) {
+    const password = await bcrypt.hash(req.password, 10);
+
+    await prisma.user.update({
+      where: {
+        email: req.email,
+      },
+      data: {
+        password,
+      },
+    });
   }
 }
