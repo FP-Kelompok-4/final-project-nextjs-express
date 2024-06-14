@@ -1,10 +1,12 @@
 import { UserService } from '@/services/user.service';
-import { VerificationTokenService } from "@/services/verificationToken.service";
+import { VerificationTokenService } from '@/services/verificationToken.service';
 import { NextFunction, Request, Response } from 'express';
+import { templateNodemailer } from 'lib/nodeMailer';
 import {
   AddUserReq,
   UpdateAccountUserReq,
   GetUserReq,
+  UpdateUserToNotVerifiedAndPasswordReq,
 } from 'models/user.model';
 
 export class UserController {
@@ -52,21 +54,28 @@ export class UserController {
     }
   }
 
-  async verificationUserByToken (req: Request, res: Response, next: NextFunction) {
+  async verificationUserByToken(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const { token } = req.body as { token: string };
 
-      const verificationToken = await VerificationTokenService.getVerificationTokenByToken({ token });
+      const verificationToken =
+        await VerificationTokenService.getVerificationTokenByToken({ token });
 
       await UserService.verificationUser({ email: verificationToken.email });
 
-      await VerificationTokenService.deleteVerificationTokenById(verificationToken.id);
+      await VerificationTokenService.deleteVerificationTokenById(
+        verificationToken.id,
+      );
 
       res.status(200).send({
-        status: "success"
-      })
+        status: 'success',
+      });
     } catch (e) {
-      next(e)
+      next(e);
     }
   }
 
@@ -78,6 +87,31 @@ export class UserController {
 
       res.status(200).send({
         data: user,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async updateUserNotVerifiedAndPasswordByEmail(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const request = req.body as UpdateUserToNotVerifiedAndPasswordReq;
+
+      await UserService.changeUserToNotVerifiedByEmail(request);
+
+      await UserService.changeUserPasswordByEmail(request);
+
+      const verificationToken =
+        await VerificationTokenService.addVerificationToken(request);
+
+      templateNodemailer(request.email, verificationToken.token);
+
+      res.status(200).send({
+        status: 'success',
       });
     } catch (e) {
       next(e);
