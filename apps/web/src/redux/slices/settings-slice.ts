@@ -1,6 +1,6 @@
 import { AccountSchema } from '@/schemas/account-schema';
 import { createSlice } from '@reduxjs/toolkit';
-import { getAccountThunk, updateAccountThunk } from './settings-thunk';
+import { changeUserpasswordThunk, getAccountThunk, updateAccountThunk } from './settings-thunk';
 import { z } from 'zod';
 
 type InitialState = {
@@ -41,6 +41,13 @@ const settingsSlice = createSlice({
     builder.addCase(getAccountThunk.fulfilled, (state, action) => {
       if (action.payload) state.account = action.payload.data;
 
+      state.isAccountLoading = false;
+    });
+
+    builder.addCase(changeUserpasswordThunk.pending, (state) => {
+      state.isAccountLoading = true;
+    });
+    builder.addCase(changeUserpasswordThunk.fulfilled, (state, action) => {
       state.isAccountLoading = false;
     });
   },
