@@ -4,6 +4,8 @@ export const userRoute = ['/settings'];
 
 export const authRoute = ['/signup', '/signin', '/auth/error'];
 
+export const bothRoute = ['/profile']
+
 export const tenantRoute = "/tenant"
 
 export const verificationRoute = "/verification"

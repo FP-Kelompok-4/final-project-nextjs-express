@@ -3,13 +3,15 @@ import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/components/ui/use-toast";
 import { AvatarSchema } from "@/schemas/profile-schema";
 import { X } from "lucide-react";
-import Image from "next/image";
 import { ChangeEvent, useState } from "react";
 import Cropper, { Area, Point } from "react-easy-crop";
 import getCroppedImg from "../_utils/cropImage";
 import { Button } from "@/components/ui/button";
+import { api } from "@/lib/axios";
+import { useSession } from "next-auth/react";
 
 const DialogUpdatePhoto = () => {
+  const { data: session, update } = useSession();
   const { toast } = useToast();
   const [newPhoto, setNewPhoto] = useState("");
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
@@ -27,9 +29,20 @@ const DialogUpdatePhoto = () => {
         croppedAreaPixels,
       )
 
-      console.log("CROPPED: ", croppedImage)
+      api.patch("users/change-image", { email: session?.user.email, image: croppedImage}, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        .then((res) => {
+          showToast(true, "Image update successful.");
+          update({...session?.user, image: res.data.data.image});
+        })
+        .catch((e) => {
+          showToast(false, e.response.data.message);
+        })
     } catch (e) {
-      console.log(e)
+      showToast(false, e as string);
     }
   }
 

@@ -11,6 +11,7 @@ import {
   GetAccountUserReq,
   toAccountUserRes,
   UpdateUserToNotVerifiedAndPasswordReq,
+  UpdateImageUserReq,
 } from 'models/user.model';
 
 export class UserService {
@@ -144,5 +145,18 @@ export class UserService {
         password,
       },
     });
+  }
+
+  static async updateImageUser(req: UpdateImageUserReq) {
+    const user = await prisma.user.update({
+      where: {
+        email: req.email,
+      },
+      data: {
+        image: req.image,
+      },
+    });
+
+    return toUserRes(user);
   }
 }

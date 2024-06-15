@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Sheet,
   SheetContent,
@@ -14,10 +16,10 @@ import FormSearchPropertyMobile from './form/Form-Search-Property-mobile';
 import LinkBrand from './Link-Brand';
 import Link from 'next/link';
 import HeaderAccountDropdown from './Header-Account-Dropdown';
-import { auth } from "@/auth";
+import { useSession } from "next-auth/react";
 
-export const Header = async ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
-  const session = await auth();
+export const Header = ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
+  const {data: session} = useSession();
 
   const isSignIn = session?.user;
   return (
@@ -52,7 +54,7 @@ export const Header = async ({ className }: React.HTMLAttributes<HTMLDivElement>
           </SheetContent>
         </Sheet>
         {isSignIn ? (
-          <HeaderAccountDropdown image={session?.user.image} />
+          <HeaderAccountDropdown />
         ) : (
           <Button
             className="bg-gossamer-500 hover:bg-gossamer-500/90 rounded-full"

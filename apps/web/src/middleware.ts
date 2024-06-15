@@ -9,7 +9,8 @@ import {
   DEFAULT_LOGIN_REDIRECT_AS_USER,
   verificationRoute,
   tenantRoute,
-  DEFAULT_LOGIN_REDIRECT_AS_TENANT
+  DEFAULT_LOGIN_REDIRECT_AS_TENANT,
+  bothRoute
   } from "@/routes"
 import { generateAccessToken } from "./lib/jwt";
 
@@ -34,6 +35,7 @@ export default auth(async function middleware(req) {
   const isPublicRoute = publicRoute.includes(nextUrl.pathname);
   const isVerificationRoute = nextUrl.pathname.startsWith(verificationRoute);
   const isTenantRoute = nextUrl.pathname.startsWith(tenantRoute);
+  const isBothRoute = bothRoute.includes(nextUrl.pathname);
 
   if (
     isLoggedIn &&
@@ -72,7 +74,7 @@ export default auth(async function middleware(req) {
     return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_USER, nextUrl));
   }
 
-  if (!isLoggedIn && (isUserRoute || isVerificationRoute || isTenantRoute)) {
+  if (!isLoggedIn && (isUserRoute || isVerificationRoute || isTenantRoute || isBothRoute)) {
     return Response.redirect(new URL("/signin", nextUrl))
   }
 });
