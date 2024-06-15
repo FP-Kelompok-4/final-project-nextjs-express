@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { useSession } from "next-auth/react"
 import DialogUpdatePhoto from "./_components/dialog-update-photo";
+import { BadgeCheck, BadgeX } from "lucide-react";
 
 const Profile = () => {
   const { data: session } = useSession();
@@ -35,6 +36,23 @@ const Profile = () => {
           <div className="py-6 border-b border-b-slate-300">
             <p className="text-athens-gray-950">Full Name</p>
             <p className="mt-1 text-sm text-athens-gray-500">{session?.user.name!}</p>
+          </div>
+          <div className="py-6 border-b border-b-slate-300">
+            <p className="text-athens-gray-950">Email</p>
+            <div className="flex justify-between gap-4">
+              <p className="mt-1 text-sm text-athens-gray-500">{session?.user.email!}</p>
+              {session?.user.isVerified ? (
+                <div className="flex gap-2 text-gossamer-500">
+                  <p className="text-sm self-center">Verified</p>
+                  <BadgeCheck size={20} />
+                </div>
+              ) : (
+                <div className="flex gap-2 text-red-500">
+                  <p className="text-sm self-center">Not verified</p>
+                  <BadgeX size={20} />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
