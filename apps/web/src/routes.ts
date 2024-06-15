@@ -1,13 +1,15 @@
-export const publicRoute = ['/'];
+export const publicRoute: string[] = ['/'];
 
-export const userRoute = ['/settings'];
+export const userRoute: string[] = [];
 
-export const authRoute = ['/signup', '/signin', '/auth/error'];
+export const bothRoute: string[] = ['/settings'];
 
-export const tenantRoute = "/tenant"
+export const authRoute: string[] = ['/signup', '/signin', '/auth/error'];
 
-export const verificationRoute = "/verification"
+export const tenantRoute = '/tenant';
 
-export const DEFAULT_LOGIN_REDIRECT_AS_USER = "/";
+export const verificationRoute = '/verification';
 
-export const DEFAULT_LOGIN_REDIRECT_AS_TENANT = "/tenant/dashboard";
+export const DEFAULT_LOGIN_REDIRECT_AS_USER = '/';
+
+export const DEFAULT_LOGIN_REDIRECT_AS_TENANT = '/tenant/dashboard';

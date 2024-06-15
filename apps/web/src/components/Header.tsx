@@ -14,9 +14,11 @@ import FormSearchPropertyMobile from './form/Form-Search-Property-mobile';
 import LinkBrand from './Link-Brand';
 import Link from 'next/link';
 import HeaderAccountDropdown from './Header-Account-Dropdown';
-import { auth } from "@/auth";
+import { auth } from '@/auth';
 
-export const Header = async ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
+export const Header = async ({
+  className,
+}: React.HTMLAttributes<HTMLDivElement>) => {
   const session = await auth();
 
   const isSignIn = session?.user;
@@ -30,29 +32,35 @@ export const Header = async ({ className }: React.HTMLAttributes<HTMLDivElement>
       <div className="w-[20%]">
         <LinkBrand />
       </div>
-      <FormSearchProperty className="hidden h-fit w-full flex-row items-center justify-center gap-1 rounded-full border-[1px] focus:bg-red-400 lg:flex xl:w-fit" />
-
-      <div className="flex w-fit justify-end items-center gap-3 md:w-[20%]">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              className="bg-athens-gray-50 hover:bg-athens-gray-50/90 text-athens-gray-950 flex aspect-square items-center justify-center rounded-full h-fit p-[18px] lg:hidden"
-              variant={'outline'}
-            >
-              <Search size={16} />
-            </Button>
-          </SheetTrigger>
-          <SheetContent className="flex flex-col gap-4" side={'top'}>
-            <SheetHeader>
-              <SheetTitle>
-                <LinkBrand />
-              </SheetTitle>
-            </SheetHeader>
-            <FormSearchPropertyMobile />
-          </SheetContent>
-        </Sheet>
+      {!(session?.user.role === 'TENANT') && (
+        <FormSearchProperty className="hidden h-fit w-full flex-row items-center justify-center gap-1 rounded-full border-[1px] focus:bg-red-400 lg:flex xl:w-fit" />
+      )}
+      <div className="flex w-fit items-center justify-end gap-3 md:w-[20%]">
+        {!(session?.user.role === 'TENANT') && (
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                className="bg-athens-gray-50 hover:bg-athens-gray-50/90 text-athens-gray-950 flex aspect-square h-fit items-center justify-center rounded-full p-[18px] lg:hidden"
+                variant={'outline'}
+              >
+                <Search size={16} />
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="flex flex-col gap-4" side={'top'}>
+              <SheetHeader>
+                <SheetTitle>
+                  <LinkBrand />
+                </SheetTitle>
+              </SheetHeader>
+              <FormSearchPropertyMobile />
+            </SheetContent>
+          </Sheet>
+        )}
         {isSignIn ? (
-          <HeaderAccountDropdown image={session?.user.image} />
+          <HeaderAccountDropdown
+            image={session?.user.image}
+            session={session}
+          />
         ) : (
           <Button
             className="bg-gossamer-500 hover:bg-gossamer-500/90 rounded-full"
