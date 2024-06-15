@@ -20,8 +20,11 @@ import { Loader2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { updateAccountThunk } from '@/redux/slices/settings-thunk';
 import { Session } from 'next-auth';
+import { useSession } from "next-auth/react";
 
-const AccountContent = ({ session }: { session: Session | null }) => {
+const AccountContent = () => {
+  const { data: session, update } = useSession()
+
   const { toast } = useToast();
 
   const defaultValues = useAppSelector(

@@ -7,8 +7,11 @@ import AccountContent from './Account-Content';
 import { Session } from 'next-auth';
 import { useAppDispatch } from '@/redux/hook';
 import { getAccountThunk } from '@/redux/slices/settings-thunk';
+import { useSession } from "next-auth/react";
 
-const SettingsWrapper = ({ session }: { session: Session | null }) => {
+const SettingsWrapper = () => {
+  const { data: session, update } = useSession()
+
   const tabValues = ['account', 'security'];
 
   const dispatch = useAppDispatch();
@@ -38,7 +41,7 @@ const SettingsWrapper = ({ session }: { session: Session | null }) => {
               value={data}
               className="py-5 md:px-5"
             >
-              {data === 'account' && <AccountContent session={session} />}
+              {data === 'account' && <AccountContent/>}
               {data === 'security' && <SecurityContent />}
             </TabsContent>
           ))}

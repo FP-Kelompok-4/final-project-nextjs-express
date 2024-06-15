@@ -27,6 +27,11 @@ export type GetAccountUserReq = {
   gender?: string | null;
 };
 
+export type UpdateUserToNotVerifiedAndPasswordReq = {
+  email: string;
+  password: string;
+};
+
 export const toAddUserRes = (user: User) => {
   return {
     id: user.id,

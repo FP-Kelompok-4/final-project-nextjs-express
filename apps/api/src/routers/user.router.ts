@@ -4,7 +4,8 @@ import {
   validateGetUser,
   validatePutAccountUser,
   validateGetAccountUser,
-  validateVerificationUser
+  validateVerificationUser,
+  validateUpdateUserNotVerifiedAndPasswordByEmail,
 } from '@/validation/user.validation';
 import { Router } from 'express';
 
@@ -33,12 +34,17 @@ export class UserRouter {
     this.router.post(
       '/by-email',
       validateGetUser,
-      this.userController.getUserByEmail
+      this.userController.getUserByEmail,
     );
     this.router.post(
       '/verification-by-token',
       validateVerificationUser,
-      this.userController.verificationUserByToken
+      this.userController.verificationUserByToken,
+    );
+    this.router.post(
+      '/change-password',
+      validateUpdateUserNotVerifiedAndPasswordByEmail,
+      this.userController.updateUserNotVerifiedAndPasswordByEmail,
     );
   }
 
