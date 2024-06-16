@@ -2,7 +2,7 @@ export const publicRoute: string[] = ['/'];
 
 export const userRoute: string[] = [];
 
-export const bothRoute: string[] = ['/settings'];
+export const bothRoute: string[] = ['/settings', '/profile'];
 
 export const authRoute: string[] = ['/signup', '/signin', '/auth/error'];
 
