@@ -1,11 +1,14 @@
 "use client"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { useSession } from "next-auth/react"
 import DialogUpdatePhoto from "./_components/dialog-update-photo";
 import { BadgeCheck, BadgeX } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { useEffect } from "react";
+import { getAccountThunk } from "@/redux/slices/settings-thunk";
+import { showDateForBirthdate } from "@/lib/formatDate";
 
 const Profile = () => {
   const { data: session } = useSession();
@@ -16,6 +19,16 @@ const Profile = () => {
   } else {
     avatar = session?.user.image ? `http://localhost:8000/user-images/${session.user.image}` : "https://github.com/shadcn.png";
   }
+
+  const dispatch = useAppDispatch();
+
+  const defaultValues = useAppSelector(
+    (state) => state.settingsReaducer.account,
+  );
+
+  useEffect(() => {
+    if (session) dispatch(getAccountThunk(session.user.id));
+  }, [session]);
 
   return (
     <main className="w-full pt-[78px] min-h-svh">
@@ -54,6 +67,12 @@ const Profile = () => {
               )}
             </div>
           </div>
+          {defaultValues.birthdate && (
+            <div className="py-6 border-b border-b-slate-300">
+              <p className="text-athens-gray-950">Birthdate</p>
+              <p className="mt-1 text-sm text-athens-gray-500">{showDateForBirthdate(defaultValues.birthdate)}</p>
+            </div>
+          )}
         </div>
       </div>
     </main>
