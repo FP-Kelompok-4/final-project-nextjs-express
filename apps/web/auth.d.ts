@@ -1,12 +1,12 @@
 declare module 'next-auth' {
   interface User {
-    id?: string | undefined;
-    name?: string | null | undefined;
-    email?: string | null | undefined;
-    image?: string | null | undefined;
-    role?: string;
-    isVerified?: boolean;
-    provider?: string | null | undefined;
+    id?: string | undefined,
+    name?: string | null | undefined,
+    email?: string | null | undefined,
+    image?: string | null | undefined,
+    role?: string,
+    isVerified?: boolean,
+    provider?: string | null | undefined
   }
 
   interface Session {

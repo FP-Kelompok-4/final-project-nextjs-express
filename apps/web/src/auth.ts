@@ -38,11 +38,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async session({ token, session }) {
       if (session.user) {
-        session.user.id = token.sub as string;
-        session.user.role = token.role;
-        session.user.isVerified = token.isVerified;
-        session.user.provider = token.provider;
-        session.user.image = token.image;
+        session.user.id = token.sub as string
+        session.user.role = token.role
+        session.user.isVerified = token.isVerified
+        session.user.provider = token.provider
+        session.user.image = token.image
       }
 
       return session;
@@ -53,7 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         token.sub = res.data.data.id;
         token.isVerified = profile?.email_verified as boolean | undefined;
-        token.role = 'USER';
+        token.role = "USER";
         token.provider = account.provider;
         token.image = profile?.picture;
 
@@ -64,7 +64,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = user.role;
         token.isVerified = user.isVerified;
         token.provider = user.provider;
-        token.image = user.image;
+        token.image= user.image
       }
 
       if (trigger === 'update' && session) {
