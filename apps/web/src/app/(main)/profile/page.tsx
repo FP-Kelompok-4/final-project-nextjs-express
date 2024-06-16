@@ -14,7 +14,7 @@ const Profile = () => {
   const { data: session } = useSession();
   let avatar;
 
-  if (session?.user.provider) {
+  if (session?.user.provider === "google") {
     avatar = session.user.image!
   } else {
     avatar = session?.user.image ? `http://localhost:8000/user-images/${session.user.image}` : "https://github.com/shadcn.png";
@@ -44,7 +44,7 @@ const Profile = () => {
               />
               <AvatarFallback>{session?.user.name.slice(0, 2)}</AvatarFallback>
             </Avatar>
-            {!session?.user.provider && (<DialogUpdatePhoto />)}
+            {session?.user.provider !== "google" && (<DialogUpdatePhoto />)}
           </div>
           <div className="py-6 border-b border-b-slate-300">
             <p className="text-athens-gray-950">Full Name</p>

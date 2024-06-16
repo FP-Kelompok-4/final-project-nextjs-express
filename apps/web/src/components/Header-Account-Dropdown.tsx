@@ -20,7 +20,7 @@ const HeaderAccountDropdown = () => {
   const { data: session } = useSession();
   let avatar;
 
-  if (session?.user.provider) {
+  if (session?.user.provider === "google") {
     avatar = session.user.image!
   } else {
     avatar = session?.user.image ? `http://localhost:8000/user-images/${session.user.image}` : "https://github.com/shadcn.png";
