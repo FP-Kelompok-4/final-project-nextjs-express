@@ -21,15 +21,18 @@ model Sample {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  name       String   @db.VarChar(255)
-  email      String   @unique @db.VarChar(100)
-  password   String?  @db.VarChar(100)
-  image      String?  @db.VarChar(100)
-  role       String   @db.VarChar(50)
-  isVerified Boolean  @default(false)
-  createAt   DateTime @default(now())
-  updateAt   DateTime @updatedAt
+  id         String    @id @default(uuid())
+  name       String    @db.VarChar(255)
+  email      String    @unique @db.VarChar(100)
+  password   String?   @db.VarChar(100)
+  provider   String?   @db.VarChar(50)
+  image      String?   @db.VarChar(100)
+  role       String    @db.VarChar(50)
+  isVerified Boolean
+  birthdate  DateTime?
+  gender     String?   @db.VarChar(1)
+  createAt   DateTime  @default(now())
+  updateAt   DateTime  @updatedAt
 
   properties Property[]
   oders      Order[]
@@ -130,4 +133,13 @@ model OrderRoom {
   room    Room   @relation(fields: [roomId], references: [id])
 
   @@map("orderRooms")
+}
+
+model VerificationToken {
+  id      String   @id @default(cuid())
+  email   String   @unique
+  token   String   @unique
+  expires DateTime
+
+  @@map("verificationTokens")
 }

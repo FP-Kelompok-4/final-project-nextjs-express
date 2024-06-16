@@ -39,13 +39,13 @@ const SignupTab = () => {
   };
 
   return (
-    <div className="mx-8 flex h-full items-center justify-center py-[61.46px] md:mx-12">
+    <div className="mx-8 flex flex-1 min-h-svh items-center justify-center py-[61.46px] md:mx-12">
       <Tabs defaultValue="user" className="md:w-[400px] w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger
             value="user"
             className="items-center gap-2 align-middle"
-            onClick={() => form.setValue('role', 'user')}
+            onFocus={() => form.setValue('role', 'user')}
           >
             <UserRound size={20} />
             User
@@ -53,7 +53,7 @@ const SignupTab = () => {
           <TabsTrigger
             value="tenant"
             className="items-center gap-2 align-middle"
-            onClick={() => form.setValue('role', 'tenant')}
+            onFocus={() => form.setValue('role', 'tenant')}
           >
             <Home size={20} />
             Tenant
@@ -61,7 +61,7 @@ const SignupTab = () => {
         </TabsList>
         <TabsContent value="user">
           <CardWrapper
-            backButtonLabel="Login now!"
+            backButtonLabel="Sign In now!"
             backButtonLink="/signin"
             showSocial
           >
@@ -70,9 +70,9 @@ const SignupTab = () => {
         </TabsContent>
         <TabsContent value="tenant">
           <CardWrapper
-            backButtonLabel="Login now!"
+            backButtonLabel="Sign In now!"
             backButtonLink="/signin"
-            showSocial
+            // showSocial
           >
             <SignupForm form={form} onSubmit={onSubmit} isPending={isPending} />
           </CardWrapper>
