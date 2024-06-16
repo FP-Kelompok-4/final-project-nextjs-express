@@ -32,6 +32,11 @@ export type UpdateUserToNotVerifiedAndPasswordReq = {
   password: string;
 };
 
+export type UpdateImageUserReq = {
+  email: string;
+  image: string;
+}
+
 export const toAddUserRes = (user: User) => {
   return {
     id: user.id,
@@ -40,6 +45,7 @@ export const toAddUserRes = (user: User) => {
     image: user.image,
     role: user.role,
     isVerified: user.isVerified,
+    provider: user.provider
   };
 };
 

@@ -1,3 +1,4 @@
+import { ResponseError } from "@/error/response-error";
 import { UserService } from '@/services/user.service';
 import { VerificationTokenService } from '@/services/verificationToken.service';
 import { NextFunction, Request, Response } from 'express';
@@ -7,6 +8,7 @@ import {
   UpdateAccountUserReq,
   GetUserReq,
   UpdateUserToNotVerifiedAndPasswordReq,
+  UpdateImageUserReq,
 } from 'models/user.model';
 
 export class UserController {
@@ -115,6 +117,29 @@ export class UserController {
       });
     } catch (e) {
       next(e);
+    }
+  }
+
+  async patchImageUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { file } = req;
+
+      if(file == undefined) {
+        throw new ResponseError(404, 'Image is required');
+      }
+
+      const request = req.body as UpdateImageUserReq;
+      request.image = file.filename;
+
+      await UserService.verifyUserByEmail({ email: request.email });
+      const user = await UserService.updateImageUser(request)
+
+      res.status(200).send({
+        status: 'success',
+        data: user
+      })
+    } catch (e) {
+      next(e)
     }
   }
 }

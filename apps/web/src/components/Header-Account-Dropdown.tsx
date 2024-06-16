@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { LayoutDashboard, LogOut, Menu, Settings, User } from 'lucide-react';
 
@@ -16,14 +14,17 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { signout } from '@/actions/auth';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
-import { Session } from 'next-auth';
+import { useSession } from "next-auth/react";
 
-const HeaderAccountDropdown = (props: {
-  image: string | null;
-  session?: Session | null;
-}) => {
-  const { session } = props;
+const HeaderAccountDropdown = () => {
+  const { data: session } = useSession();
+  let avatar;
+
+  if (session?.user.provider) {
+    avatar = session.user.image!
+  } else {
+    avatar = session?.user.image ? `http://localhost:8000/user-images/${session.user.image}` : "https://github.com/shadcn.png";
+  }
 
   return (
     <DropdownMenu modal={false}>
@@ -37,13 +38,9 @@ const HeaderAccountDropdown = (props: {
           </div>
           <Avatar className="aspect-square h-9 w-fit">
             <AvatarImage
-              src={
-                props.image
-                  ? (props.image as string)
-                  : 'https://github.com/shadcn.png'
-              }
+              src={avatar}
             />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarFallback>{session?.user.name.slice(0, 2)}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -61,10 +58,12 @@ const HeaderAccountDropdown = (props: {
           </DropdownMenuGroup>
         )}
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-          </DropdownMenuItem>
+          <Link href={'/profile'}>
+            <DropdownMenuItem>
+              <User className="mr-2 h-4 w-4" />
+              <span>Profile</span>
+            </DropdownMenuItem>
+          </Link>
           <Link href={'/settings'}>
             <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" />
