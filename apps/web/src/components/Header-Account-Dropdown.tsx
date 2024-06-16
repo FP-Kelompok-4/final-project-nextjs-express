@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { LogOut, Menu, Settings, User } from 'lucide-react';
+import { LayoutDashboard, LogOut, Menu, Settings, User } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -16,8 +16,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { signout } from '@/actions/auth';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
 
-const HeaderAccountDropdown = (props: { image: string | null }) => {
+const HeaderAccountDropdown = (props: {
+  image: string | null;
+  session?: Session | null;
+}) => {
+  const { session } = props;
+
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
@@ -43,6 +50,16 @@ const HeaderAccountDropdown = (props: { image: string | null }) => {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {session?.user.role === 'TENANT' && (
+          <DropdownMenuGroup>
+            <Link href={'/tenant/dashboard'}>
+              <DropdownMenuItem>
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                <span>Dashboard</span>
+              </DropdownMenuItem>
+            </Link>
+          </DropdownMenuGroup>
+        )}
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <User className="mr-2 h-4 w-4" />
@@ -56,7 +73,14 @@ const HeaderAccountDropdown = (props: { image: string | null }) => {
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={async () => await signout()}>
+        <DropdownMenuItem
+          onClick={async () => {
+            await signout().then((data) => {
+              console.log('LogOut');
+              console.log(data);
+            });
+          }}
+        >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

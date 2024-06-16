@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import ReduxProvider from '@/redux/provider';
 import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/auth';
+import AlertNotVerified from '@/components/Alert-Not-Verified';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
