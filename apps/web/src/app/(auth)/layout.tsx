@@ -1,8 +1,6 @@
 import LinkBrand from '@/components/Link-Brand';
 import { ToastProvider } from '@/components/ui/toast';
 import { Toaster } from '@/components/ui/toaster';
-import { auth } from '@/auth';
-import { SessionProvider } from 'next-auth/react';
 
 export default function AuthLayout({
   children,
