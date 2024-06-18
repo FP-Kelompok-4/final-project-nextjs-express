@@ -1,5 +1,5 @@
 import { UserController } from '@/controllers/user.controller';
-import { uploaderSingle } from "@/middlewares/upload-single";
+import { uploaderSingle } from '@/middlewares/upload-single';
 import {
   validatePostUser,
   validateGetUser,
@@ -8,6 +8,7 @@ import {
   validateVerificationUser,
   validateUpdateUserNotVerifiedAndPasswordByEmail,
   validateUpdateImage,
+  validateCheckEmail,
 } from '@/validation/user.validation';
 import { Router } from 'express';
 
@@ -53,7 +54,12 @@ export class UserRouter {
       uploaderSingle('IMG', '/user-images').single('image'),
       validateUpdateImage,
       this.userController.patchImageUser,
-    )
+    );
+    this.router.post(
+      '/check-email',
+      validateCheckEmail,
+      this.userController.checkEmail,
+    );
   }
 
   getRouter(): Router {
