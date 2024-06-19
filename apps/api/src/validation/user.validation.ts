@@ -90,8 +90,8 @@ export const validateGetUser = [
     }
 
     next();
-  }
-]
+  },
+];
 
 export const validateVerificationUser = [
   body('token').trim().notEmpty().withMessage('Email is required'),
@@ -107,7 +107,7 @@ export const validateVerificationUser = [
     }
 
     next();
-  }
+  },
 ];
 
 export const validateGetAccountUser = [
@@ -119,13 +119,13 @@ export const validateGetAccountUser = [
     if (!errors.isEmpty()) {
       return res.status(400).send({
         status: 'fail',
-        message: errors.array()
-      })
+        message: errors.array(),
+      });
     }
 
     next();
-  }
-]
+  },
+];
 
 export const validateUpdateUserNotVerifiedAndPasswordByEmail = [
   body('email').trim().isEmail().notEmpty().withMessage('Email is required'),
@@ -147,8 +147,8 @@ export const validateUpdateUserNotVerifiedAndPasswordByEmail = [
     }
 
     next();
-  }
-]
+  },
+];
 
 export const validateUpdateImage = [
   body('email').trim().isEmail().notEmpty().withMessage('Email is required'),
@@ -164,5 +164,22 @@ export const validateUpdateImage = [
     }
 
     next();
-  }
-]
+  },
+];
+
+export const validateCheckEmail = [
+  body('email').trim().isEmail().notEmpty().withMessage('Email is required'),
+
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        status: 'fail',
+        message: errors.array(),
+      });
+    }
+
+    next();
+  },
+];

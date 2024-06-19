@@ -14,17 +14,18 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { signout } from '@/actions/auth';
 import Link from 'next/link';
-import { useSession } from "next-auth/react";
+import { useSession } from 'next-auth/react';
 
 const HeaderAccountDropdown = () => {
   const { data: session } = useSession();
   let avatar;
 
-  if (session?.user.provider === "google") {
-
-    avatar = session.user.image!
+  if (session?.user.provider === 'google') {
+    avatar = session.user.image!;
   } else {
-    avatar = session?.user.image ? `http://localhost:8000/user-images/${session.user.image}` : "https://github.com/shadcn.png";
+    avatar = session?.user.image
+      ? `http://localhost:8000/user-images/${session.user.image}`
+      : 'https://github.com/shadcn.png';
   }
 
   return (
@@ -38,9 +39,7 @@ const HeaderAccountDropdown = () => {
             <Menu size={16} />
           </div>
           <Avatar className="aspect-square h-9 w-fit">
-            <AvatarImage
-              src={avatar}
-            />
+            <AvatarImage src={avatar} />
             <AvatarFallback>{session?.user.name.slice(0, 2)}</AvatarFallback>
           </Avatar>
         </Button>
