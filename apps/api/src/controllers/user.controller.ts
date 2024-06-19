@@ -107,10 +107,10 @@ export class UserController {
 
       await UserService.changeUserPasswordByEmail(request);
 
-      const verificationToken =
-        await VerificationTokenService.addVerificationToken(request);
+      // const verificationToken =
+      //   await VerificationTokenService.addVerificationToken(request);
 
-      templateNodemailer(request.email, verificationToken.token);
+      // templateNodemailer(request.email, verificationToken.token);
 
       res.status(200).send({
         status: 'success',
@@ -148,7 +148,7 @@ export class UserController {
       const { email } = req.body as { email: string };
 
       await UserService.verifyUserByEmail({ email });
-      
+
       await UserService.verifyUserCredentialByEmail({ email });
 
       res.status(200).send({
