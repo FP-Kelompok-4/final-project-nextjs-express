@@ -10,7 +10,7 @@ import { DEFAULT_LOGIN_REDIRECT_AS_USER } from '@/routes';
 
 export const singup = async (values: z.infer<typeof SignupSchema>) => {
   try {
-    await api.post('users/', { ...values, provider: 'credential' });
+    await api.post('users/', { ...values });
 
     return { success: 'Success signup!' };
   } catch (e) {

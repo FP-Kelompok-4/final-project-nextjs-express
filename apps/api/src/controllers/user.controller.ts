@@ -148,6 +148,8 @@ export class UserController {
       const { email } = req.body as { email: string };
 
       await UserService.verifyUserByEmail({ email });
+      
+      await UserService.verifyUserCredentialByEmail({ email });
 
       res.status(200).send({
         status: 'success',
