@@ -22,11 +22,11 @@ export default auth(async function middleware(req) {
 
   const session = await authSession();
 
-  if (session) {
-    const accessToken = await generateAccessToken(session);
+  // if (session) {
+  //   const accessToken = await generateAccessToken(session);
 
-    console.log('ACCESS TOKEN: ', accessToken);
-  }
+  //   console.log('ACCESS TOKEN: ', accessToken);
+  // }
 
   console.log('MIDDLEWARE: ', session);
 

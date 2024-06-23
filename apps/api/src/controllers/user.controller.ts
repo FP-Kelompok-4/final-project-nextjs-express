@@ -2,7 +2,7 @@ import { ResponseError } from '@/error/response-error';
 import { UserService } from '@/services/user.service';
 import { VerificationTokenService } from '@/services/verificationToken.service';
 import { NextFunction, Request, Response } from 'express';
-import { templateNodemailer } from 'lib/nodeMailer';
+import TokenManager from "lib/tokenManager";
 import {
   AddUserReq,
   UpdateAccountUserReq,
@@ -47,9 +47,10 @@ export class UserController {
       const request = req.body as GetUserReq;
 
       const user = await UserService.getUserByEmail(request);
+      const token = TokenManager.generateToken(user)
 
       res.status(200).send({
-        data: user,
+        data: { ...user, accessToken: token },
       });
     } catch (e) {
       next(e);

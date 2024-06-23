@@ -8,8 +8,6 @@ import {
   toUpdateAccountUserRes,
   GetUserReq,
   toUserRes,
-  GetAccountUserReq,
-  toAccountUserRes,
   UpdateUserToNotVerifiedAndPasswordReq,
   UpdateImageUserReq,
 } from 'models/user.model';

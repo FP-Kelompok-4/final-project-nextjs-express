@@ -6,7 +6,8 @@ declare module 'next-auth' {
     image?: string | null | undefined,
     role?: string,
     isVerified?: boolean,
-    provider?: string | null | undefined
+    provider?: string | null | undefined,
+    accessToken?: string | undefined
   }
 
   interface Session {
@@ -18,6 +19,7 @@ declare module 'next-auth' {
       role: string | undefined;
       isVerified: boolean | undefined;
       provider: string | null | undefined;
+      accessToken: string | undefined;
     };
   }
 }
@@ -30,6 +32,7 @@ declare module 'next-auth/jwt' {
     isVerified: boolean | undefined;
     provider: string | null | undefined;
     image: string | null | undefined;
+    accessToken: string | undefined;
   }
 }
 
