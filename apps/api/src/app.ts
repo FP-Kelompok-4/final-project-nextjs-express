@@ -14,6 +14,7 @@ import { ResponseError } from './error/response-error';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UserRouter } from './routers/user.router';
 import { VerificationTokenRouter } from "./routers/verificationToken.route";
+import { PropertyRouter } from "./routers/property.router";
 
 export default class App {
   private app: Express;
@@ -60,6 +61,7 @@ export default class App {
     const sampleRouter = new SampleRouter();
     const userRouter = new UserRouter();
     const verificationToken = new VerificationTokenRouter();
+    const propertyRouter = new PropertyRouter();
 
     this.app.get('/api/', (req: Request, res: Response) => {
       res.send(`Restful API is already !`);
@@ -68,6 +70,7 @@ export default class App {
     this.app.use('/api/samples', sampleRouter.getRouter());
     this.app.use('/api/users', userRouter.getRouter());
     this.app.use('/api/verification-token', verificationToken.getRouter());
+    this.app.use('/api/properties', propertyRouter.getRouter());
   }
 
   public start(): void {
