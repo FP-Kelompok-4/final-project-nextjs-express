@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import settingsReaducer from '@/redux/slices/settings-slice';
+import propertyCategoryReducer from "./slices/propertyCategory-slice";
 
 export const store = configureStore({
   reducer: {
     settingsReaducer,
+    propertyCategoryReducer
   },
 });
 

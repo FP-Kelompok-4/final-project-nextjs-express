@@ -43,6 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.isVerified = token.isVerified
         session.user.provider = token.provider
         session.user.image = token.image
+        session.user.accessToken = token.accessToken
       }
 
       return session;
@@ -56,6 +57,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = "USER";
         token.provider = account.provider;
         token.image = profile?.picture;
+        token.accessToken = res.data.data.accessToken;
 
         return token;
       }
@@ -65,6 +67,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.isVerified = user.isVerified;
         token.provider = user.provider;
         token.image= user.image
+        token.accessToken = user.accessToken;
       }
 
       if (trigger === 'update' && session) {
