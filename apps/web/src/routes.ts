@@ -13,3 +13,5 @@ export const verificationRoute = '/verification';
 export const DEFAULT_LOGIN_REDIRECT_AS_USER = '/';
 
 export const DEFAULT_LOGIN_REDIRECT_AS_TENANT = '/tenant/dashboard';
+
+export const superAdminRoute = ['/tenant/property-category']

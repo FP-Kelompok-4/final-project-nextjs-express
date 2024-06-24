@@ -74,10 +74,7 @@ const HeaderAccountDropdown = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={async () => {
-            await signout().then((data) => {
-              console.log('LogOut');
-              console.log(data);
-            });
+            await signout()
           }}
         >
           <LogOut className="mr-2 h-4 w-4" />

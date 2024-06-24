@@ -41,5 +41,5 @@ export const signin = async (values: z.infer<typeof SigninSchema>) => {
 };
 
 export const signout = async () => {
-  await signOut({ redirectTo: '/', redirect: true });
+  await signOut({ redirectTo: '/signin', redirect: true });
 };
