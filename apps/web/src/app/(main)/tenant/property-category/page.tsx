@@ -105,7 +105,7 @@ const PropertyCategory = () => {
         onDelete={onDelete}
       />
       <DialogCustomAdmin
-        titleDialogContent="Create New Property Category"
+        titleDialogContent={form.getValues("id") ? "Edit Property Category" : "Create New Property Category"}
         open={open}
         onOpenChange={handleOnOpenChange}
       >
