@@ -12,8 +12,17 @@ export class PropertyService {
 
     if (!user) throw new ResponseError(404, 'User is not exist.');
 
+    const { name, description, location, propertyCategoryId, image } = req;
+
     const property = await prisma.property.create({
-      data: { userId: user.id, ...req },
+      data: {
+        userId: user.id,
+        name,
+        description,
+        location,
+        propertyCategoryId,
+        image,
+      },
     });
 
     return toAddPropertyRes({ ...property });

@@ -24,12 +24,12 @@ export class PropertyRouter {
 
     this.router.post(
       '/',
+      uploaderSingle('IMG', '/properties').single('image'),
       validatAddProperty,
       this.propertyController.addProperty,
     );
-    this.router.post(
+    this.router.get(
       '/categories',
-      validatAddProperty,
       this.propertyCategoryController.getPropertyCategory,
     );
   }

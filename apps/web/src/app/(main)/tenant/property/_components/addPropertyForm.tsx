@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2, Plus } from 'lucide-react';
 import {
@@ -29,10 +29,19 @@ import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { getTenantPropertyCategoryThunk } from '@/redux/slices/tenant-thunk';
+import {
+  addTenantPropertyThunk,
+  getTenantPropertyCategoryThunk,
+} from '@/redux/slices/tenant-thunk';
 import { useSession } from 'next-auth/react';
+import * as z from 'zod';
+import { PropertySchema } from '@/schemas/property-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useToast } from '@/components/ui/use-toast';
 
 const AddPropertyForm = () => {
+  const { toast } = useToast();
+
   const { data: session } = useSession();
 
   const dispatch = useAppDispatch();
@@ -41,39 +50,73 @@ const AddPropertyForm = () => {
     (state) => state.tenantReducer,
   );
 
-  const form = useForm();
+  const [isOpenSheet, setIsOpenSheet] = useState(false);
+
+  const form = useForm<z.infer<typeof PropertySchema>>({
+    resolver: zodResolver(PropertySchema),
+  });
+
+  const onSubmit = (data: z.infer<typeof PropertySchema>) => {
+    console.log(data);
+
+    dispatch(
+      addTenantPropertyThunk({
+        token: session?.user.accessToken!,
+        email: session?.user.email!,
+        body: data,
+      }),
+    ).then((data: any) => {
+      toast({
+        variant: data.payload.error ? 'destructive' : 'default',
+        title: data.payload.error ? data.payload.error : data.payload.success,
+      });
+
+      console.log(data);
+
+      if (!data.payload.error) {
+        form.reset();
+
+        onSheetOpenHandler(false);
+      }
+    });
+  };
+
+  const onSheetOpenHandler = (value: boolean) => setIsOpenSheet(value);
 
   useEffect(() => {
-    dispatch(
-      getTenantPropertyCategoryThunk({ token: session?.user.accessToken! }),
-    );
-  }, []);
+    if (isLoadingCategories === true)
+      dispatch(
+        getTenantPropertyCategoryThunk({ token: session?.user.accessToken! }),
+      );
+  }, [isLoadingCategories]);
 
   return (
-    <Sheet>
+    <Sheet open={isOpenSheet} onOpenChange={onSheetOpenHandler}>
       <SheetTrigger asChild>
         <Button className="gap-2">
           <Plus size={16} /> <span>Add Property</span>
         </Button>
       </SheetTrigger>
-      <SheetContent className="h-[95%]" side={'bottom'}>
+      <SheetContent
+        className="flex h-[95%] flex-col gap-10 overflow-y-auto"
+        side={'bottom'}
+      >
         <SheetHeader>
-          <SheetTitle>Are you absolutely sure?</SheetTitle>
+          <SheetTitle>Add Property</SheetTitle>
           <SheetDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            This action will add your property to list
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
-              name="username"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nama Properti</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="Nama" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -82,7 +125,7 @@ const AddPropertyForm = () => {
             />
             <FormField
               control={form.control}
-              name="username"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Deskripsi Properti</FormLabel>
@@ -101,17 +144,22 @@ const AddPropertyForm = () => {
 
             <FormField
               control={form.control}
-              name="email"
+              name="propertyCategoryId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    onValueChange={(event) => {
+                      field.onChange(
+                        event
+                          ? categories.findLast((ele) => ele.name === event)!.id
+                          : undefined,
+                      );
+                    }}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a verified email to display" />
+                        <SelectValue placeholder="Select a category to display" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -119,15 +167,15 @@ const AddPropertyForm = () => {
                         <Loader2 className="animate-spin" />
                       ) : (
                         <>
-                        {JSON.stringify(categories)}
-                          {/* {categories.map((data, index) => (
+                          {/* {JSON.stringify(categories)} */}
+                          {categories.map((data, index) => (
                             <SelectItem
                               key={`${data.id}-${index}`}
                               value={data.name}
                             >
                               {data.name}
                             </SelectItem>
-                          ))} */}
+                          ))}
                         </>
                       )}
                     </SelectContent>
@@ -139,18 +187,45 @@ const AddPropertyForm = () => {
 
             <FormField
               control={form.control}
-              name="username"
+              name="location"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Lokasi</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="Lokasi" {...field} />
                   </FormControl>
 
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Gambar</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="gambar"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        field.onChange(file);
+                      }}
+                      ref={field.ref}
+                      // {...field}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit">Tambah Property</Button>
           </form>
         </Form>
       </SheetContent>

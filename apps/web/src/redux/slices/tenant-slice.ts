@@ -1,16 +1,23 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { z } from 'zod';
-import { getTenantPropertyCategoryThunk } from './tenant-thunk';
+import {
+  addTenantPropertyThunk,
+  getTenantPropertyCategoryThunk,
+} from './tenant-thunk';
 import { TPropertyCategory } from './propertyCategory-slice';
 
 type InitialState = {
+  properties: [];
   categories: TPropertyCategory[];
   isLoadingCategories: boolean;
+  isLoadingProperties: boolean;
 };
 
 const initialState: InitialState = {
+  properties: [],
   categories: [],
   isLoadingCategories: true,
+  isLoadingProperties: true,
 };
 
 const tenantSlice = createSlice({
@@ -29,6 +36,15 @@ const tenantSlice = createSlice({
         state.isLoadingCategories = false;
       },
     );
+
+    builder.addCase(addTenantPropertyThunk.pending, (state) => {
+      state.isLoadingProperties = true;
+    });
+    builder.addCase(addTenantPropertyThunk.fulfilled, (state, action) => {
+      if (action.payload) state.properties = action.payload.data;
+
+      state.isLoadingProperties = false;
+    });
   },
 });
 
