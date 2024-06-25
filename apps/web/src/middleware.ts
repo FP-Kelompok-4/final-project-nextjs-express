@@ -11,6 +11,7 @@ import {
   tenantRoute,
   DEFAULT_LOGIN_REDIRECT_AS_TENANT,
   userRoute,
+  superAdminRoute,
 } from '@/routes';
 import { generateAccessToken } from './lib/jwt';
 
@@ -36,12 +37,13 @@ export default auth(async function middleware(req) {
   const isPublicRoute = publicRoute.includes(nextUrl.pathname);
   const isVerificationRoute = nextUrl.pathname.startsWith(verificationRoute);
   const isTenantRoute = nextUrl.pathname.startsWith(tenantRoute);
+  const isSuperAdminRoute = superAdminRoute.includes(nextUrl.pathname);
 
   if (
     isLoggedIn &&
     (session?.user.isVerified === true || session?.user.isVerified === false) &&
     session.user.role === 'TENANT' &&
-    (isUserRoute || isAuthRoute)
+    (isUserRoute || isAuthRoute || isSuperAdminRoute)
   ) {
     return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_USER, req.url));
   }
@@ -50,7 +52,7 @@ export default auth(async function middleware(req) {
     isLoggedIn &&
     session?.user.isVerified === true &&
     (session.user.role === 'USER' || session.user.role === 'TENANT') &&
-    isVerificationRoute
+    (isVerificationRoute || isSuperAdminRoute)
   ) {
     if (session.user.role === 'TENANT')
       return Response.redirect(
@@ -63,7 +65,7 @@ export default auth(async function middleware(req) {
   if (
     isLoggedIn &&
     session?.user.isVerified === false &&
-    (isBothRoute || isUserRoute)
+    (isBothRoute || isUserRoute || isSuperAdminRoute)
   ) {
     return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_USER, req.url));
   }
@@ -72,14 +74,14 @@ export default auth(async function middleware(req) {
     isLoggedIn &&
     (session?.user.isVerified === true || session?.user.isVerified === false) &&
     session.user.role === 'USER' &&
-    (isTenantRoute || isAuthRoute)
+    (isTenantRoute || isAuthRoute || isSuperAdminRoute)
   ) {
     return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_USER, req.url));
   }
 
   if (
     !isLoggedIn &&
-    (isBothRoute || isUserRoute || isVerificationRoute || isTenantRoute)
+    (isBothRoute || isUserRoute || isVerificationRoute || isTenantRoute || isSuperAdminRoute)
   ) {
     return Response.redirect(new URL('/signin', req.url));
   }
