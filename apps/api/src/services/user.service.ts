@@ -107,6 +107,16 @@ export class UserService {
     if (!user) throw new ResponseError(404, 'User is not exist.');
   }
 
+  static async verifyUserById(req: { id: string }) {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.id,
+      },
+    });
+
+    if (!user) throw new ResponseError(404, 'User is not exist.');
+  }
+
   static async verifyUserCredentialByEmail(req: { email: string }) {
     const user = await prisma.user.findUnique({
       where: {

@@ -57,7 +57,6 @@ const AddPropertyForm = () => {
   });
 
   const onSubmit = (data: z.infer<typeof PropertySchema>) => {
-    console.log(data);
 
     dispatch(
       addTenantPropertyThunk({
@@ -70,8 +69,6 @@ const AddPropertyForm = () => {
         variant: data.payload.error ? 'destructive' : 'default',
         title: data.payload.error ? data.payload.error : data.payload.success,
       });
-
-      console.log(data);
 
       if (!data.payload.error) {
         form.reset();

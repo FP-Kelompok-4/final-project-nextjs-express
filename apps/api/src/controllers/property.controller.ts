@@ -2,9 +2,26 @@ import { ResponseError } from '@/error/response-error';
 import { PropertyService } from '@/services/property.service';
 import { UserService } from '@/services/user.service';
 import { NextFunction, Request, Response } from 'express';
-import { AddUPropertyReq } from 'models/property.model';
+import { AddUPropertyReq, GetPropertiesReq } from 'models/property.model';
 
 export class PropertyController {
+  async getProperty(req: Request, res: Response, next: NextFunction) {
+    try {
+      const request = req.params as GetPropertiesReq;
+
+      await UserService.verifyUserById({ id: request.id });
+
+      const property = await PropertyService.getProperty({ ...request });
+
+      res.status(200).send({
+        status: 'success',
+        data: property,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
   async addProperty(req: Request, res: Response, next: NextFunction) {
     try {
       const { file } = req;

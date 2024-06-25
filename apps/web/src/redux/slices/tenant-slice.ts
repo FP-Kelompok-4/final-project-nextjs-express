@@ -2,12 +2,22 @@ import { createSlice } from '@reduxjs/toolkit';
 import { z } from 'zod';
 import {
   addTenantPropertyThunk,
+  getTenantPropertiesThunk,
   getTenantPropertyCategoryThunk,
 } from './tenant-thunk';
 import { TPropertyCategory } from './propertyCategory-slice';
 
+export type TProperty = {
+  id: string;
+  name: string;
+  description: string;
+  location: string;
+  image: string;
+  propertyCategoryId: number;
+};
+
 type InitialState = {
-  properties: [];
+  properties: TProperty[];
   categories: TPropertyCategory[];
   isLoadingCategories: boolean;
   isLoadingProperties: boolean;
@@ -37,11 +47,26 @@ const tenantSlice = createSlice({
       },
     );
 
+    builder.addCase(getTenantPropertiesThunk.pending, (state) => {
+      state.isLoadingProperties = true;
+    });
+    builder.addCase(getTenantPropertiesThunk.fulfilled, (state, action) => {
+      if (action.payload)
+        state.properties = action.payload.error
+          ? [...state.properties]
+          : [...action.payload.data];
+
+      state.isLoadingProperties = false;
+    });
+
     builder.addCase(addTenantPropertyThunk.pending, (state) => {
       state.isLoadingProperties = true;
     });
     builder.addCase(addTenantPropertyThunk.fulfilled, (state, action) => {
-      if (action.payload) state.properties = action.payload.data;
+      if (action.payload)
+        state.properties = action.payload.error
+          ? [...state.properties]
+          : [action.payload.data, ...state.properties];
 
       state.isLoadingProperties = false;
     });

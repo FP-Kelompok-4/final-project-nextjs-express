@@ -2,7 +2,7 @@ import { PropertyController } from '@/controllers/property.controller';
 import { PropertyCategoryController } from '@/controllers/propertyCategory.controller';
 import { verifyToken } from '@/middlewares/auth.middleware';
 import { uploaderSingle } from '@/middlewares/upload-single';
-import { validatAddProperty } from '@/validation/property.valiadtion';
+import { validatAddProperty, validatGetProperties } from '@/validation/property.valiadtion';
 
 import { Router } from 'express';
 
@@ -22,6 +22,11 @@ export class PropertyRouter {
   private initializeRoutes(): void {
     this.router.use(verifyToken);
 
+    this.router.get(
+      '/:id',
+      validatGetProperties,
+      this.propertyController.getProperty,
+    );
     this.router.post(
       '/',
       uploaderSingle('IMG', '/properties').single('image'),

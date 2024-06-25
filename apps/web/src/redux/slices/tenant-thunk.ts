@@ -3,6 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import * as z from 'zod';
 import { PropertySchema } from '@/schemas/property-schema';
+import { TProperty } from './tenant-slice';
 
 export const getTenantPropertyCategoryThunk = createAsyncThunk(
   'tenant/getTenantPropertyCategory',
@@ -15,6 +16,29 @@ export const getTenantPropertyCategoryThunk = createAsyncThunk(
       });
 
       return { success: 'Success Get Account!', data: res.data.data };
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        return {
+          error: e.response?.data.message,
+        };
+      }
+    }
+  },
+);
+
+export const getTenantPropertiesThunk = createAsyncThunk(
+  'tenant/getTenantProperties',
+  async (props: { token: string; id: string }) => {
+    try {
+      const res = await api.get(`properties/${props.id}`, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      });
+
+      console.log(res.data)
+
+      return { success: 'Success Get Properties!', data: res.data.data };
     } catch (e) {
       if (axios.isAxiosError(e)) {
         return {
@@ -43,8 +67,11 @@ export const addTenantPropertyThunk = createAsyncThunk(
           },
         },
       );
-      
-      return { success: 'Success Get Account!', data: res.data.data };
+
+      return {
+        success: 'Success Add Property!',
+        data: res.data.data,
+      };
     } catch (e) {
       if (axios.isAxiosError(e)) {
         return {
