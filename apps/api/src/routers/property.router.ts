@@ -2,7 +2,13 @@ import { PropertyController } from '@/controllers/property.controller';
 import { PropertyCategoryController } from '@/controllers/propertyCategory.controller';
 import { verifyToken } from '@/middlewares/auth.middleware';
 import { uploaderSingle } from '@/middlewares/upload-single';
-import { validatAddProperty, validatGetProperties } from '@/validation/property.valiadtion';
+import {
+  validatAddProperty,
+  validateDeleteProperty,
+  validateUpdateProperty,
+  validatGetProperties,
+  validatGetPropertyDetail,
+} from '@/validation/property.valiadtion';
 
 import { Router } from 'express';
 
@@ -23,9 +29,18 @@ export class PropertyRouter {
     this.router.use(verifyToken);
 
     this.router.get(
-      '/:id',
+      '/all/:id',
       validatGetProperties,
       this.propertyController.getProperty,
+    );
+    this.router.get(
+      '/:id/:pId',
+      validatGetPropertyDetail,
+      this.propertyController.getDetailProperty,
+    );
+    this.router.get(
+      '/categories',
+      this.propertyCategoryController.getPropertyCategory,
     );
     this.router.post(
       '/',
@@ -33,9 +48,16 @@ export class PropertyRouter {
       validatAddProperty,
       this.propertyController.addProperty,
     );
-    this.router.get(
-      '/categories',
-      this.propertyCategoryController.getPropertyCategory,
+    this.router.patch(
+      '/:id/:pId',
+      uploaderSingle('IMG', '/properties').single('image'),
+      validateUpdateProperty,
+      this.propertyController.updateProperty,
+    );
+    this.router.delete(
+      '/delete/:id/:pId',
+      validateDeleteProperty,
+      this.propertyController.deleteProperty,
     );
   }
 

@@ -1,6 +1,9 @@
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { TProperty } from '@/redux/slices/tenant-slice';
-import { getTenantPropertiesThunk } from '@/redux/slices/tenant-thunk';
+import {
+  deleteTenantDetailPropertyThunk,
+  getTenantPropertiesThunk,
+} from '@/redux/slices/tenant-thunk';
 import { ColumnDef } from '@tanstack/react-table';
 import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react';
@@ -27,13 +30,18 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import UpdatePropertyForm from './UpdatePropertyForm';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const PropertyTable = () => {
   const { data: session } = useSession();
 
+  const route = useRouter();
+
   const dispatch = useAppDispatch();
 
-  const { properties, isLoadingCategories } = useAppSelector(
+  const { properties, isLoadingCategories, categories } = useAppSelector(
     (state) => state.tenantReducer,
   );
 
@@ -53,6 +61,36 @@ const PropertyTable = () => {
             Name
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
+        );
+      },
+    },
+    {
+      accessorKey: 'propertyCategoryId',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Category
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+
+      cell(props) {
+        const { row } = props;
+
+        const payment = row.original;
+
+        return (
+          <>
+            {isLoadingCategories
+              ? 'Loading...'
+              : categories.filter(
+                  (data) => data.id === payment.propertyCategoryId,
+                )[0].name}
+          </>
         );
       },
     },
@@ -126,11 +164,28 @@ const PropertyTable = () => {
                 Copy payment ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Pencil className="mr-2 h-4 w-4" />
-                <span>Efit</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="focus:bg-red-100">
+
+              <Link href={`/tenant/property/${payment.id}`}>
+                <DropdownMenuItem>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  <span>Edit</span>
+                </DropdownMenuItem>
+              </Link>
+
+              <DropdownMenuItem
+                className="focus:bg-red-100"
+                onClick={() =>
+                  dispatch(
+                    deleteTenantDetailPropertyThunk({
+                      id: session?.user.id!,
+                      pId: payment.id,
+                      token: session?.user.accessToken!,
+                    }),
+                  ).then(() => {
+                    route.refresh();
+                  })
+                }
+              >
                 <Trash2 className="mr-2 h-4 w-4" />
                 <span>Delete</span>
               </DropdownMenuItem>
@@ -140,16 +195,6 @@ const PropertyTable = () => {
       },
     },
   ];
-
-  useEffect(() => {
-    if (isLoadingCategories === true)
-      dispatch(
-        getTenantPropertiesThunk({
-          token: session?.user.accessToken!,
-          id: session?.user.id!,
-        }),
-      );
-  }, [isLoadingCategories]);
 
   return (
     <div>

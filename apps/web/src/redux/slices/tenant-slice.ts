@@ -2,8 +2,11 @@ import { createSlice } from '@reduxjs/toolkit';
 import { z } from 'zod';
 import {
   addTenantPropertyThunk,
+  deleteTenantDetailPropertyThunk,
+  getTenantDetailPropertyThunk,
   getTenantPropertiesThunk,
   getTenantPropertyCategoryThunk,
+  updateTenantDetailPropertyThunk,
 } from './tenant-thunk';
 import { TPropertyCategory } from './propertyCategory-slice';
 
@@ -18,9 +21,11 @@ export type TProperty = {
 
 type InitialState = {
   properties: TProperty[];
+  property?: TProperty;
   categories: TPropertyCategory[];
   isLoadingCategories: boolean;
   isLoadingProperties: boolean;
+  isLoadingProperty: boolean;
 };
 
 const initialState: InitialState = {
@@ -28,6 +33,7 @@ const initialState: InitialState = {
   categories: [],
   isLoadingCategories: true,
   isLoadingProperties: true,
+  isLoadingProperty: true,
 };
 
 const tenantSlice = createSlice({
@@ -70,6 +76,57 @@ const tenantSlice = createSlice({
 
       state.isLoadingProperties = false;
     });
+
+    builder.addCase(getTenantDetailPropertyThunk.pending, (state) => {
+      state.isLoadingProperty = true;
+    });
+    builder.addCase(getTenantDetailPropertyThunk.fulfilled, (state, action) => {
+      if (action.payload)
+        state.property = action.payload.error ? undefined : action.payload.data;
+
+      state.isLoadingProperty = false;
+    });
+
+    builder.addCase(updateTenantDetailPropertyThunk.pending, (state) => {
+      state.isLoadingProperty = true;
+    });
+    builder.addCase(
+      updateTenantDetailPropertyThunk.fulfilled,
+      (state, action) => {
+        if (action.payload)
+          state.properties = action.payload.error
+            ? state.properties
+            : state.properties.map((data) => {
+                if (action.payload)
+                  if (action.payload.data.id === data.id)
+                    return {
+                      ...action.payload.data,
+                    };
+
+                return data;
+              });
+
+        state.isLoadingProperty = false;
+      },
+    );
+
+    builder.addCase(deleteTenantDetailPropertyThunk.pending, (state) => {
+      state.isLoadingProperty = true;
+    });
+    builder.addCase(
+      deleteTenantDetailPropertyThunk.fulfilled,
+      (state, action) => {
+        if (action.payload) {
+          state.properties = action.payload.error
+            ? state.properties
+            : state.properties.filter(
+                (data) => data.id !== action.payload!.data.id,
+              );
+        }
+
+        state.isLoadingProperty = false;
+      },
+    );
   },
 });
 

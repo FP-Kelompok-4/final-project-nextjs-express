@@ -9,25 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useForm } from 'react-hook-form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import {
   addTenantPropertyThunk,
@@ -38,6 +20,7 @@ import * as z from 'zod';
 import { PropertySchema } from '@/schemas/property-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/components/ui/use-toast';
+import AddForm from './AddForm';
 
 const AddPropertyForm = () => {
   const { toast } = useToast();
@@ -53,11 +36,17 @@ const AddPropertyForm = () => {
   const [isOpenSheet, setIsOpenSheet] = useState(false);
 
   const form = useForm<z.infer<typeof PropertySchema>>({
+    defaultValues: {
+      name: '', // Initialize with empty string or appropriate default value
+      description: '',
+      location: '',
+      propertyCategoryId: undefined, // or appropriate initial value
+      image: undefined, // or undefined depending on your use case
+    },
     resolver: zodResolver(PropertySchema),
   });
 
   const onSubmit = (data: z.infer<typeof PropertySchema>) => {
-
     dispatch(
       addTenantPropertyThunk({
         token: session?.user.accessToken!,
@@ -104,127 +93,7 @@ const AddPropertyForm = () => {
             This action will add your property to list
           </SheetDescription>
         </SheetHeader>
-        <Form {...form}>
-          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nama Properti</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nama" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Deskripsi Properti</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Tell us a little bit about yourself"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="propertyCategoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select
-                    onValueChange={(event) => {
-                      field.onChange(
-                        event
-                          ? categories.findLast((ele) => ele.name === event)!.id
-                          : undefined,
-                      );
-                    }}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category to display" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {isLoadingCategories ? (
-                        <Loader2 className="animate-spin" />
-                      ) : (
-                        <>
-                          {/* {JSON.stringify(categories)} */}
-                          {categories.map((data, index) => (
-                            <SelectItem
-                              key={`${data.id}-${index}`}
-                              value={data.name}
-                            >
-                              {data.name}
-                            </SelectItem>
-                          ))}
-                        </>
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Lokasi</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Lokasi" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Gambar</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="gambar"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        field.onChange(file);
-                      }}
-                      ref={field.ref}
-                      // {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit">Tambah Property</Button>
-          </form>
-        </Form>
+        <AddForm form={form} onSubmit={onSubmit} />
       </SheetContent>
     </Sheet>
   );
