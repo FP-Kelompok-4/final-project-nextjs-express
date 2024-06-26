@@ -18,8 +18,6 @@ export const getTenantPropertyCategoryThunk = createAsyncThunk(
         },
       });
 
-      console.log(res.data);
-
       return { success: 'Success Get Category!', data: res.data.data };
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -41,8 +39,6 @@ export const getTenantPropertiesThunk = createAsyncThunk(
         },
       });
 
-      console.log(res.data);
-
       return { success: 'Success Get Properties!', data: res.data.data };
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -63,8 +59,6 @@ export const getTenantDetailPropertyThunk = createAsyncThunk(
           Authorization: `Bearer ${props.token}`,
         },
       });
-
-      console.log(res.data);
 
       return { success: 'Success Get Property!', data: res.data.data };
     } catch (e) {
@@ -97,8 +91,6 @@ export const updateTenantDetailPropertyThunk = createAsyncThunk(
         },
       );
 
-      console.log(res.data);
-
       return { success: 'Success Update Property!', data: res.data.data };
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -114,13 +106,14 @@ export const deleteTenantDetailPropertyThunk = createAsyncThunk(
   'tenant/deleteTenantDetailProperty',
   async (props: { token: string; id: string; pId: string }) => {
     try {
-      const res = await api.delete(`properties/delete/${props.id}/${props.pId}`, {
-        headers: {
-          Authorization: `Bearer ${props.token}`,
+      const res = await api.delete(
+        `properties/delete/${props.id}/${props.pId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
         },
-      });
-
-      console.log(res.data);
+      );
 
       return { success: 'Success Delete Property!', data: res.data.data };
     } catch (e) {
