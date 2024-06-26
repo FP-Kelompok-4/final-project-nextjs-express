@@ -51,7 +51,7 @@ model Property {
 
   userId             String           @map("user_id")
   user               User             @relation(fields: [userId], references: [id])
-  propertyCategoryId Int              @unique
+  propertyCategoryId Int              @map("property_category_id")
   propertyCategory   PropertyCategory @relation(fields: [propertyCategoryId], references: [id])
   rooms              Room[]
 

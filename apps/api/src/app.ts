@@ -14,6 +14,7 @@ import { ResponseError } from './error/response-error';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UserRouter } from './routers/user.router';
 import { VerificationTokenRouter } from "./routers/verificationToken.route";
+import { PropertyRouter } from "./routers/property.router";
 import { PropertyCategoryRouter } from "./routers/propertyCategory.router";
 
 export default class App {
@@ -61,6 +62,7 @@ export default class App {
     const sampleRouter = new SampleRouter();
     const userRouter = new UserRouter();
     const verificationToken = new VerificationTokenRouter();
+    const propertyRouter = new PropertyRouter();
     const propertyCategoryRouter = new PropertyCategoryRouter();
 
     this.app.get('/api/', (req: Request, res: Response) => {
@@ -70,6 +72,7 @@ export default class App {
     this.app.use('/api/samples', sampleRouter.getRouter());
     this.app.use('/api/users', userRouter.getRouter());
     this.app.use('/api/verification-token', verificationToken.getRouter());
+    this.app.use('/api/properties', propertyRouter.getRouter());
     this.app.use('/api/property-category', propertyCategoryRouter.getRouter());
   }
 
