@@ -69,7 +69,7 @@ export const updateTenantDetailRoomThunk = createAsyncThunk(
           },
         },
       );
-      
+
       return { success: 'Success Update Room!', data: res.data.data };
     } catch (e) {
       if (axios.isAxiosError(e)) {
