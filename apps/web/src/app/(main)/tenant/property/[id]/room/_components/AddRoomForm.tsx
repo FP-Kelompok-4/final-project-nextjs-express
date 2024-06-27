@@ -36,8 +36,6 @@ const AddRoomForm = ({ pId }: { pId: string }) => {
   });
 
   const onSubmit = (data: z.infer<typeof RoomSchema>) => {
-    console.log('data', data);
-
     dispatch(
       addTenantRoomThunk({
         token: session?.user.accessToken!,

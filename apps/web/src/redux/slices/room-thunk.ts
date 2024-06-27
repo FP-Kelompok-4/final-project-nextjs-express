@@ -69,8 +69,6 @@ export const updateTenantDetailRoomThunk = createAsyncThunk(
           },
         },
       );
-
-      console.log({ success: 'Success Update Room!', data: res.data.data });
       
       return { success: 'Success Update Room!', data: res.data.data };
     } catch (e) {

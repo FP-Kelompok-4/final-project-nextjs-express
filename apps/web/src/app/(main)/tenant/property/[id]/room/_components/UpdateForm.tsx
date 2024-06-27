@@ -56,7 +56,6 @@ const UpdateForm = ({
   const handleCropImage = async () => {
     const croppedImage = await getCroppedImg(newPhoto, croppedAreaPixels);
 
-    console.log(croppedImage?.size);
 
     if (croppedImage) {
       form.setValue('image', croppedImage);

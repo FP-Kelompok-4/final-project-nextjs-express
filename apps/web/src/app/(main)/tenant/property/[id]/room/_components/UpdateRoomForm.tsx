@@ -27,7 +27,6 @@ const UpdateRoomForm = ({ pId, rId }: { rId: string; pId: string }) => {
   });
 
   const onSubmit = (data: z.infer<typeof UpdateRoomSchema>) => {
-    console.log('Submitted data:', data);
 
     dispatch(
       updateTenantDetailRoomThunk({
