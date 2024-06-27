@@ -1,38 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Loader2, Plus } from 'lucide-react';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+import React, { useState } from 'react';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { PropertySchema } from '@/schemas/property-schema';
-import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { getTenantPropertyCategoryThunk } from '@/redux/slices/tenant-thunk';
+import { UpdateRoomSchema } from '@/schemas/room-schema';
 import * as z from 'zod';
-import { useSession } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import {
   Dialog,
@@ -47,21 +27,15 @@ import getCroppedImg from '@/app/(main)/profile/_utils/cropImage';
 import { X } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 
-const AddForm = ({
+const UpdateForm = ({
   form,
   onSubmit,
+  imageUrl,
 }: {
-  form: UseFormReturn<z.infer<typeof PropertySchema>>;
-  onSubmit: (values: z.infer<typeof PropertySchema>) => void;
+  form: UseFormReturn<z.infer<typeof UpdateRoomSchema>>;
+  onSubmit: (values: z.infer<typeof UpdateRoomSchema>) => void;
+  imageUrl?: string;
 }) => {
-  const { data: session } = useSession();
-
-  const dispatch = useAppDispatch();
-
-  const { categories, isLoadingCategories } = useAppSelector(
-    (state) => state.tenantReducer,
-  );
-
   const [isOpenDialog, setIsOpenDialog] = useState(false);
 
   const [newPhoto, setNewPhoto] = useState('');
@@ -100,27 +74,19 @@ const AddForm = ({
     setIsOpenDialog(open);
   };
 
-  useEffect(() => {
-    if (isLoadingCategories === true)
-      dispatch(
-        getTenantPropertyCategoryThunk({ token: session?.user.accessToken! }),
-      );
-  }, [isLoadingCategories]);
-
   return (
     <>
       <Form {...form}>
         <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
-            name="name"
+            name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nama Properti</FormLabel>
+                <FormLabel>Type of Room</FormLabel>
                 <FormControl>
-                  <Input placeholder="Nama" {...field} />
+                  <Input placeholder="Type" {...field} />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
@@ -130,79 +96,37 @@ const AddForm = ({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Deskripsi Properti</FormLabel>
+                <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Tell us a little bit about yourself"
+                    placeholder="Tell us a little bit about the room"
                     className="resize-none"
                     {...field}
                   />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
-            name="propertyCategoryId"
+            name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select
-                  onValueChange={(event) => {
-                    field.onChange(event ? Number(event) : undefined);
-                  }}
-                  // onValueChange={field.onChange}
-                  value={JSON.stringify(field.value)}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category to display" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {isLoadingCategories ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <>
-                        {/* {JSON.stringify(categories)} */}
-                        {categories
-                          ? categories.map((data, index) => (
-                              <SelectItem
-                                key={`${data.id}-${index}`}
-                                value={JSON.stringify(data.id)}
-                              >
-                                {data.name}
-                              </SelectItem>
-                            ))
-                          : 'kosong'}
-                      </>
-                    )}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Lokasi</FormLabel>
+                <FormLabel>Harga</FormLabel>
                 <FormControl>
-                  <Input placeholder="Lokasi" {...field} />
+                  <Input
+                    type="number"
+                    placeholder="Give us the price"
+                    className="resize-none"
+                    {...field}
+                  />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
           />
-
-          <div className="relative flex aspect-video h-full max-h-40 w-fit max-w-fit items-center justify-center overflow-hidden rounded-xl border-[1px] border-dashed">
+          <div className="relative z-10 flex aspect-video h-40 max-h-40 w-fit max-w-fit items-center justify-center overflow-hidden rounded-xl border-[1px] border-dashed">
             {image ? (
               <Image
                 className="object-cover"
@@ -211,8 +135,16 @@ const AddForm = ({
                 sizes="100%"
                 alt="preview"
               />
+            ) : imageUrl ? (
+              <Image
+                className="object-cover"
+                src={`http://localhost:8000/rooms/${imageUrl}`}
+                fill
+                sizes="100%"
+                alt="preview"
+              />
             ) : (
-              <p>Image Empty</p>
+              <p>Empty</p>
             )}
           </div>
           <FormField
@@ -248,10 +180,9 @@ const AddForm = ({
               </FormItem>
             )}
           />
-
-          <Button type="submit">Tambah Property</Button>
+          <Button type="submit">Update Room</Button>
         </form>
-      </Form>{' '}
+      </Form>
       <Dialog open={isOpenDialog} onOpenChange={handleDialogChange}>
         <DialogPortal>
           <DialogClose asChild>
@@ -269,7 +200,7 @@ const AddForm = ({
                     image={newPhoto}
                     crop={crop}
                     zoom={zoom}
-                    aspect={4 / 2}
+                    aspect={2 / 1}
                     onCropChange={setCrop}
                     onCropComplete={onCropComplete}
                     onZoomChange={setZoom}
@@ -307,4 +238,4 @@ const AddForm = ({
   );
 };
 
-export default AddForm;
+export default UpdateForm;

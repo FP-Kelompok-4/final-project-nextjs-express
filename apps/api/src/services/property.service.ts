@@ -109,13 +109,48 @@ export class PropertyService {
   static async deleteProperty(req: UpdatePropertyPar) {
     const { id, pId } = req;
 
-    const property = await prisma.property.delete({
+    const propertyR = await prisma.property.findUnique({
       where: {
         id: pId,
         userId: id,
       },
     });
 
-    return toDeletePropertyRes(property.id);
+    if (!propertyR) {
+      throw new Error('Property not found or does not belong to the user.');
+    }
+
+    // Find all rooms related to the property
+    const roomsR = await prisma.room.findMany({
+      where: {
+        propertyId: pId,
+      },
+    });
+
+    // Delete all RoomPrice records related to the rooms
+    for (const room of roomsR) {
+      await prisma.roomPrice.deleteMany({
+        where: {
+          roomId: room.id,
+        },
+      });
+    }
+
+    // Delete all Room records related to the property
+    await prisma.room.deleteMany({
+      where: {
+        propertyId: pId,
+      },
+    });
+
+    // Finally, delete the Property
+    const propertyD = await prisma.property.delete({
+      where: {
+        id: pId,
+        userId: id,
+      },
+    });
+
+    return toDeletePropertyRes(propertyD.id);
   }
 }

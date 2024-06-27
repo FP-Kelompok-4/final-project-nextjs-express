@@ -89,7 +89,7 @@ const UpdatePropertyForm = ({ id }: { id: string }) => {
 
   return (
     <>
-      <UpdateForm form={form} onSubmit={onSubmit} />
+      <UpdateForm form={form} onSubmit={onSubmit} imageUrl={property?.image} />
     </>
   );
 };
