@@ -7,7 +7,7 @@ import {
 import { ColumnDef } from '@tanstack/react-table';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
-import { DataTable } from './Property-Table/data-table';
+import { DataTable } from './Room-Table/data-table';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,9 +31,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import UpdatePropertyForm from './UpdatePropertyForm';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { TRoom } from '@/redux/slices/room-slice';
+import { deleteTenantDetailRoomThunk } from '@/redux/slices/room-thunk';
+import { useToast } from '@/components/ui/use-toast';
 import {
   Dialog,
   DialogClose,
@@ -44,70 +46,38 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useToast } from '@/components/ui/use-toast';
 
-const PropertyTable = () => {
+const RoomTable = ({ pId }: { pId: string }) => {
   const { data: session } = useSession();
   const { toast } = useToast();
 
   const route = useRouter();
-  const [isOpenDialog, setIsOpenDialog] = useState({ isOpen: false, pId: '' });
 
   const dispatch = useAppDispatch();
 
-  const { properties, isLoadingCategories, categories } = useAppSelector(
-    (state) => state.tenantReducer,
-  );
+  const { rooms } = useAppSelector((state) => state.roomReducer);
+
+  const [isOpenDialog, setIsOpenDialog] = useState({ isOpen: false, rId: '' });
 
   const onOpenChangeDialog = (open: boolean) =>
-    setIsOpenDialog({ isOpen: open, pId: '' });
+    setIsOpenDialog({ isOpen: open, rId: '' });
 
-  const columns: ColumnDef<TProperty>[] = [
+  const columns: ColumnDef<TRoom>[] = [
     {
       accessorKey: 'id',
       header: 'ID',
     },
     {
-      accessorKey: 'name',
+      accessorKey: 'type',
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            Name
+            Type
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
-        );
-      },
-    },
-    {
-      accessorKey: 'propertyCategoryId',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Category
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-
-      cell(props) {
-        const { row } = props;
-
-        const payment = row.original;
-
-        return (
-          <>
-            {isLoadingCategories
-              ? 'Loading...'
-              : categories.filter(
-                  (data) => data.id === payment.propertyCategoryId,
-                )[0].name}
-          </>
         );
       },
     },
@@ -116,19 +86,20 @@ const PropertyTable = () => {
       header: 'Deskripsi',
     },
     {
-      accessorKey: 'location',
+      accessorKey: 'price',
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            Location
+            Harga
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
       },
     },
+
     {
       accessorKey: 'image',
       header: 'Image',
@@ -146,7 +117,7 @@ const PropertyTable = () => {
               <div className="relative h-auto w-full">
                 <Image
                   className="!relative object-contain"
-                  src={`http://localhost:8000/properties/${payment.image}`}
+                  src={`http://localhost:8000/rooms/${payment.image}`}
                   fill
                   sizes="100%"
                   alt={`image-${payment.id}`}
@@ -180,27 +151,28 @@ const PropertyTable = () => {
               >
                 Copy payment ID
               </DropdownMenuItem> */}
-              <Link href={`/tenant/property/${payment.id}/room`}>
+              {/* <Link href={`/tenant/property/${payment.id}/room`}>
                 <DropdownMenuItem
                 // onClick={() => navigator.clipboard.writeText(payment.id)}
                 >
                   <DoorOpen className="mr-2 h-4 w-4" />
                   <span>Room</span>
                 </DropdownMenuItem>
-              </Link>
+              </Link> */}
 
               <DropdownMenuSeparator />
 
-              <Link href={`/tenant/property/${payment.id}`}>
+              <Link href={`/tenant/property/${pId}/room/${payment.id}`}>
                 <DropdownMenuItem>
                   <Pencil className="mr-2 h-4 w-4" />
                   <span>Edit</span>
                 </DropdownMenuItem>
               </Link>
+
               <DropdownMenuItem
                 className="focus:bg-red-100"
                 onClick={() =>
-                  setIsOpenDialog({ isOpen: true, pId: payment.id })
+                  setIsOpenDialog({ isOpen: true, rId: payment.id })
                 }
               >
                 <Trash2 className="mr-2 h-4 w-4" />
@@ -215,53 +187,58 @@ const PropertyTable = () => {
 
   return (
     <div>
-      <DataTable columns={columns} data={properties} />
+      <DataTable columns={columns} data={rooms} />
       <Dialog open={isOpenDialog.isOpen} onOpenChange={onOpenChangeDialog}>
-        <DialogContent>
-          <DialogHeader className="gap-4">
-            <DialogTitle>Apakah Anda benar-benar yakin?</DialogTitle>
-            <DialogDescription>
-              Tindakan ini tidak bisa dibatalkan. Tindakan ini akan menghapus
-              data anda secara permanen.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose>
-              <Button className="w-fit" variant={'ghost'}>
-                Batal
-              </Button>
-            </DialogClose>
+              
+                <DialogContent>
+                  <DialogHeader className="gap-4">
+                    <DialogTitle>Apakah Anda benar-benar yakin?</DialogTitle>
+                    <DialogDescription>
+                      Tindakan ini tidak bisa dibatalkan. Tindakan ini akan
+                      menghapus data anda secara permanen.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose>
+                      <Button className="w-fit" variant={'ghost'}>
+                        Batal
+                      </Button>
+                    </DialogClose>
 
-            <Button
-              className="bg-gossamer-500 hover:bg-gossamer-500/90 w-fit"
-              disabled={session?.user.provider === 'google'}
-              onClick={() => {
-                dispatch(
-                  deleteTenantDetailPropertyThunk({
-                    id: session?.user.id!,
-                    pId: isOpenDialog.pId,
-                    token: session?.user.accessToken!,
-                  }),
-                ).then((data: any) => {
-                  toast({
-                    variant: data.payload.error ? 'destructive' : 'default',
-                    title: data.payload.error
-                      ? data.payload.error
-                      : data.payload.success,
-                  });
-                });
+                    <Button
+                      className="bg-gossamer-500 hover:bg-gossamer-500/90 w-fit"
+                      disabled={session?.user.provider === 'google'}
+                      onClick={() =>
+                        dispatch(
+                          deleteTenantDetailRoomThunk({
+                            id: session?.user.id!,
+                            token: session?.user.accessToken!,
+                            pId,
+                            rId: isOpenDialog.rId,
+                          }),
+                        ).then((data: any) => {
+                          toast({
+                            variant: data.payload.error
+                              ? 'destructive'
+                              : 'default',
+                            title: data.payload.error
+                              ? data.payload.error
+                              : data.payload.success,
+                          });
 
-                route.refresh();
-                onOpenChangeDialog(false);
-              }}
-            >
-              Yakin
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+                          route.refresh();
+                          onOpenChangeDialog(false);
+
+                        })
+                      }
+                    >
+                      Yakin
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
     </div>
   );
 };
 
-export default PropertyTable;
+export default RoomTable;

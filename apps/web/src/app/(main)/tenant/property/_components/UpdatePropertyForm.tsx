@@ -53,7 +53,6 @@ const UpdatePropertyForm = ({ id }: { id: string }) => {
         body: data,
       }),
     ).then((data: any) => {
-      // console.log(data.payload);
       toast({
         variant: data.payload.error ? 'destructive' : 'default',
         title: data.payload.error ? data.payload.error : data.payload.success,
@@ -89,7 +88,7 @@ const UpdatePropertyForm = ({ id }: { id: string }) => {
 
   return (
     <>
-      <UpdateForm form={form} onSubmit={onSubmit} />
+      <UpdateForm form={form} onSubmit={onSubmit} imageUrl={property?.image} />
     </>
   );
 };

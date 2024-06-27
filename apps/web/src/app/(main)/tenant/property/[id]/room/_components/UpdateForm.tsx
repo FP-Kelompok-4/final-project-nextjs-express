@@ -1,38 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+import React, { useState } from 'react';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { UpdatePropertySchema } from '@/schemas/property-schema';
-import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { getTenantPropertyCategoryThunk } from '@/redux/slices/tenant-thunk';
+import { UpdateRoomSchema } from '@/schemas/room-schema';
 import * as z from 'zod';
-import { useSession } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 import {
   Dialog,
   DialogClose,
@@ -45,25 +26,16 @@ import Cropper, { Area, Point } from 'react-easy-crop';
 import getCroppedImg from '@/app/(main)/profile/_utils/cropImage';
 import { X } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
-import Image from 'next/image';
 
 const UpdateForm = ({
   form,
   onSubmit,
   imageUrl,
 }: {
-  form: UseFormReturn<z.infer<typeof UpdatePropertySchema>>;
-  onSubmit: (values: z.infer<typeof UpdatePropertySchema>) => void;
+  form: UseFormReturn<z.infer<typeof UpdateRoomSchema>>;
+  onSubmit: (values: z.infer<typeof UpdateRoomSchema>) => void;
   imageUrl?: string;
 }) => {
-  const { data: session } = useSession();
-
-  const dispatch = useAppDispatch();
-
-  const { categories, isLoadingCategories } = useAppSelector(
-    (state) => state.tenantReducer,
-  );
-
   const [isOpenDialog, setIsOpenDialog] = useState(false);
 
   const [newPhoto, setNewPhoto] = useState('');
@@ -84,6 +56,7 @@ const UpdateForm = ({
   const handleCropImage = async () => {
     const croppedImage = await getCroppedImg(newPhoto, croppedAreaPixels);
 
+
     if (croppedImage) {
       form.setValue('image', croppedImage);
       setImage(croppedImage);
@@ -100,27 +73,19 @@ const UpdateForm = ({
     setIsOpenDialog(open);
   };
 
-  useEffect(() => {
-    if (isLoadingCategories === true)
-      dispatch(
-        getTenantPropertyCategoryThunk({ token: session?.user.accessToken! }),
-      );
-  }, [isLoadingCategories]);
-
   return (
     <>
       <Form {...form}>
         <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
-            name="name"
+            name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nama Properti</FormLabel>
+                <FormLabel>Type of Room</FormLabel>
                 <FormControl>
-                  <Input placeholder="Nama" {...field} />
+                  <Input placeholder="Type" {...field} />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
@@ -130,77 +95,36 @@ const UpdateForm = ({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Deskripsi Properti</FormLabel>
+                <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Tell us a little bit about yourself"
+                    placeholder="Tell us a little bit about the room"
                     className="resize-none"
                     {...field}
                   />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
-            name="propertyCategoryId"
+            name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select
-                  onValueChange={(event) => {
-                    field.onChange(event ? Number(event) : undefined);
-                  }}
-                  // defaultValue={field.value ? String(field.value) : undefined}
-                  value={field.value ? String(field.value) : undefined}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category to display" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {isLoadingCategories ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <>
-                        {categories
-                          ? categories.map((data, index) => (
-                              <SelectItem
-                                key={`${data.id}-${index}`}
-                                value={String(data.id)}
-                              >
-                                {data.name}
-                              </SelectItem>
-                            ))
-                          : 'kosong'}
-                      </>
-                    )}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Lokasi</FormLabel>
+                <FormLabel>Harga</FormLabel>
                 <FormControl>
-                  <Input placeholder="Lokasi" {...field} />
+                  <Input
+                    type="number"
+                    placeholder="Give us the price"
+                    className="resize-none"
+                    {...field}
+                  />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
           />
-
           <div className="relative z-10 flex aspect-video h-40 max-h-40 w-fit max-w-fit items-center justify-center overflow-hidden rounded-xl border-[1px] border-dashed">
             {image ? (
               <Image
@@ -213,7 +137,7 @@ const UpdateForm = ({
             ) : imageUrl ? (
               <Image
                 className="object-cover"
-                src={`http://localhost:8000/properties/${imageUrl}`}
+                src={`http://localhost:8000/rooms/${imageUrl}`}
                 fill
                 sizes="100%"
                 alt="preview"
@@ -227,26 +151,35 @@ const UpdateForm = ({
             name="image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Gambar</FormLabel>
+                <FormLabel>Image</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="gambar"
+                    placeholder="Image"
                     type="file"
                     accept="image/*"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-                      field.onChange(file);
+
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setNewPhoto(reader.result as string);
+                        };
+                        reader.readAsDataURL(file!);
+
+                        setIsOpenDialog(true);
+                      }
+
+                      // field.onChange(file);
                     }}
                     ref={field.ref}
                   />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
           />
-
-          <Button type="submit">Update Property</Button>
+          <Button type="submit">Update Room</Button>
         </form>
       </Form>
       <Dialog open={isOpenDialog} onOpenChange={handleDialogChange}>
