@@ -13,8 +13,10 @@ import { SampleRouter } from './routers/sample.router';
 import { ResponseError } from './error/response-error';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UserRouter } from './routers/user.router';
-import { VerificationTokenRouter } from "./routers/verificationToken.route";
-import { PropertyCategoryRouter } from "./routers/propertyCategory.router";
+import { VerificationTokenRouter } from './routers/verificationToken.route';
+import { PropertyRouter } from './routers/property.router';
+import { PropertyCategoryRouter } from './routers/propertyCategory.router';
+import { RoomRouter } from './routers/room.router';
 
 export default class App {
   private app: Express;
@@ -40,17 +42,17 @@ export default class App {
         if (err instanceof ResponseError) {
           res.status(err.status).send({
             status: 'fail',
-            message: err.message
+            message: err.message,
           });
         } else if (err instanceof PrismaClientKnownRequestError) {
           res.status(400).send({
             status: 'fail',
-            message: err.message
+            message: err.message,
           });
         } else {
           res.status(500).send({
             status: 'fail',
-            message: err.message
+            message: err.message,
           });
         }
       },
@@ -61,6 +63,8 @@ export default class App {
     const sampleRouter = new SampleRouter();
     const userRouter = new UserRouter();
     const verificationToken = new VerificationTokenRouter();
+    const propertyRouter = new PropertyRouter();
+    const roomRouter = new RoomRouter();
     const propertyCategoryRouter = new PropertyCategoryRouter();
 
     this.app.get('/api/', (req: Request, res: Response) => {
@@ -70,6 +74,8 @@ export default class App {
     this.app.use('/api/samples', sampleRouter.getRouter());
     this.app.use('/api/users', userRouter.getRouter());
     this.app.use('/api/verification-token', verificationToken.getRouter());
+    this.app.use('/api/properties', propertyRouter.getRouter());
+    this.app.use('/api/rooms', roomRouter.getRouter());
     this.app.use('/api/property-category', propertyCategoryRouter.getRouter());
   }
 

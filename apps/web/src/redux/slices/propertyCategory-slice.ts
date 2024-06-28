@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { deletePropertyCategoryThunk, getPropertyCategoryThunk, patchPropertyCategoryThunk, postPropertyCategoryThunk } from "./propertyCategory-thunk";
 
-type TPropertyCategory = {
+export type TPropertyCategory = {
   id: number;
   name: string;
 };

@@ -1,5 +1,12 @@
 import React from 'react';
-import { LayoutDashboard, LogOut, Menu, Settings, User } from 'lucide-react';
+import {
+  Building2,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Settings,
+  User,
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -53,6 +60,12 @@ const HeaderAccountDropdown = () => {
               <DropdownMenuItem>
                 <LayoutDashboard className="mr-2 h-4 w-4" />
                 <span>Dashboard</span>
+              </DropdownMenuItem>
+            </Link>
+            <Link href={'/tenant/property'}>
+              <DropdownMenuItem>
+                <Building2 className="mr-2 h-4 w-4" />
+                <span>Property</span>
               </DropdownMenuItem>
             </Link>
           </DropdownMenuGroup>

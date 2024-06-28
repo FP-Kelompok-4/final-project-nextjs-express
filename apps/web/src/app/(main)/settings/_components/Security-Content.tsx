@@ -78,7 +78,7 @@ const SecurityContent = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-[400px] space-y-6"
+        className="w-full space-y-6"
       >
         <FormField
           control={form.control}
