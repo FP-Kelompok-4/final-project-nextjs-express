@@ -26,6 +26,10 @@ export class PropertyRouter {
   }
 
   private initializeRoutes(): void {
+    this.router.get(
+      '/client',
+      this.propertyController.getPropertiesForClient
+    )
     this.router.use(verifyToken);
 
     this.router.get(
