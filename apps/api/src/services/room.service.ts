@@ -170,4 +170,12 @@ export class RoomService {
 
     return toDeleteRoomRes(room.id);
   }
+
+  static async verifyRoomById(id: string) {
+    const room = await prisma.room.findUnique({
+      where: { id }
+    });
+
+    if (!room) throw new ResponseError(404, "Room not found");
+  }
 }

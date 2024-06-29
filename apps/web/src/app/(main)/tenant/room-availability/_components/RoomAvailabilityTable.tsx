@@ -1,5 +1,6 @@
+import React from 'react'
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -7,110 +8,112 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import RoomAvailabilityDataTable from "./data-table/Data-Table"
+import { useAppDispatch, useAppSelector } from "@/redux/hook"
+import { TRoomAvailability } from "@/redux/slices/roomAvailability-slice"
+import { format } from "date-fns"
+import { useState } from "react"
+import AlertDialogDelete from "@/components/Alert-Dialog-Delete"
+import { deleteRoomAvailability } from "@/redux/slices/roomAvailability-thunk"
+import { useSession } from "next-auth/react"
+import { toast } from "@/components/ui/use-toast"
+import { z } from "zod"
+import { FromRoomAvailabilityPriceSchema } from "@/schemas/form-room-availability-price-schema"
+import { UseFormReturn } from "react-hook-form"
 
-export const data: TPayment[] = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@gmail.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@gmail.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@gmail.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-]
+const RoomAvailableTable = ({
+  form,
+  setOpenDialogSetAvailability,
+  roomAvailaId,
+  setRoomAvailaId,
+  setModalPopover,
+}:{
+  form: UseFormReturn<z.infer<typeof FromRoomAvailabilityPriceSchema>, any, undefined>;
+  setOpenDialogSetAvailability: React.Dispatch<React.SetStateAction<boolean>>;
+  roomAvailaId: string;
+  setRoomAvailaId: React.Dispatch<React.SetStateAction<string>>;
+  setModalPopover: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const [openAlert, setOpenAlert] = useState<boolean>(false);
+  const {roomAvailabilities} = useAppSelector((state) => state.roomAvailabilityReducer);
+  const {data: session} = useSession();
+  const dispatch = useAppDispatch();
 
-export type TPayment = {
-  id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
-}
+  const handleOnOpenChangeAlert = (open: boolean) => {
+    setOpenAlert(open);
+    setRoomAvailaId("");
+  }
 
-const RoomAvailableTable = () => {
-  const columns: ColumnDef<TPayment>[] = [
+  const handleShowAlertDelete = (id: string) => {
+    handleOnOpenChangeAlert(true);
+    setRoomAvailaId(id);
+  }
+
+  const onDelete = () => {
+    dispatch(deleteRoomAvailability({token: session?.user.accessToken!, id: roomAvailaId}))
+      .then((data: any) => {
+        toast({
+          variant: data.payload.error ? 'destructive' : 'default',
+          title: data.payload.error ? data.payload.error : data.payload.success,
+        });
+      })
+    handleOnOpenChangeAlert(false);
+  }
+
+  const columns: ColumnDef<TRoomAvailability>[] = [
     {
-      accessorKey: "id",
+      accessorKey: "name",
       header: ({ column }) => {
         return (
           <Button
+            className="px-0"
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Id
+            Property Name
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
       },
-      cell: ({ row }) => <div className="lowercase">{row.getValue("id")}</div>,
+      cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
     },
     {
-      accessorKey: "status",
-      header: "Status",
+      accessorKey: "type",
+      header: ({ column }) => {
+        return (
+          <Button
+            className="px-0"
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Type Room
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className="capitalize">{row.getValue("type")}</div>,
+    },
+    {
+      accessorKey: "fromDate",
+      header: "From Date",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("status")}</div>
+        <div className="capitalize">{format(row.getValue("fromDate"), "PPP")}</div>
       ),
     },
     {
-      accessorKey: "email",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Email
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        )
-      },
-      cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-    },
-    {
-      accessorKey: "amount",
-      header: () => <div className="text-right">Amount</div>,
-      cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("amount"))
-
-        // Format the amount as a dollar amount
-        const formatted = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(amount)
-
-        return <div className="text-right font-medium">{formatted}</div>
-      },
+      accessorKey: "toDate",
+      header: "To Date",
+      cell: ({ row }) => (
+        <div className="capitalize">{format(row.getValue("toDate"), "PPP")}</div>
+      ),
     },
     {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const payment = row.original
+        const roomAvaila = row.original;
 
         return (
           <DropdownMenu>
@@ -123,13 +126,24 @@ const RoomAvailableTable = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(payment.id)}
+                className="flex items-center gap-2"
+                onClick={() => {
+                  form.setValue('roomId', roomAvaila.roomId);
+                  setRoomAvailaId(roomAvaila.roomAvailaId);
+                  setOpenDialogSetAvailability(true);
+                  setModalPopover(true);
+                }}
               >
-                Copy payment ID
+                <Pencil size={16} />
+                <span>Edit</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem>
+              <DropdownMenuItem
+                className="flex items-center gap-2"
+                onClick={() => handleShowAlertDelete(roomAvaila.roomAvailaId)}
+              >
+                <Trash2 size={16} />
+                <span>Delete</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )
@@ -138,7 +152,15 @@ const RoomAvailableTable = () => {
   ]
 
   return (
-    <RoomAvailabilityDataTable columns={columns} data={data} />
+    <>
+      <AlertDialogDelete
+        alertDialodDescrip="This action cannot be undone. This will permanently delete room availability from our servers."
+        onOpenChange={handleOnOpenChangeAlert}
+        open={openAlert}
+        onDelete={onDelete}
+      />
+      <RoomAvailabilityDataTable columns={columns} data={roomAvailabilities} />
+    </>
   )
 }
 

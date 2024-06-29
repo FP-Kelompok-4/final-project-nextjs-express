@@ -1,10 +1,10 @@
 import * as z from 'zod';
 
 export const FromRoomAvailabilityPriceSchema = z.object({
-  id: z
+  roomId: z
     .string()
     .min(1, {
-      message: "A room is required"
+      message: "Please select one room."
     })
     .trim(),
   fromDate: z.date({

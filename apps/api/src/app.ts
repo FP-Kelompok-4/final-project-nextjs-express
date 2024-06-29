@@ -17,6 +17,7 @@ import { VerificationTokenRouter } from './routers/verificationToken.route';
 import { PropertyRouter } from './routers/property.router';
 import { PropertyCategoryRouter } from './routers/propertyCategory.router';
 import { RoomRouter } from './routers/room.router';
+import { RoomAvailabilityRouter } from "./routers/roomAvailability.router";
 
 export default class App {
   private app: Express;
@@ -66,6 +67,7 @@ export default class App {
     const propertyRouter = new PropertyRouter();
     const roomRouter = new RoomRouter();
     const propertyCategoryRouter = new PropertyCategoryRouter();
+    const roomAvailabilityRouter = new RoomAvailabilityRouter();
 
     this.app.get('/api/', (req: Request, res: Response) => {
       res.send(`Restful API is already !`);
@@ -77,6 +79,7 @@ export default class App {
     this.app.use('/api/properties', propertyRouter.getRouter());
     this.app.use('/api/rooms', roomRouter.getRouter());
     this.app.use('/api/property-category', propertyCategoryRouter.getRouter());
+    this.app.use('/api/room-availability', roomAvailabilityRouter.getRouter());
   }
 
   public start(): void {

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -10,29 +10,41 @@ import { FromRoomAvailabilityPriceSchema } from "@/schemas/form-room-availabilit
 import DialogCustomAdmin from "@/components/Dialog-Custom-Admin"
 import FormSetRoomAvailability from "./_components/Form-Set-Room-Availability"
 import RoomAvailableTable from "./_components/RoomAvailabilityTable"
+import { useAppDispatch, useAppSelector } from "@/redux/hook"
+import { getPropretyRooms, getRoomAvailability } from "@/redux/slices/roomAvailability-thunk"
+import { useSession } from "next-auth/react"
 
 const RoomAvailability = () => {
   const [openDialogSetAvailability, setOpenDialogSetAvailability] = useState<boolean>(false);
   const [modalPopover, setModalPopover] = useState<boolean>(false);
+  const [roomAvailaId, setRoomAvailaId] = useState<string>("");
+  const {data: session} = useSession();
+  const dispatch = useAppDispatch();
+  const {refetch} = useAppSelector((state) => state.roomAvailabilityReducer)
 
   const form = useForm<z.infer<typeof FromRoomAvailabilityPriceSchema>>({
     resolver: zodResolver(FromRoomAvailabilityPriceSchema),
-    defaultValues: {
-      id: "",
-    }
   });
 
   const handleOpenDialogSetAvailability = (open: boolean) => {
     setOpenDialogSetAvailability(open);
     setModalPopover(false);
     form.reset();
+    setRoomAvailaId("");
   }
 
+  useEffect(() => {
+    if (session?.user) {
+      dispatch(getPropretyRooms({token: session.user.accessToken!, userId: session.user.id}));
+      dispatch(getRoomAvailability({token: session.user.accessToken!, userId: session.user.id}));
+    }
+  }, [dispatch, refetch])
+  
   return (
     <main className="min-h-svh pt-[78px] px-6 md:px-10 xl:px-20 ">
       <DialogCustomAdmin
-        titleDialogContent="Add room availability"
-        descripDialogContent="If you want to change room availability, first delete the room availability that you have set. Because the room that has been set is not available in the field room."
+        titleDialogContent={form.getValues("roomId") ? "Edit room availability" : "Add room availability"}
+        descripDialogContent={form.getValues("roomId") ? "" : "If the room field is empty, create your property and room first."}
         onOpenChange={handleOpenDialogSetAvailability}
         open={openDialogSetAvailability}
       >
@@ -40,6 +52,7 @@ const RoomAvailability = () => {
           form={form}
           handleOpenDialogSetAvailability={handleOpenDialogSetAvailability}
           modalPopover={modalPopover}
+          roomAvailaId={roomAvailaId}
         />
       </DialogCustomAdmin>
       <div className="my-6 flex md:flex-row flex-col justify-between md:items-center">
@@ -53,7 +66,13 @@ const RoomAvailability = () => {
           Add Room Availability
         </Button>
       </div>
-      <RoomAvailableTable />
+      <RoomAvailableTable 
+        form={form}
+        setOpenDialogSetAvailability={setOpenDialogSetAvailability}
+        roomAvailaId={roomAvailaId}
+        setRoomAvailaId={setRoomAvailaId}
+        setModalPopover={setModalPopover}
+      />
     </main>
   )
 }

@@ -12,18 +12,46 @@ import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from "@/components/ui/select"
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { patchRoomAvailability, postRoomAvailability } from "@/redux/slices/roomAvailability-thunk";
+import { useSession } from "next-auth/react";
+import { toast } from "@/components/ui/use-toast";
 
 const FormSetRoomAvailability = ({
   form,
   handleOpenDialogSetAvailability,
-  modalPopover
+  modalPopover,
+  roomAvailaId,
 }: {
-  form: UseFormReturn<z.infer<typeof FromRoomAvailabilityPriceSchema>, any, undefined>
-  handleOpenDialogSetAvailability: (open: boolean) => void,
-  modalPopover: boolean
+  form: UseFormReturn<z.infer<typeof FromRoomAvailabilityPriceSchema>, any, undefined>;
+  handleOpenDialogSetAvailability: (open: boolean) => void;
+  modalPopover: boolean;
+  roomAvailaId?: string;
 }) => {
+  const {data: session} = useSession();
+  const {propertiesRooms} = useAppSelector((state) => state.roomAvailabilityReducer);
+  const dispatch = useAppDispatch();
+
   const onSubmit = (values: z.infer<typeof FromRoomAvailabilityPriceSchema>) => {
-    console.log(values)
+    if (roomAvailaId) {
+      dispatch(patchRoomAvailability({ token: session?.user.accessToken!, payload: values, id: roomAvailaId}))
+        .then((data: any) => {
+          toast({
+            variant: data.payload.error ? 'destructive' : 'default',
+            title: data.payload.error ? data.payload.error : data.payload.success,
+          });
+        })
+      handleOpenDialogSetAvailability(false);
+      return
+    }
+
+    dispatch(postRoomAvailability({ token: session?.user.accessToken!, payload: values}))
+      .then((data: any) => {
+        toast({
+          variant: data.payload.error ? 'destructive' : 'default',
+          title: data.payload.error ? data.payload.error : data.payload.success,
+        });
+      })
     handleOpenDialogSetAvailability(false);
   }
 
@@ -35,7 +63,7 @@ const FormSetRoomAvailability = ({
       >
         <FormField
           control={form.control}
-          name="id"
+          name="roomId"
           render={({field}) => (
             <FormItem>
               <FormLabel>Room</FormLabel>
@@ -46,18 +74,26 @@ const FormSetRoomAvailability = ({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Property 1</SelectLabel>
-                    <SelectItem value="Room 1 Property 1">Room 1 Property 1</SelectItem>
-                    <SelectItem value="Room 2 Property 1">Room 2 Property 1</SelectItem>
-                    <SelectItem value="Room 3 Property 1">Room 3 Property 1</SelectItem>
-                  </SelectGroup>
-                  <SelectGroup>
-                    <SelectLabel>Property 2</SelectLabel>
-                    <SelectItem value="Room 1 Property 2">Room 1 Property 2</SelectItem>
-                    <SelectItem value="Room 2 Property 2">Room 2 Property 2</SelectItem>
-                    <SelectItem value="Room 3 Property 3">Room 3 Property 3</SelectItem>
-                  </SelectGroup>
+                  {propertiesRooms.map((pr, i) => (
+                    <SelectGroup key={i}>
+                      <SelectLabel>{pr.name}</SelectLabel>
+                      <>
+                        {pr.rooms.map((r) => (
+                          <SelectItem 
+                            key={r.id}
+                            value={r.id}
+                            disabled={form.getValues("roomId") 
+                              ? form.getValues("roomId") === r.id
+                                ? false : true
+                              : r.roomAvailabilitiesId ? true : false
+                            }
+                          >
+                            {r.type}
+                          </SelectItem>
+                        ))}
+                      </>
+                    </SelectGroup>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -96,7 +132,7 @@ const FormSetRoomAvailability = ({
                     onSelect={field.onChange}
                     disabled={(date) => {
                       // ["2024-06-29", "2024-06-30"].includes(format(date, "yyyy-MM-dd"))
-                      if (format(date, "yyyy-MM-dd") == format("2024-07-29T00:00:00.000Z", "yyyy-MM-dd")) return true
+                      if (format(date, "yyyy-MM-dd") == format("2024-07-29T00:00:00.000Z", "yyyy-MM-dd")) return true;
                       if (date < addDays(new Date(), 1)) return true;
                       return false;
                     }}
@@ -138,8 +174,8 @@ const FormSetRoomAvailability = ({
                     selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) => {
-                      // ["2024-06-29", "2024-06-30"].includes(format(date, "yyyy-MM-dd"))
-                      if (format(date, "yyyy-MM-dd") == format("2024-07-29T00:00:00.000Z", "yyyy-MM-dd")) return true
+                      if (form.getValues("fromDate")) 
+                        if (date <= form.getValues("fromDate")) return true;
                       if (date < addDays(new Date(), 1)) return true;
                       return false;
                     }}

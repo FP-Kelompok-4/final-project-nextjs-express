@@ -6,6 +6,7 @@ import {
   SortingState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -21,13 +22,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { TPayment } from "../RoomAvailabilityTable"
+import { TRoomAvailability } from "@/redux/slices/roomAvailability-slice"
 
 const RoomAvailabilityDataTable = ({
   columns, data
 }: {
-  columns: ColumnDef<TPayment>[],
-  data: TPayment[]
+  columns: ColumnDef<TRoomAvailability>[],
+  data: TRoomAvailability[]
 }) => {
   const [sorting, setSorting] = React.useState<SortingState>([])
 
@@ -38,6 +39,7 @@ const RoomAvailabilityDataTable = ({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
     },
@@ -47,10 +49,10 @@ const RoomAvailabilityDataTable = ({
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Fine type room..."
+          value={(table.getColumn("type")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("type")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
