@@ -31,7 +31,10 @@ export class PropertyRouter {
       this.propertyController.getPropertiesForClient
     )
     this.router.use(verifyToken);
-
+    this.router.get(
+      '/rooms/:userId',
+      this.propertyController.getPropertyRooms
+    )
     this.router.get(
       '/all/:id',
       validatGetProperties,

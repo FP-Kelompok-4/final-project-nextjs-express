@@ -1,6 +1,5 @@
 import { ResponseError } from '@/error/response-error';
 import { PropertyService } from '@/services/property.service';
-import { RoomService } from '@/services/room.service';
 import { UserService } from '@/services/user.service';
 import { NextFunction, Request, Response } from 'express';
 import {
@@ -127,6 +126,21 @@ export class PropertyController {
       });
     } catch (e) {
       next(e);
+    }
+  }
+
+  async getPropertyRooms(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.params;
+
+      const propertyRooms = await PropertyService.getpropertyRooms(userId);
+
+      res.status(200).send({
+        status: 'success',
+        data: propertyRooms
+      })
+    } catch (e) {
+      next(e)
     }
   }
 }

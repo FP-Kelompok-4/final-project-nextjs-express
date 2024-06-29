@@ -1,16 +1,17 @@
 import React from 'react'
-import { Dialog, DialogClose, DialogContent, DialogPortal, DialogTitle } from "./ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogPortal, DialogTitle, DialogDescription, DialogHeader } from "./ui/dialog"
 import { Button } from "./ui/button"
 import { X } from "lucide-react"
-import { DialogDescription } from "@radix-ui/react-dialog"
 
 const DialogCustomAdmin = ({
   titleDialogContent,
+  descripDialogContent,
   open,
   onOpenChange,
   children
 }:{
   titleDialogContent: string,
+  descripDialogContent?: string,
   open: boolean,
   onOpenChange: (open: boolean) => void,
   children: React.ReactNode
@@ -25,7 +26,10 @@ const DialogCustomAdmin = ({
         </DialogClose>
       </DialogPortal>
       <DialogContent aria-describedby="">
-        <DialogTitle>{titleDialogContent}</DialogTitle>
+        <DialogHeader>
+          <DialogTitle>{titleDialogContent}</DialogTitle>
+          {descripDialogContent && <DialogDescription>{descripDialogContent}</DialogDescription>}
+        </DialogHeader>
         {children}
       </DialogContent>
     </Dialog>

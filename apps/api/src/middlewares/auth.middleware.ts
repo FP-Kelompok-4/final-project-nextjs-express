@@ -32,3 +32,14 @@ export const superAdminGuard = async (req: Request, res: Response, next: NextFun
     next(e);
   }
 };
+
+export const tenantGuard = async (req: Request, res: Response, next: NextFunction,) => {
+  try {
+    if (String(req.user?.role).toUpperCase() !== 'TENANT' &&String(req.user?.role).toUpperCase() !== 'SUPER_ADMIN')
+      throw new ResponseError(403, 'Unauthorized');
+
+    next();
+  } catch (e) {
+    next(e);
+  }
+};

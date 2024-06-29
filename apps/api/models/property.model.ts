@@ -1,3 +1,5 @@
+import { Property, Room, RoomAvailability } from "@prisma/client";
+
 export type GetPropertiesReq = {
   id: string;
 };
@@ -39,6 +41,14 @@ export type AddUPropertyRes = {
 };
 
 type Rooms = {
+  roomAvailabilities: RoomAvailability[]
+} & Room
+
+type GetPropertyRoomsRes = {
+  rooms: Rooms[]
+} & Property
+
+type TRooms = {
   id: string;
   image: string;
   description: string;
@@ -54,7 +64,7 @@ type PropertyRoomPrice = {
   name: string;
   description: string;
   location: string;
-  rooms: Rooms[]
+  rooms: TRooms[]
 }
 
 export const toGetPropertiesRes = (property: AddUPropertyRes[]) => {
@@ -76,6 +86,21 @@ export const toDeletePropertyRes = (id: string) => {
     id,
   };
 };
+
+export const toGetPropertyRoomsRes = (propertyRooms: GetPropertyRoomsRes[]) => {
+  return propertyRooms.map((pr) => {
+    return {
+      name: pr.name,
+      rooms: pr.rooms.map((r) => {
+        return {
+          id: r.id,
+          type: r.type,
+          roomAvailabilitiesId: r.roomAvailabilities.map((ra) => ra.id)[0]
+        }
+      })
+    }
+  })
+}
 
 export const toPropertyRoomPriceRes = (property: PropertyRoomPrice[]) => {
   return property.map(({ id, name, description, image, location, rooms }) => {

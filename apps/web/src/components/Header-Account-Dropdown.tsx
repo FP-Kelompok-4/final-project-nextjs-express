@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  BedSingle,
   Building2,
   LayoutDashboard,
   LogOut,
@@ -54,7 +55,7 @@ const HeaderAccountDropdown = () => {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {session?.user.role === 'TENANT' && (
+        {session?.user.role !== 'USER' && (
           <DropdownMenuGroup>
             <Link href={'/tenant/dashboard'}>
               <DropdownMenuItem>
@@ -66,6 +67,12 @@ const HeaderAccountDropdown = () => {
               <DropdownMenuItem>
                 <Building2 className="mr-2 h-4 w-4" />
                 <span>Property</span>
+              </DropdownMenuItem>
+            </Link>
+            <Link href={'/tenant/room-availability'}>
+              <DropdownMenuItem>
+                <BedSingle className="mr-2 h-4 w-4" />
+                <span>Room Availability</span>
               </DropdownMenuItem>
             </Link>
           </DropdownMenuGroup>
