@@ -8,7 +8,8 @@ export class RoomAvailabilityService {
       FROM properties p
       INNER JOIN rooms r ON p.id=r.property_id
       INNER JOIN roomAvailabilities ra ON r.id=ra.room_id
-      WHERE p.user_id = ${userId}`;
+      WHERE p.user_id = ${userId}
+      ORDER BY p.name ASC`;
 
     return roomAvaila as GetRoomAvailabilityRes;
   }
