@@ -38,6 +38,25 @@ export type AddUPropertyRes = {
   propertyCategoryId: number;
 };
 
+type Rooms = {
+  id: string;
+  image: string;
+  description: string;
+  type: string;
+  roomPrices: {
+      price: number;
+  } | null;
+}
+
+type PropertyRoomPrice = {
+  id: string;
+  image: string;
+  name: string;
+  description: string;
+  location: string;
+  rooms: Rooms[]
+}
+
 export const toGetPropertiesRes = (property: AddUPropertyRes[]) => {
   return property;
 };
@@ -57,3 +76,22 @@ export const toDeletePropertyRes = (id: string) => {
     id,
   };
 };
+
+export const toPropertyRoomPriceRes = (property: PropertyRoomPrice[]) => {
+  return property.map(({ id, name, description, image, location, rooms }) => {
+    return {
+      id,
+      name,
+      description,
+      location,
+      image,
+      price: rooms.map((v, i) => {
+        if (i === 0) {
+          return {
+            price: v.roomPrices?.price
+          }
+        }
+      })[0]?.price
+    }
+  })
+}
