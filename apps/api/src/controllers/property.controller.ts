@@ -11,6 +11,19 @@ import {
 } from 'models/property.model';
 
 export class PropertyController {
+  async getPropertiesForClient(req: Request, res: Response, next: NextFunction) {
+    try {
+      const properties = await PropertyService.getPropertiesForClient();
+
+      res.status(200).send({
+        status: 'success',
+        data: properties
+      })
+    } catch (e) {
+      next(e)
+    }    
+  }
+
   async getProperty(req: Request, res: Response, next: NextFunction) {
     try {
       const request = req.params as GetPropertiesReq;

@@ -4,6 +4,7 @@ import propertyCategoryReducer from './slices/propertyCategory-slice';
 import tenantReducer from './slices/tenant-slice';
 import roomReducer from './slices/room-slice';
 import roomAvailabilityReducer from "./slices/roomAvailability-slice";
+import propertiesClientSlice from "./slices/client/property-slice";
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ export const store = configureStore({
     propertyCategoryReducer,
     tenantReducer,
     roomReducer,
-    roomAvailabilityReducer
+    roomAvailabilityReducer,
+    propertiesClientSlice,
   },
 });
 

@@ -9,6 +9,7 @@ import {
   toGetDetailPropertyRes,
   toGetPropertiesRes,
   toGetPropertyRoomsRes,
+  toPropertyRoomPriceRes,
   UpdatePropertyPar,
   UpdatePropertyReq,
 } from 'models/property.model';
@@ -18,6 +19,24 @@ interface UpdatePropertyServiceProps
     UpdatePropertyPar {}
 
 export class PropertyService {
+  static async getPropertiesForClient() {
+    const properties = await prisma.property.findMany({
+      select: {
+        id: true, name: true, description: true, location: true, image: true,
+        rooms: {
+          select: {
+            id: true, type: true, description: true, image: true,
+            roomPrices: {
+              select: {price: true}
+            }
+          }
+        }
+      }
+    });
+
+    return toPropertyRoomPriceRes(properties)
+  }
+
   static async getProperty(req: GetPropertiesReq) {
     const { id } = req;
 

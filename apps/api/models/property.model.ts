@@ -48,6 +48,25 @@ type GetPropertyRoomsRes = {
   rooms: Rooms[]
 } & Property
 
+type TRooms = {
+  id: string;
+  image: string;
+  description: string;
+  type: string;
+  roomPrices: {
+      price: number;
+  } | null;
+}
+
+type PropertyRoomPrice = {
+  id: string;
+  image: string;
+  name: string;
+  description: string;
+  location: string;
+  rooms: TRooms[]
+}
+
 export const toGetPropertiesRes = (property: AddUPropertyRes[]) => {
   return property;
 };
@@ -79,6 +98,25 @@ export const toGetPropertyRoomsRes = (propertyRooms: GetPropertyRoomsRes[]) => {
           roomAvailabilitiesId: r.roomAvailabilities.map((ra) => ra.id)[0]
         }
       })
+    }
+  })
+}
+
+export const toPropertyRoomPriceRes = (property: PropertyRoomPrice[]) => {
+  return property.map(({ id, name, description, image, location, rooms }) => {
+    return {
+      id,
+      name,
+      description,
+      location,
+      image,
+      price: rooms.map((v, i) => {
+        if (i === 0) {
+          return {
+            price: v.roomPrices?.price
+          }
+        }
+      })[0]?.price
     }
   })
 }
