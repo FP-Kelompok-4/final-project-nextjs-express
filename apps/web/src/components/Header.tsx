@@ -32,11 +32,11 @@ export const Header = ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
       <div className="w-[20%]">
         <LinkBrand />
       </div>
-      {!(session?.user.role === 'TENANT') && (
+      {!(session?.user.role === 'TENANT' || session?.user.role === 'SUPER_ADMIN') && (
         <FormSearchProperty className="hidden h-fit w-full flex-row items-center justify-center gap-1 rounded-full border-[1px] focus:bg-red-400 lg:flex xl:w-fit" />
       )}
       <div className="flex w-fit items-center justify-end gap-3 md:w-[20%]">
-        {!(session?.user.role === 'TENANT') && (
+        {!(session?.user.role === 'TENANT' || session?.user.role === 'SUPER_ADMIN') && (
           <Sheet>
             <SheetTrigger asChild>
               <Button

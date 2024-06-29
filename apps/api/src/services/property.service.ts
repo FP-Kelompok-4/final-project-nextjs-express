@@ -8,6 +8,7 @@ import {
   toDeletePropertyRes,
   toGetDetailPropertyRes,
   toGetPropertiesRes,
+  toGetPropertyRoomsRes,
   toPropertyRoomPriceRes,
   UpdatePropertyPar,
   UpdatePropertyReq,
@@ -171,5 +172,23 @@ export class PropertyService {
     });
 
     return toDeletePropertyRes(propertyD.id);
+  }
+
+  static async getpropertyRooms(userId: string) {
+    const propertyRooms = await prisma.property.findMany({
+      include: {
+        rooms: {
+          include: {
+            roomAvailabilities: true
+          }
+        }
+      },
+      where: { userId },
+      orderBy: {name: "asc"}
+    });
+
+    if (propertyRooms.length === 0) throw new ResponseError(404, 'You have not added any property yet.');
+
+    return toGetPropertyRoomsRes(propertyRooms)
   }
 }
