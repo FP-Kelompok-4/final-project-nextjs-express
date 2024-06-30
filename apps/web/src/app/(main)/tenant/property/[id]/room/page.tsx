@@ -17,15 +17,15 @@ const RoomPage = ({ params }: { params: { id: string } }) => {
   );
 
   useEffect(() => {
-    // if (isLoadingRooms === true)
-    dispatch(
-      getTenantRoomsThunk({
-        token: session?.user.accessToken!,
-        id: session?.user.id!,
-        pId: params.id,
-      }),
-    );
-  }, []);
+    if (isLoadingRooms === true)
+      dispatch(
+        getTenantRoomsThunk({
+          token: session?.user.accessToken!,
+          id: session?.user.id!,
+          pId: params.id,
+        }),
+      );
+  }, [isLoadingRooms, rooms]);
 
   return (
     <main className="flex min-h-svh flex-col gap-6 pt-[78px]">
