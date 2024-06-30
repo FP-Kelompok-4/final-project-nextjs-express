@@ -27,7 +27,6 @@ const UpdateRoomForm = ({ pId, rId }: { rId: string; pId: string }) => {
   });
 
   const onSubmit = (data: z.infer<typeof UpdateRoomSchema>) => {
-
     dispatch(
       updateTenantDetailRoomThunk({
         token: session?.user.accessToken!,
@@ -70,7 +69,17 @@ const UpdateRoomForm = ({ pId, rId }: { rId: string; pId: string }) => {
     }
   }, [room]);
 
-  return <UpdateForm form={form} onSubmit={onSubmit} imageUrl={room?.image} />;
+  return (
+    <>
+      {room ? (
+        <UpdateForm form={form} onSubmit={onSubmit} imageUrl={room.image} />
+      ) : (
+        <div className="flex min-h-[calc(100svh-79px)] w-full items-center justify-center">
+          <h2 className="text-xl font-semibold">Opps. Property not found.</h2>
+        </div>
+      )}
+    </>
+  );
 };
 
 export default UpdateRoomForm;

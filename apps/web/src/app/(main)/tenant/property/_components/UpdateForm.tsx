@@ -46,6 +46,7 @@ import getCroppedImg from '@/app/(main)/profile/_utils/cropImage';
 import { X } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import Image from 'next/image';
+import { useRouter } from "next/navigation";
 
 const UpdateForm = ({
   form,
@@ -57,6 +58,8 @@ const UpdateForm = ({
   imageUrl?: string;
 }) => {
   const { data: session } = useSession();
+
+  const router = useRouter()
 
   const dispatch = useAppDispatch();
 
@@ -245,8 +248,10 @@ const UpdateForm = ({
               </FormItem>
             )}
           />
-
-          <Button type="submit">Update Property</Button>
+          <div className="flex gap-3">
+            <Button type="reset" variant={'ghost'} onClick={() => router.back()}>Cancel</Button>
+            <Button type="submit">Update Property</Button>
+          </div>
         </form>
       </Form>
       <Dialog open={isOpenDialog} onOpenChange={handleDialogChange}>

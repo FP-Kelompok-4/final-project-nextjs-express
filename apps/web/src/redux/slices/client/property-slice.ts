@@ -1,5 +1,8 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { getPropertiesClientThunk } from "./property-thunk";
+import { createSlice } from '@reduxjs/toolkit';
+import {
+  getPropertiesClientThunk,
+  getPropertyDetailClientThunk,
+} from './property-thunk';
 
 export type TPropertiesClient = {
   id: string;
@@ -8,17 +11,38 @@ export type TPropertiesClient = {
   location: string;
   image: string;
   price: number;
-}
+};
+
+export type TPropertyDetailClient = {
+  id: string;
+  name: string;
+  description: string;
+  location: string;
+  image: string;
+  category: string;
+  rooms: TRoomClient[];
+};
+
+export type TRoomClient = {
+  id: string;
+  type: string;
+  description: string;
+  price: number;
+  image: string;
+};
 
 type TInitialState = {
   properties: TPropertiesClient[];
+  properyDetail?: TPropertyDetailClient;
   isLoading: boolean;
-}
+  isPropertyDetailLoading: boolean;
+};
 
 const initialState: TInitialState = {
   properties: [],
-  isLoading: true
-}
+  isLoading: true,
+  isPropertyDetailLoading: true,
+};
 
 const propertiesClientSlice = createSlice({
   name: 'propertiesClient',
@@ -28,16 +52,26 @@ const propertiesClientSlice = createSlice({
     builder.addCase(getPropertiesClientThunk.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(
-      getPropertiesClientThunk.fulfilled,
-      (state, action) => {
-        if (action.payload) state.properties = action.payload.data;
+    builder.addCase(getPropertiesClientThunk.fulfilled, (state, action) => {
+      if (action.payload) state.properties = action.payload.data;
 
-        state.isLoading = false;
-      },
-    );
+      state.isLoading = false;
+    });
+
+    builder.addCase(getPropertyDetailClientThunk.pending, (state) => {
+      state.isPropertyDetailLoading = true;
+    });
+    builder.addCase(getPropertyDetailClientThunk.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.properyDetail = action.payload.data;
+      } else {
+        state.properyDetail = undefined;
+      }
+
+      state.isPropertyDetailLoading = false;
+    });
   },
-})
+});
 
 export const {} = propertiesClientSlice.actions;
 export default propertiesClientSlice.reducer;

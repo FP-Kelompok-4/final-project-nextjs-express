@@ -6,6 +6,7 @@ import {
   GetPropertiesReq,
   toAddPropertyRes,
   toDeletePropertyRes,
+  toGetDetailPropertyClientRes,
   toGetDetailPropertyRes,
   toGetPropertiesRes,
   toGetPropertyRoomsRes,
@@ -22,19 +23,68 @@ export class PropertyService {
   static async getPropertiesForClient() {
     const properties = await prisma.property.findMany({
       select: {
-        id: true, name: true, description: true, location: true, image: true,
+        id: true,
+        name: true,
+        description: true,
+        location: true,
+        image: true,
         rooms: {
           select: {
-            id: true, type: true, description: true, image: true,
+            id: true,
+            type: true,
+            description: true,
+            image: true,
             roomPrices: {
-              select: {price: true}
-            }
-          }
-        }
-      }
+              select: { price: true },
+            },
+          },
+        },
+      },
     });
 
-    return toPropertyRoomPriceRes(properties)
+    return toPropertyRoomPriceRes(properties);
+  }
+
+  static async getPropertyForClient(req: GetPropertiesReq) {
+    const { id } = req;
+
+    const property = await prisma.property.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        rooms: {
+          include: {
+            roomPrices: true,
+          },
+        },
+        propertyCategory: true,
+      },
+    });
+
+    if (!property) throw new ResponseError(404, 'Property is not exist.');
+
+    const {
+      id: pId,
+      name,
+      description,
+      propertyCategory,
+      location,
+      image,
+      rooms,
+    } = property;
+
+    const result = {
+      id: pId,
+      name,
+      description,
+      category: propertyCategory.name,
+      location,
+      image,
+      rooms,
+    };
+
+    return toGetDetailPropertyClientRes(result);
   }
 
   static async getProperty(req: GetPropertiesReq) {
@@ -179,16 +229,17 @@ export class PropertyService {
       include: {
         rooms: {
           include: {
-            roomAvailabilities: true
-          }
-        }
+            roomAvailabilities: true,
+          },
+        },
       },
       where: { userId },
-      orderBy: {name: "asc"}
+      orderBy: { name: 'asc' },
     });
 
-    if (propertyRooms.length === 0) throw new ResponseError(404, 'You have not added any property yet.');
+    if (propertyRooms.length === 0)
+      throw new ResponseError(404, 'You have not added any property yet.');
 
-    return toGetPropertyRoomsRes(propertyRooms)
+    return toGetPropertyRoomsRes(propertyRooms);
   }
 }

@@ -26,15 +26,12 @@ export class PropertyRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get(
-      '/client',
-      this.propertyController.getPropertiesForClient
-    )
+    this.router.get('/client', this.propertyController.getPropertiesForClient);
+    this.router.get('/client/:pId', this.propertyController.getPropertyDetailForClient);
+
     this.router.use(verifyToken);
-    this.router.get(
-      '/rooms/:userId',
-      this.propertyController.getPropertyRooms
-    )
+
+    this.router.get('/rooms/:userId', this.propertyController.getPropertyRooms);
     this.router.get(
       '/all/:id',
       validatGetProperties,

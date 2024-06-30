@@ -88,7 +88,17 @@ const UpdatePropertyForm = ({ id }: { id: string }) => {
 
   return (
     <>
-      <UpdateForm form={form} onSubmit={onSubmit} imageUrl={property?.image} />
+      {property ? (
+        <UpdateForm
+          form={form}
+          onSubmit={onSubmit}
+          imageUrl={property?.image}
+        />
+      ) : (
+        <div className="flex min-h-[calc(100svh-79px)] w-full items-center justify-center">
+          <h2 className="text-xl font-semibold">Opps. Property not found.</h2>
+        </div>
+      )}
     </>
   );
 };
