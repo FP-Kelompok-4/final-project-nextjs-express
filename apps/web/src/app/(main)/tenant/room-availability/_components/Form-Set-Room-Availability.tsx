@@ -22,11 +22,13 @@ const FormSetRoomAvailability = ({
   handleOpenDialogSetAvailability,
   modalPopover,
   roomAvailaId,
+  roomId,
 }: {
   form: UseFormReturn<z.infer<typeof FromRoomAvailabilityPriceSchema>, any, undefined>;
   handleOpenDialogSetAvailability: (open: boolean) => void;
   modalPopover: boolean;
   roomAvailaId?: string;
+  roomId?: string;
 }) => {
   const {data: session} = useSession();
   const {propertiesRooms} = useAppSelector((state) => state.roomAvailabilityReducer);
@@ -82,8 +84,8 @@ const FormSetRoomAvailability = ({
                           <SelectItem 
                             key={r.id}
                             value={r.id}
-                            disabled={form.getValues("roomId") 
-                              ? form.getValues("roomId") === r.id
+                            disabled={roomId
+                              ? roomId === r.id
                                 ? false : true
                               : r.roomAvailabilitiesId ? true : false
                             }
@@ -131,7 +133,6 @@ const FormSetRoomAvailability = ({
                     selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) => {
-                      if (format(date, "yyyy-MM-dd") == format("2024-07-29T00:00:00.000Z", "yyyy-MM-dd")) return true;
                       if (date < addDays(new Date(), 1)) return true;
                       return false;
                     }}

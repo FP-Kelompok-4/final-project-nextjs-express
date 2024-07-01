@@ -28,12 +28,14 @@ const RoomAvailableTable = ({
   setOpenDialogSetAvailability,
   roomAvailaId,
   setRoomAvailaId,
+  setRoomId,
   setModalPopover,
 }:{
   form: UseFormReturn<z.infer<typeof FromRoomAvailabilityPriceSchema>, any, undefined>;
   setOpenDialogSetAvailability: React.Dispatch<React.SetStateAction<boolean>>;
   roomAvailaId: string;
   setRoomAvailaId: React.Dispatch<React.SetStateAction<string>>;
+  setRoomId: React.Dispatch<React.SetStateAction<string>>;
   setModalPopover: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [openAlert, setOpenAlert] = useState<boolean>(false);
@@ -129,6 +131,7 @@ const RoomAvailableTable = ({
                 className="flex items-center gap-2"
                 onClick={() => {
                   form.setValue('roomId', roomAvaila.roomId);
+                  setRoomId(roomAvaila.roomId)
                   setRoomAvailaId(roomAvaila.roomAvailaId);
                   setOpenDialogSetAvailability(true);
                   setModalPopover(true);

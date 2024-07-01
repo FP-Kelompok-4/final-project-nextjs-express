@@ -18,6 +18,7 @@ const RoomAvailability = () => {
   const [openDialogSetAvailability, setOpenDialogSetAvailability] = useState<boolean>(false);
   const [modalPopover, setModalPopover] = useState<boolean>(false);
   const [roomAvailaId, setRoomAvailaId] = useState<string>("");
+  const [roomId, setRoomId] = useState<string>("");
   const {data: session} = useSession();
   const dispatch = useAppDispatch();
   const {refetch} = useAppSelector((state) => state.roomAvailabilityReducer)
@@ -30,6 +31,7 @@ const RoomAvailability = () => {
     setOpenDialogSetAvailability(open);
     setModalPopover(false);
     form.reset();
+    setRoomId("");
     setRoomAvailaId("");
   }
 
@@ -53,6 +55,7 @@ const RoomAvailability = () => {
           handleOpenDialogSetAvailability={handleOpenDialogSetAvailability}
           modalPopover={modalPopover}
           roomAvailaId={roomAvailaId}
+          roomId={roomId}
         />
       </DialogCustomAdmin>
       <div className="my-6 flex md:flex-row flex-col justify-between md:items-center">
@@ -71,6 +74,7 @@ const RoomAvailability = () => {
         setOpenDialogSetAvailability={setOpenDialogSetAvailability}
         roomAvailaId={roomAvailaId}
         setRoomAvailaId={setRoomAvailaId}
+        setRoomId={setRoomId}
         setModalPopover={setModalPopover}
       />
     </main>
