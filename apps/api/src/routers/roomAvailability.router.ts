@@ -17,22 +17,22 @@ export class RoomAvailabilityRouter {
     this.router.use(verifyToken, tenantGuard);
     this.router.get(
       '/:userId',
-      this.roomAvailabilityController.getRoomAvailabilityByUserId
-    )
+      this.roomAvailabilityController.getRoomAvailabilitiresByUserId
+    );
     this.router.post(
       "/",
       validatePostRoomAvailability,
       this.roomAvailabilityController.postRoomAvailability
-    )
+    );
     this.router.patch(
       "/:id",
       validatePatchRoomAvailability,
-      this.roomAvailabilityController.patchRoomAvailability
-    )
+      this.roomAvailabilityController.patchRoomAvailabilityById
+    );
     this.router.delete(
       "/:id",
-      this.roomAvailabilityController.deleteRoomAvailabilityByUserId
-    )
+      this.roomAvailabilityController.deleteRoomAvailabilityById
+    );
   }
 
   getRouter(): Router {

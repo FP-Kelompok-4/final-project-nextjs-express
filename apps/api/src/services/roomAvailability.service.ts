@@ -3,7 +3,7 @@ import prisma from "@/prisma";
 import { AddRoomAvailabilityReq, GetRoomAvailabilityRes, UpdateRoomAvailabilityReq } from "models/roomAvailability.model";
 
 export class RoomAvailabilityService {
-  static async getRoomAvailabilities(userId: string) {
+  static async getRoomAvailabilitiesByUserId(userId: string) {
     const roomAvaila = await prisma.$queryRaw`SELECT p.name, r.type, r.id as roomId, ra.id AS roomAvailaId, ra.fromDate, ra.toDate
       FROM properties p
       INNER JOIN rooms r ON p.id=r.property_id
@@ -22,7 +22,7 @@ export class RoomAvailabilityService {
     return roomAvailability;
   }
 
-  static async updateRoomAvailability({req, id}:{req: UpdateRoomAvailabilityReq, id: string}) {
+  static async updateRoomAvailabilityById({req, id}:{req: UpdateRoomAvailabilityReq, id: string}) {
     const roomAvailability = await prisma.roomAvailability.update({
       data: req,
       where: { id }
@@ -31,7 +31,7 @@ export class RoomAvailabilityService {
     return roomAvailability;
   }
 
-  static async deleteRoomAvailability(id: string) {
+  static async deleteRoomAvailabilityById(id: string) {
     const roomAvailability = await prisma.roomAvailability.delete({
       where: { id }
     });
@@ -39,7 +39,7 @@ export class RoomAvailabilityService {
     return roomAvailability;
   }
 
-  static async verifyRoomAvailability(id: string) {
+  static async verifyRoomAvailabilityById(id: string) {
     const roomAvailability = await prisma.roomAvailability.findUnique({
       where: { id }
     });
