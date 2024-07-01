@@ -53,7 +53,10 @@ const propertiesClientSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getPropertiesClientThunk.fulfilled, (state, action) => {
-      if (action.payload) state.properties = action.payload.data;
+      if (action.payload)
+        state.properties = action.payload.error
+          ? [...state.properties]
+          : action.payload.data;
 
       state.isLoading = false;
     });
