@@ -131,7 +131,6 @@ const FormSetRoomAvailability = ({
                     selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) => {
-                      // ["2024-06-29", "2024-06-30"].includes(format(date, "yyyy-MM-dd"))
                       if (format(date, "yyyy-MM-dd") == format("2024-07-29T00:00:00.000Z", "yyyy-MM-dd")) return true;
                       if (date < addDays(new Date(), 1)) return true;
                       return false;

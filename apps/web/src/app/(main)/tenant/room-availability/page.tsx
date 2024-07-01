@@ -43,8 +43,8 @@ const RoomAvailability = () => {
   return (
     <main className="min-h-svh pt-[78px] px-6 md:px-10 xl:px-20 ">
       <DialogCustomAdmin
-        titleDialogContent={form.getValues("roomId") ? "Edit room availability" : "Add room availability"}
-        descripDialogContent={form.getValues("roomId") ? "" : "If the room field is empty, create your property and room first."}
+        titleDialogContent={roomAvailaId ? "Edit room availability" : "Add room availability"}
+        descripDialogContent={roomAvailaId ? "" : "If the room field is empty, create your property and room first."}
         onOpenChange={handleOpenDialogSetAvailability}
         open={openDialogSetAvailability}
       >
