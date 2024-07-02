@@ -22,6 +22,7 @@ const RoomAvailability = () => {
     useState<boolean>(false);
   const [modalPopover, setModalPopover] = useState<boolean>(false);
   const [roomAvailaId, setRoomAvailaId] = useState<string>('');
+  const [roomId, setRoomId] = useState<string>('');
   const { data: session } = useSession();
   const dispatch = useAppDispatch();
   const { refetch } = useAppSelector((state) => state.roomAvailabilityReducer);
@@ -34,6 +35,7 @@ const RoomAvailability = () => {
     setOpenDialogSetAvailability(open);
     setModalPopover(false);
     form.reset();
+    setRoomId('');
     setRoomAvailaId('');
   };
 
@@ -58,12 +60,10 @@ const RoomAvailability = () => {
     <main className="min-h-svh px-6 pt-[78px] md:px-10 xl:px-20">
       <DialogCustomAdmin
         titleDialogContent={
-          form.getValues('roomId')
-            ? 'Edit room availability'
-            : 'Add room availability'
+          roomAvailaId ? 'Edit room availability' : 'Add room availability'
         }
         descripDialogContent={
-          form.getValues('roomId')
+          roomAvailaId
             ? ''
             : 'If the room field is empty, create your property and room first.'
         }
@@ -75,6 +75,7 @@ const RoomAvailability = () => {
           handleOpenDialogSetAvailability={handleOpenDialogSetAvailability}
           modalPopover={modalPopover}
           roomAvailaId={roomAvailaId}
+          roomId={roomId}
         />
       </DialogCustomAdmin>
       <div className="my-6 flex flex-col justify-between md:flex-row md:items-center">
@@ -95,6 +96,7 @@ const RoomAvailability = () => {
         setOpenDialogSetAvailability={setOpenDialogSetAvailability}
         roomAvailaId={roomAvailaId}
         setRoomAvailaId={setRoomAvailaId}
+        setRoomId={setRoomId}
         setModalPopover={setModalPopover}
       />
     </main>

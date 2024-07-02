@@ -104,7 +104,7 @@ const roomAvailabilitySlice = createSlice({
       if (action.payload)
         state.roomAvailabilities = action.payload.error
           ? [...state.roomAvailabilities]
-          : state.roomAvailabilities.filter((d) => d.roomAvailaId !== action.payload?.data.roomAvailaId);;
+          : state.roomAvailabilities.filter((d) => d.roomAvailaId !== action.payload?.data.id);
 
       state.isLoading = false;
       state.refetch = false;

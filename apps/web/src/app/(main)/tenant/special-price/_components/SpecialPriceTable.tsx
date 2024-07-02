@@ -10,51 +10,51 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import RoomAvailabilityDataTable from "./data-table/Data-Table"
+import SpecialPriceDataTable from "./data-table/Data-Table"
 import { useAppDispatch, useAppSelector } from "@/redux/hook"
-import { TRoomAvailability } from "@/redux/slices/roomAvailability-slice"
+import { TSpecialPrice } from "@/redux/slices/specialPrice-slice"
 import { format } from "date-fns"
 import { useState } from "react"
 import AlertDialogDelete from "@/components/Alert-Dialog-Delete"
-import { deleteRoomAvailability } from "@/redux/slices/roomAvailability-thunk"
+import { deleteSpecialPrice } from "@/redux/slices/specialPrice-thunk"
 import { useSession } from "next-auth/react"
 import { toast } from "@/components/ui/use-toast"
 import { z } from "zod"
-import { FromRoomAvailabilityPriceSchema } from "@/schemas/form-room-availability-price-schema"
+import { FormSpecialPriceSchema } from "@/schemas/specialPrice-schema"
 import { UseFormReturn } from "react-hook-form"
+import { formatCurrencyRp } from "@/lib/formatNumber"
+import { TEditForm } from "../page"
 
-const RoomAvailableTable = ({
+const SpecialPriceTable = ({
   form,
-  setOpenDialogSetAvailability,
-  roomAvailaId,
-  setRoomAvailaId,
-  setRoomId,
+  setOpenDialogSetSpecialPrice,
+  editForm,
+  setEditForm,
   setModalPopover,
 }:{
-  form: UseFormReturn<z.infer<typeof FromRoomAvailabilityPriceSchema>, any, undefined>;
-  setOpenDialogSetAvailability: React.Dispatch<React.SetStateAction<boolean>>;
-  roomAvailaId: string;
-  setRoomAvailaId: React.Dispatch<React.SetStateAction<string>>;
-  setRoomId: React.Dispatch<React.SetStateAction<string>>;
+  form: UseFormReturn<z.infer<typeof FormSpecialPriceSchema>, any, undefined>;
+  setOpenDialogSetSpecialPrice: React.Dispatch<React.SetStateAction<boolean>>;
+  editForm: TEditForm
+  setEditForm: React.Dispatch<React.SetStateAction<TEditForm>>;
   setModalPopover: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [openAlert, setOpenAlert] = useState<boolean>(false);
-  const {roomAvailabilities} = useAppSelector((state) => state.roomAvailabilityReducer);
+  const {specialPrices} = useAppSelector((state) => state.specialPriceReducer);
   const {data: session} = useSession();
   const dispatch = useAppDispatch();
 
   const handleOnOpenChangeAlert = (open: boolean) => {
     setOpenAlert(open);
-    setRoomAvailaId("");
+    setEditForm({});
   }
 
   const handleShowAlertDelete = (id: string) => {
     handleOnOpenChangeAlert(true);
-    setRoomAvailaId(id);
+    setEditForm({specialPriceId: id});
   }
 
   const onDelete = () => {
-    dispatch(deleteRoomAvailability({token: session?.user.accessToken!, id: roomAvailaId}))
+    dispatch(deleteSpecialPrice({token: session?.user.accessToken!, id: editForm.specialPriceId!}))
       .then((data: any) => {
         toast({
           variant: data.payload.error ? 'destructive' : 'default',
@@ -64,7 +64,7 @@ const RoomAvailableTable = ({
     handleOnOpenChangeAlert(false);
   }
 
-  const columns: ColumnDef<TRoomAvailability>[] = [
+  const columns: ColumnDef<TSpecialPrice>[] = [
     {
       accessorKey: "name",
       header: ({ column }) => {
@@ -98,6 +98,13 @@ const RoomAvailableTable = ({
       cell: ({ row }) => <div className="capitalize">{row.getValue("type")}</div>,
     },
     {
+      accessorKey: "price",
+      header: "Special Price",
+      cell: ({ row }) => (
+        <div className="capitalize">{formatCurrencyRp(row.getValue("price"))}</div>
+      ),
+    },
+    {
       accessorKey: "fromDate",
       header: "From Date",
       cell: ({ row }) => (
@@ -108,7 +115,7 @@ const RoomAvailableTable = ({
       accessorKey: "toDate",
       header: "To Date",
       cell: ({ row }) => (
-        <div className="capitalize">{format(row.getValue("toDate"), "PPP")}</div>
+        <div className="capitalize">{row.getValue("toDate") ? format(row.getValue("toDate"), "PPP") : "-"}</div>
       ),
     },
     {
@@ -131,9 +138,12 @@ const RoomAvailableTable = ({
                 className="flex items-center gap-2"
                 onClick={() => {
                   form.setValue('roomId', roomAvaila.roomId);
-                  setRoomId(roomAvaila.roomId)
-                  setRoomAvailaId(roomAvaila.roomAvailaId);
-                  setOpenDialogSetAvailability(true);
+                  setEditForm({
+                    price: String(roomAvaila.price),
+                    roomId: roomAvaila.roomId,
+                    specialPriceId: roomAvaila.specialPriceId,
+                  })
+                  setOpenDialogSetSpecialPrice(true);
                   setModalPopover(true);
                 }}
               >
@@ -142,7 +152,7 @@ const RoomAvailableTable = ({
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="flex items-center gap-2"
-                onClick={() => handleShowAlertDelete(roomAvaila.roomAvailaId)}
+                onClick={() => handleShowAlertDelete(roomAvaila.specialPriceId)}
               >
                 <Trash2 size={16} />
                 <span>Delete</span>
@@ -157,14 +167,14 @@ const RoomAvailableTable = ({
   return (
     <>
       <AlertDialogDelete
-        alertDialodDescrip="This action cannot be undone. This will permanently delete room availability from our servers."
+        alertDialodDescrip="This action cannot be undone. This will permanently delete special room price from our servers."
         onOpenChange={handleOnOpenChangeAlert}
         open={openAlert}
         onDelete={onDelete}
       />
-      <RoomAvailabilityDataTable columns={columns} data={roomAvailabilities} />
+      <SpecialPriceDataTable columns={columns} data={specialPrices} />
     </>
   )
 }
 
-export default RoomAvailableTable
+export default SpecialPriceTable
