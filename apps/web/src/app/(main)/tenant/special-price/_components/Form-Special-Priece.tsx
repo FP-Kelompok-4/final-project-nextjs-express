@@ -1,5 +1,5 @@
 import React from 'react'
-import { FromRoomAvailabilityPriceSchema } from "@/schemas/form-room-availability-price-schema";
+import { FormSpecialPriceSchema } from "@/schemas/specialPrice-schema";
 import { UseFormReturn } from "react-hook-form";
 import z from "zod"
 
@@ -13,48 +13,49 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from "@/components/ui/select"
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
-import { patchRoomAvailability, postRoomAvailability } from "@/redux/slices/roomAvailability-thunk";
+import { patchSpecialPrice, postSpecialPrice } from "@/redux/slices/specialPrice-thunk";
 import { useSession } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
+import { TEditForm } from "../page";
+import { formatCurrencyRp } from "@/lib/formatNumber";
 
-const FormSetRoomAvailability = ({
+const FormSpecialPrice = ({
   form,
-  handleOpenDialogSetAvailability,
+  handleOpenDialogSetSpecialPrice,
   modalPopover,
-  roomAvailaId,
-  roomId,
+  editForm
 }: {
-  form: UseFormReturn<z.infer<typeof FromRoomAvailabilityPriceSchema>, any, undefined>;
-  handleOpenDialogSetAvailability: (open: boolean) => void;
+  form: UseFormReturn<z.infer<typeof FormSpecialPriceSchema>, any, undefined>;
+  handleOpenDialogSetSpecialPrice: (open: boolean) => void;
   modalPopover: boolean;
-  roomAvailaId?: string;
-  roomId?: string;
+  editForm: TEditForm;
 }) => {
   const {data: session} = useSession();
   const {propertiesRooms} = useAppSelector((state) => state.roomAvailabilityReducer);
   const dispatch = useAppDispatch();
 
-  const onSubmit = (values: z.infer<typeof FromRoomAvailabilityPriceSchema>) => {
-    if (roomAvailaId) {
-      dispatch(patchRoomAvailability({ token: session?.user.accessToken!, payload: values, id: roomAvailaId}))
+  const onSubmit = (values: z.infer<typeof FormSpecialPriceSchema>) => {
+    if (editForm.specialPriceId) {
+      dispatch(patchSpecialPrice({ token: session?.user.accessToken!, payload: values, id: editForm.specialPriceId}))
         .then((data: any) => {
           toast({
             variant: data.payload.error ? 'destructive' : 'default',
             title: data.payload.error ? data.payload.error : data.payload.success,
           });
         })
-      handleOpenDialogSetAvailability(false);
+      handleOpenDialogSetSpecialPrice(false);
       return
     }
 
-    dispatch(postRoomAvailability({ token: session?.user.accessToken!, payload: values}))
+    dispatch(postSpecialPrice({ token: session?.user.accessToken!, payload: values}))
       .then((data: any) => {
         toast({
           variant: data.payload.error ? 'destructive' : 'default',
           title: data.payload.error ? data.payload.error : data.payload.success,
         });
       })
-    handleOpenDialogSetAvailability(false);
+    handleOpenDialogSetSpecialPrice(false);
   }
 
   return (
@@ -84,10 +85,10 @@ const FormSetRoomAvailability = ({
                           <SelectItem 
                             key={r.id}
                             value={r.id}
-                            disabled={roomId
-                              ? roomId === r.id
+                            disabled={editForm.roomId 
+                              ? editForm.roomId === r.id
                                 ? false : true
-                              : r.roomAvailabilitiesId ? true : false
+                              : false
                             }
                           >
                             {r.type}
@@ -98,6 +99,21 @@ const FormSetRoomAvailability = ({
                   ))}
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={editForm.price && formatCurrencyRp(+editForm.price)}
+                  type="number" {...field}/>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -148,7 +164,7 @@ const FormSetRoomAvailability = ({
           name="toDate"
           render={({field}) => (
             <FormItem className="flex flex-col">
-              <FormLabel>To Date</FormLabel>
+              <FormLabel>To Date <span className="text-slate-500">(Optional)</span></FormLabel>
               <Popover modal={modalPopover}>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -197,4 +213,4 @@ const FormSetRoomAvailability = ({
   )
 }
 
-export default FormSetRoomAvailability
+export default FormSpecialPrice

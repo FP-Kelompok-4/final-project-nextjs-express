@@ -4,11 +4,11 @@ import { NextFunction, Request, Response } from "express";
 import { AddRoomAvailabilityReq, UpdateRoomAvailabilityReq } from "models/roomAvailability.model";
 
 export class RoomAvailabilityController {
-  async getRoomAvailabilityByUserId(req: Request, res: Response, next: NextFunction) {
+  async getRoomAvailabilitiresByUserId(req: Request, res: Response, next: NextFunction) {
     try {
       const { userId } = req.params;
 
-      const roomAvailability = await RoomAvailabilityService.getRoomAvailabilities(userId);
+      const roomAvailability = await RoomAvailabilityService.getRoomAvailabilitiesByUserId(userId);
 
       res.status(200).send({
         status: 'success',
@@ -35,13 +35,13 @@ export class RoomAvailabilityController {
     }
   }
 
-  async patchRoomAvailability(req: Request, res: Response, next: NextFunction) {
+  async patchRoomAvailabilityById(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
       const request = req.body as UpdateRoomAvailabilityReq;
 
-      await RoomAvailabilityService.verifyRoomAvailability(id);
-      const roomAvailability = await RoomAvailabilityService.updateRoomAvailability({req: request, id});
+      await RoomAvailabilityService.verifyRoomAvailabilityById(id);
+      const roomAvailability = await RoomAvailabilityService.updateRoomAvailabilityById({req: request, id});
 
       res.status(201).send({
         status: 'success',
@@ -52,12 +52,12 @@ export class RoomAvailabilityController {
     }
   }
 
-  async deleteRoomAvailabilityByUserId(req: Request, res: Response, next: NextFunction) {
+  async deleteRoomAvailabilityById(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
 
-      await RoomAvailabilityService.verifyRoomAvailability(id);
-      const roomAvailability = await RoomAvailabilityService.deleteRoomAvailability(id);
+      await RoomAvailabilityService.verifyRoomAvailabilityById(id);
+      const roomAvailability = await RoomAvailabilityService.deleteRoomAvailabilityById(id);
 
       res.status(200).send({
         status: 'success',

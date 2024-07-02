@@ -2,6 +2,7 @@ import React from 'react';
 import {
   BedSingle,
   Building2,
+  DollarSign,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -73,6 +74,12 @@ const HeaderAccountDropdown = () => {
               <DropdownMenuItem>
                 <BedSingle className="mr-2 h-4 w-4" />
                 <span>Room Availability</span>
+              </DropdownMenuItem>
+            </Link>
+            <Link href={'/tenant/special-price'}>
+              <DropdownMenuItem>
+                <DollarSign className="mr-2 h-4 w-4" />
+                <span>Special Price</span>
               </DropdownMenuItem>
             </Link>
           </DropdownMenuGroup>
