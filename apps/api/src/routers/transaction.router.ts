@@ -34,6 +34,12 @@ export class TransactionRouter {
       this.transactionController.checkBokingProperty,
     );
 
+    this.router.patch(
+      '/booking/cancel/:uId/:iId',
+      validateUpdateBooking,
+      this.transactionController.cancelBokingProperty,
+    );
+
     this.router.post(
       '/booking',
       validateAddBooking,

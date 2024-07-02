@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
   addBookingClientThunk,
+  cancelBookingsClientThunk,
   getBookingsClientThunk,
   updateBookingsClientThunk,
 } from './transaction-thunk';
@@ -83,6 +84,26 @@ const transactionClientSlice = createSlice({
       state.isLoadingGetBookings = true;
     });
     builder.addCase(updateBookingsClientThunk.fulfilled, (state, action) => {
+      if (action.payload)
+        state.orderList = action.payload.error
+          ? state.orderList
+          : state.orderList.map((data) => {
+              if (action.payload)
+                if (action.payload.data.id === data.id)
+                  return {
+                    ...action.payload.data,
+                  };
+
+              return data;
+            });
+
+      state.isLoadingGetBookings = false;
+    });
+
+    builder.addCase(cancelBookingsClientThunk.pending, (state) => {
+      state.isLoadingGetBookings = true;
+    });
+    builder.addCase(cancelBookingsClientThunk.fulfilled, (state, action) => {
       if (action.payload)
         state.orderList = action.payload.error
           ? state.orderList
