@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { addDays, format, differenceInDays } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2, Loader2Icon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -29,6 +29,10 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { addBookingClientThunk } from '@/redux/slices/client/transaction-thunk';
 import { useSession } from 'next-auth/react';
+import { TOrderData } from '@/redux/slices/client/transaction-slice';
+import { useToast } from '@/components/ui/use-toast';
+import { countDaysInRange } from '@/lib/countDaysInRange';
+import { useRouter } from 'next/navigation';
 
 const BookingFloating = ({
   pId,
@@ -47,6 +51,10 @@ const BookingFloating = ({
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [daysBooking, setDaysBooking] = useState(0);
+
+  const { toast } = useToast();
+
+  const router = useRouter();
 
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
@@ -70,13 +78,6 @@ const BookingFloating = ({
   };
 
   const onHandleDialogOpen = (open: boolean) => setIsDialogOpen(open);
-
-  const countDaysInRange = (fromDate: Date, toDate: Date) => {
-    const start = new Date(fromDate);
-    const end = new Date(toDate);
-    // Tambah 1 hari karena perhitungan dimulai dari 0
-    return differenceInDays(end, start) + 1;
-  };
 
   return (
     <div className="fixed bottom-0 left-1/2 z-50 flex w-screen -translate-x-1/2 flex-col justify-between gap-2 border-t-[1px] bg-white px-8 py-5 shadow-xl drop-shadow-xl sm:bottom-4 sm:w-fit sm:flex-row sm:gap-10 sm:rounded-full sm:px-3 sm:py-3">
@@ -154,83 +155,114 @@ const BookingFloating = ({
           
         </DialogTrigger> */}
         <DialogContent className="flex flex-col gap-6 sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Konfirmasi</DialogTitle>
-          </DialogHeader>
+          {isLoadingAddBooking ? (
+            <div className="flex h-52 items-center justify-center">
+              <Loader2Icon size={24} className="animate-spin" />
+            </div>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle>Konfirmasi</DialogTitle>
+              </DialogHeader>
 
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1">
-              {orderList.map(({ id, type, price, quantity, amount }, index) => (
-                <div
-                  key={`${id}-${index}`}
-                  className="flex items-center justify-between rounded-md border-[1px] px-4 py-2"
-                >
-                  <p className="text-xs font-semibold">{type}</p>
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1">
+                  {orderList.map(
+                    ({ id, type, price, quantity, amount }, index) => (
+                      <div
+                        key={`${id}-${index}`}
+                        className="flex items-center justify-between rounded-md border-[1px] px-4 py-2"
+                      >
+                        <p className="text-xs font-semibold">{type}</p>
+                        <div className="flex items-center gap-1">
+                          <p className="text-athens-gray-400 text-xs font-semibold">
+                            {formatCurrencyRp(price)}
+                          </p>
+                          <p className="text-athens-gray-400 text-xs font-semibold">
+                            x
+                          </p>
+                          <p className="text-athens-gray-400 text-xs font-semibold">
+                            {quantity}
+                          </p>
+                          <p className="text-athens-gray-400 text-xs font-semibold">
+                            :
+                          </p>
+                          <p className="text-sm font-semibold">
+                            {formatCurrencyRp(amount)}
+                          </p>
+                        </div>
+                      </div>
+                    ),
+                  )}
+                </div>
+                <div className="flex w-full flex-col items-end justify-end gap-2 pr-4">
                   <div className="flex items-center gap-1">
-                    <p className="text-athens-gray-400 text-xs font-semibold">
-                      {formatCurrencyRp(price)}
-                    </p>
+                    <p className="text-sm font-semibold">{daysBooking} days</p>
                     <p className="text-athens-gray-400 text-xs font-semibold">
                       x
                     </p>
-                    <p className="text-athens-gray-400 text-xs font-semibold">
-                      {quantity}
-                    </p>
-                    <p className="text-athens-gray-400 text-xs font-semibold">
-                      :
-                    </p>
                     <p className="text-sm font-semibold">
-                      {formatCurrencyRp(amount)}
+                      {formatCurrencyRp(totalPay)}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <p className="text-lg font-bold">
+                      {formatCurrencyRp(totalPay * daysBooking)}
                     </p>
                   </div>
                 </div>
-              ))}
-            </div>
-            <div className="flex w-full flex-col items-end justify-end gap-2 pr-4">
-              <div className="flex items-center gap-1">
-                <p className="text-sm font-semibold">{daysBooking} days</p>
-                <p className="text-athens-gray-400 text-xs font-semibold">x</p>
-                <p className="text-sm font-semibold">
-                  {formatCurrencyRp(totalPay)}
-                </p>
               </div>
 
-              <div className="flex items-center gap-1">
-                <p className="text-lg font-bold">
-                  {formatCurrencyRp(totalPay * daysBooking)}
-                </p>
-              </div>
-            </div>
-          </div>
+              <DialogFooter>
+                <DialogClose>
+                  <Button variant={'ghost'}>Batal</Button>
+                </DialogClose>
+                <Button
+                  onClick={() => {
+                    session &&
+                      dispatch(
+                        addBookingClientThunk({
+                          userId: session.user.id,
+                          pId,
+                          checkIn: new Date(form.getValues().dateRange.from),
+                          checkOut: new Date(form.getValues().dateRange.to),
+                          rooms: orderList.map(
+                            ({ id: roomId, type, quantity }) => {
+                              return {
+                                roomId,
+                                quantity,
+                                type,
+                              };
+                            },
+                          ),
+                          token: session.user.accessToken!,
+                        }),
+                      ).then((data: any) => {
+                        const result = data.payload.data;
 
-          <DialogFooter>
-            <DialogClose>
-              <Button variant={'ghost'}>Batal</Button>
-            </DialogClose>
-            <Button
-              onClick={() => {
-                session &&
-                  dispatch(
-                    addBookingClientThunk({
-                      userId: session.user.id,
-                      pId,
-                      checkIn: new Date(),
-                      checkOut: new Date(),
-                      rooms: orderList.map(({ id: roomId, type, quantity }) => {
-                        return {
-                          roomId,
-                          quantity,
-                          type,
-                        };
-                      }),
-                      token: session.user.accessToken!,
-                    }),
-                  );
-              }}
-            >
-              Bayar
-            </Button>
-          </DialogFooter>
+                        toast({
+                          variant: data.payload.error
+                            ? 'destructive'
+                            : 'default',
+                          title: data.payload.error
+                            ? JSON.stringify(data.payload.error)
+                            : 'Success Add Order',
+                        });
+
+                        if (!data.payload.error) {
+                          router.push('/order');
+
+                          onHandleDialogOpen(false);
+                        }
+                      });
+                  }}
+                >
+                  Bayar
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>

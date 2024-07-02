@@ -64,6 +64,60 @@ export type Payment = {
 
 //
 
+export type DOKUCheckRes = {
+  order: Order;
+  transaction: Transaction;
+  service: Channel;
+  acquirer: Acquirer;
+  channel: Channel;
+  virtual_account_info: VirtualAccountInfo;
+  virtual_account_inquiry: VirtualAccountInquiry;
+  virtual_account_payment: VirtualAccountPayment;
+  additional_info: AdditionalInfo;
+};
+
+export type Acquirer = {
+  id: string;
+  name: string;
+};
+
+export type Channel = {
+  id: string;
+};
+
+export type Transaction = {
+  status: string;
+  type: string;
+  date: Date;
+  original_request_id: string;
+};
+
+export type VirtualAccountInfo = {
+  virtual_account_number: string;
+  created_date: string;
+  expired_date: string;
+  reusable_status: boolean;
+};
+
+export type VirtualAccountInquiry = {
+  status: string;
+  date: string;
+  channel_code: string;
+};
+
+export type VirtualAccountPayment = {
+  identifier: Identifier[];
+  date: string;
+  status: string;
+};
+
+export type Identifier = {
+  name: string;
+  value: string;
+};
+
+//
+
 export type AddDOKUPaymentRes = {
   message: string[];
   response: ResponseAddDOKUPaymentRes;

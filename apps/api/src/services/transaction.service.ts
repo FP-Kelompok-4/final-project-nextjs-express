@@ -1,18 +1,26 @@
-import { DokuVariablesData } from './../utils/doku-utils/doku-config';
+import { generateSignatureCheckV2 } from './../utils/doku-utils/doku-utils';
+import {
+  DokuVariablesData,
+  generateRequestId,
+  getCurrentTimestamp,
+} from './../utils/doku-utils/doku-config';
 import { ResponseError } from '@/error/response-error';
 import prisma from '@/prisma';
 import { timeStampString } from '@/utils/doku-utils/doku-config';
 import {
   AddBokingProperty,
   AddDOKUPayment,
+  CheckBokingPropertyReq,
   DOKUPaymentType,
   LineItem,
   toAddBokingProperty,
+  toGetBokingsProperty,
 } from 'models/transaction.model';
 import axios from 'axios';
 import { generateSignature } from '@/utils/doku-utils/doku-utils';
 import {
   AddDOKUPaymentRes,
+  DOKUCheckRes,
   DOKURes,
   LineItemAddDOKUPaymentRes,
 } from '@/utils/doku-utils/doku-model';
@@ -21,7 +29,7 @@ import { countDaysInRange } from '@/utils/date-utils';
 export class TransactionService {
   static async addDOKUPayment(req: AddDOKUPayment) {
     const { userId, rooms: roomsOrd, checkIn, checkOut, pId } = req;
-    const dateMargin = countDaysInRange(checkIn, checkOut);
+    const dateMargin = countDaysInRange(new Date(checkIn), new Date(checkOut));
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
@@ -39,7 +47,10 @@ export class TransactionService {
     const order = await prisma.order.findFirst({
       where: {
         userId,
-        status: "pending"
+        status: 'pending',
+        expDateTime: {
+          gt: new Date(),
+        },
       },
     });
 
@@ -51,6 +62,8 @@ export class TransactionService {
     rooms.forEach(({ id, type, roomPrices }) => {
       const quantity =
         roomsOrd.find((data) => data.roomId === id)?.quantity ?? 1;
+
+      console.log('TOTAL', dateMargin, roomPrices?.price, quantity);
 
       const roomPrice = roomPrices ? roomPrices.price * dateMargin : 0;
 
@@ -118,8 +131,54 @@ export class TransactionService {
     } as AddDOKUPaymentRes;
   }
 
+  static checkDOKUPayment = async (req: CheckBokingPropertyReq) => {
+    const { invoiceId: invoiceNumber, userId } = req;
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+
+    if (!user) throw new Error('User does not exist.');
+
+    const order = await prisma.order.findFirst({
+      where: { invoiceId: invoiceNumber },
+    });
+
+    if (!order) throw new Error('Order does not exist.');
+
+    const requestId = generateRequestId();
+    const requestTimestamp = getCurrentTimestamp();
+    const signature = generateSignatureCheckV2(
+      invoiceNumber,
+      requestId,
+      requestTimestamp,
+    );
+
+    const myHeaders = {
+      'Client-Id': DokuVariablesData.Client_Id,
+      'Request-Id': requestId,
+      'Request-Timestamp': requestTimestamp,
+      Signature: signature,
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      const response = await axios.get(
+        `https://api-sandbox.doku.com/orders/v1/status/${invoiceNumber}`,
+        { headers: myHeaders },
+      );
+
+      if (response.status !== 200) throw new Error('Order does not exist.');
+
+      const res: DOKUCheckRes = response.data;
+
+      return res;
+    } catch (error) {
+      throw new Error(JSON.stringify(error));
+    }
+  };
+
   static async addBookingProperty(
     req: AddBokingProperty & {
+      invoiceId: string;
       expDateTime: Date;
       urlPayment: string;
       totalPayment: number;
@@ -134,6 +193,7 @@ export class TransactionService {
       urlPayment,
       totalPayment,
       expDateTime,
+      invoiceId,
     } = req;
 
     const user = await prisma.user.findUnique({
@@ -157,6 +217,7 @@ export class TransactionService {
         urlPayment,
         totalPayment,
         expDateTime,
+        invoiceId,
         orderRooms: {
           createMany: {
             data: [
@@ -193,5 +254,131 @@ export class TransactionService {
         }),
       ),
     });
+  }
+
+  static async updateBookingProperty(req: CheckBokingPropertyReq) {
+    const { userId, invoiceId } = req;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) throw new ResponseError(404, 'User does not exist.');
+
+    const order = await prisma.order.findFirst({
+      where: {
+        userId,
+        invoiceId,
+      },
+      include: {
+        orderRooms: {
+          include: {
+            room: {
+              include: {
+                property: {
+                  include: {
+                    propertyCategory: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) throw new Error('order does not exist.');
+
+    const property = order.orderRooms[0].room.property;
+    const id = order.id;
+
+    if (!property) throw new ResponseError(404, 'Property does not exist.');
+
+    const updateorder = await prisma.order.update({
+      where: {
+        id,
+        userId,
+        invoiceId,
+      },
+      data: {
+        status: 'finished',
+      },
+      include: {
+        orderRooms: {
+          include: { room: true },
+        },
+      },
+    });
+
+    return toAddBokingProperty({
+      ...updateorder,
+      orderProperty: {
+        ...property,
+        category: property.propertyCategory.name,
+      },
+      orderRooms: updateorder.orderRooms.map(
+        ({ id, room: { image, description, type }, quantity, price }) => ({
+          id,
+          image,
+          description,
+          type,
+          quantity,
+          price,
+        }),
+      ),
+    });
+  }
+
+  static async getBookingsProperty(id: string) {
+    const user = await prisma.user.findUnique({ where: { id } });
+
+    if (!user) throw new Error('User does not exist.');
+
+    const orders = await prisma.order.findMany({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        orderRooms: {
+          include: {
+            room: {
+              include: {
+                property: {
+                  include: {
+                    propertyCategory: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (orders.length < 1) return toGetBokingsProperty([]);
+
+    const property = orders[0].orderRooms[0].room.property;
+
+    return toGetBokingsProperty([
+      ...orders.map((order) => {
+        return {
+          ...order,
+          orderProperty: {
+            ...property,
+            category: property.propertyCategory.name,
+          },
+          orderRooms: order.orderRooms.map(
+            ({ id, room: { image, description, type }, quantity, price }) => ({
+              id,
+              image,
+              description,
+              type,
+              quantity,
+              price,
+            }),
+          ),
+        };
+      }),
+    ]);
   }
 }

@@ -14,6 +14,11 @@ export type AddBokingProperty = {
   checkOut: Date;
 };
 
+export type CheckBokingPropertyReq = {
+  userId: string;
+  invoiceId: string;
+};
+
 export type DokuRoomBokingProperty = {
   roomId: string;
   quantity: number;
@@ -31,6 +36,7 @@ export type OrderType = {
   expDateTime: Date;
   status: string;
   totalPayment: number;
+  invoiceId: string;
   urlPayment: string;
   checkIn: Date;
   checkOut: Date;
@@ -90,3 +96,5 @@ export type Payment = {
 };
 
 export const toAddBokingProperty = (order: OrderType) => order;
+
+export const toGetBokingsProperty = (order: OrderType[]) => [...order];

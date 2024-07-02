@@ -12,3 +12,10 @@ export const DokuVariablesData = {
   Request_Timestamp: utcString,
   SecretKey: 'SK-l9ZHunRxx0vYrBPPOI15',
 };
+
+export const generateRequestId = (): string => v4();
+
+export const getCurrentTimestamp = (): string => {
+  const now = new Date();
+  return now.toISOString().slice(0, 19) + 'Z';
+};

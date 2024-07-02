@@ -36,10 +36,47 @@ export class TransactionController {
             };
           },
         ),
+        invoiceId: doku.response.order.invoice_number,
         expDateTime: dateObject,
         urlPayment: doku.response.payment.url,
         totalPayment: Number(doku.response.order.amount),
       });
+
+      res.status(201).send({
+        data: order,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async checkBokingProperty(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { uId: userId, iId: invoiceId } = req.params;
+
+      const order = await TransactionService.checkDOKUPayment({
+        userId,
+        invoiceId,
+      });
+
+      const book = await TransactionService.updateBookingProperty({
+        userId,
+        invoiceId,
+      });
+
+      res.status(201).send({
+        data: book,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async getBokings(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { uId: id } = req.params;
+
+      const order = await TransactionService.getBookingsProperty(id);
 
       res.status(201).send({
         data: order,

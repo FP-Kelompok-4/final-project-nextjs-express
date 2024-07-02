@@ -33,13 +33,13 @@ export const addBookingClientThunk = createAsyncThunk(
 
       const res = await api.post(
         `transaction/booking`,
-        JSON.stringify({
+        {
           userId,
           pId,
           checkIn,
           checkOut,
-          rooms,
-        }),
+          rooms: rooms,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,6 +48,63 @@ export const addBookingClientThunk = createAsyncThunk(
       );
 
       console.log(res.data);
+
+      return { success: res.data.success, data: res.data.data };
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        return {
+          error: e.response?.data.message,
+        };
+      }
+    }
+  },
+);
+
+export const getBookingsClientThunk = createAsyncThunk(
+  'transactionClient/getBookingsClient',
+  async ({ userId, token }: { userId: string; token: string }) => {
+    try {
+      const res = await api.get(`transaction/bookings/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log(res.data);
+
+      return { success: res.data.success, data: res.data.data };
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        return {
+          error: e.response?.data.message,
+        };
+      }
+    }
+  },
+);
+
+export const updateBookingsClientThunk = createAsyncThunk(
+  'transactionClient/updateBookingsClient',
+  async ({
+    userId,
+    invoiceId,
+    token,
+  }: {
+    userId: string;
+    invoiceId: string;
+    token: string;
+  }) => {
+    try {
+      const res = await api.get(
+        `transaction/booking/check/${userId}/${invoiceId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      console.log('Transddd', res.data);
 
       return { success: res.data.success, data: res.data.data };
     } catch (e) {

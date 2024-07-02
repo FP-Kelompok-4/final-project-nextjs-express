@@ -22,11 +22,15 @@ export const generateSignature = (jsonBody: string): string => {
   return `HMACSHA256=${signatureBase64}`;
 };
 
-export const generateSignatureCheck = (invoiceNumber: string): string => {
+export const generateSignatureCheckV2 = (
+  invoiceNumber: string,
+  requestId: string,
+  requestTimestamp: string,
+): string => {
   const signatureComponents = [
     `Client-Id:${DokuVariablesData.Client_Id}`,
-    `Request-Id:${DokuVariablesData.Request_Id}`,
-    `Request-Timestamp:${DokuVariablesData.Request_Timestamp}`,
+    `Request-Id:${requestId}`,
+    `Request-Timestamp:${requestTimestamp}`,
     `Request-Target:/orders/v1/status/${invoiceNumber}`,
   ].join('\n');
 
