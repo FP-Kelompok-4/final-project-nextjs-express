@@ -101,6 +101,7 @@ model Order {
   expDateTime  DateTime
   status       String   @default("pending") @db.VarChar(100)
   totalPayment Float
+  invoiceId    String   @db.VarChar(255)
   urlPayment   String   @db.VarChar(255)
   checkIn      DateTime
   checkOut     DateTime
@@ -129,10 +130,12 @@ model Review {
 model OrderRoom {
   id String @id @default(uuid())
 
-  orderId String @map("order_id")
-  order   Order  @relation(fields: [orderId], references: [id])
-  roomId  String @map("room_id")
-  room    Room   @relation(fields: [roomId], references: [id])
+  orderId  String @map("order_id")
+  order    Order  @relation(fields: [orderId], references: [id])
+  roomId   String @map("room_id")
+  room     Room   @relation(fields: [roomId], references: [id])
+  quantity Int
+  price    Float
 
   @@map("orderRooms")
 }

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { CodeSquare } from 'lucide-react';
 
 export const getPropertiesClientThunk = createAsyncThunk(
-  'properties/client',
+  'propertiesClient/getPropertiesClient',
   async () => {
     try {
       const res = await api.get('properties/client');
@@ -21,7 +21,7 @@ export const getPropertiesClientThunk = createAsyncThunk(
 );
 
 export const getPropertyDetailClientThunk = createAsyncThunk(
-  'propertyDetail/client',
+  'propertiesClient/getPropertyDetailClient',
   async ({ id }: { id: string }) => {
     try {
       const res = await api.get(`properties/client/${id}`);

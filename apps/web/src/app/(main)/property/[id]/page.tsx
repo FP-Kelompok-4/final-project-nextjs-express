@@ -3,7 +3,7 @@
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -13,9 +13,24 @@ import { Button } from '@/components/ui/button';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { getPropertyDetailClientThunk } from '@/redux/slices/client/property-thunk';
 import { formatCurrencyRp } from '@/lib/formatNumber';
+import { useSession } from 'next-auth/react';
+import RoomCard from './_components/Room-Card';
+import BookingFloating from './_components/Booking-Floating';
 
 const DetailPage = ({ params }: { params: { id: string } }) => {
-  // const ListSlide = ['1', '2', '3', '4', '5'];
+  const { data: session, update } = useSession();
+
+  const [orderList, setOrderList] = useState<
+    {
+      id: string;
+      type: string;
+      price: number;
+      quantity: number;
+      amount: number;
+    }[]
+  >([]);
+
+  const [totalPay, setTotalPay] = useState(0);
 
   const swiperRef = useRef<any>(null);
 
@@ -31,9 +46,7 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  // getPropertyDetailClientThunk
   const dispatch = useAppDispatch();
-
   const { properyDetail, isPropertyDetailLoading } = useAppSelector(
     (state) => state.propertiesClientSlice,
   );
@@ -42,8 +55,49 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
     dispatch(getPropertyDetailClientThunk({ id: params.id }));
   }, [params]);
 
+  const handleRoomCardChange = ({
+    id,
+    amount,
+    quantity,
+    type,
+    price,
+  }: {
+    id: string;
+    type: string;
+    price: number;
+    amount: number;
+    quantity: number;
+  }) => {
+    const existingIndex = orderList.findIndex((item) => item.id === id);
+
+    if (quantity === 0 && amount === 0 && existingIndex !== -1) {
+      const updatedOrderList = [...orderList];
+
+      updatedOrderList.splice(existingIndex, 1);
+
+      setOrderList(updatedOrderList);
+    } else if (existingIndex !== -1) {
+      const updatedOrderList = [...orderList];
+
+      updatedOrderList[existingIndex] = { id, amount, quantity, type, price };
+
+      setOrderList(updatedOrderList);
+    } else if (quantity > 0) {
+      setOrderList((prev) => [...prev, { id, amount, quantity, type, price }]);
+    }
+  };
+
+  useEffect(() => {
+    let newTotalPay = 0;
+
+    for (const { amount } of orderList) {
+      newTotalPay += amount;
+    }
+    setTotalPay(newTotalPay);
+  }, [orderList]);
+
   return (
-    <main className="mt-[78px] flex min-h-svh flex-col gap-6 py-5">
+    <main className="mt-[78px] flex min-h-svh flex-col gap-6 py-5 pb-24 sm:pb-5">
       {properyDetail ? (
         <>
           <div className="px-6 md:px-10 xl:px-20">
@@ -63,18 +117,22 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
               {properyDetail.name}
             </p>
 
-            <div className="flex flex-row items-center gap-3">
-              <div className="bg-athens-gray-950 rounded-full px-6 py-2 text-white">
-                {properyDetail.category}
-              </div>
-              <div className="border-athens-gray-950 text-athens-gray-950 rounded-full border-[1px] px-6 py-2">
-                {properyDetail.location}
+            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+              <div className="flex flex-row items-center gap-3">
+                <div className="bg-athens-gray-950 rounded-full px-6 py-2 text-white">
+                  {properyDetail.category}
+                </div>
+                <div className="border-athens-gray-950 text-athens-gray-950 rounded-full border-[1px] px-6 py-2">
+                  {properyDetail.location}
+                </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <Star size={16} /> <span>4</span>
+              <div className="flex flex-row items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <Star size={16} /> <span>4</span>
+                </div>
+                <span>(12 review)</span>
               </div>
-              <span>(12 review)</span>
             </div>
             <Separator orientation="horizontal" />
 
@@ -107,37 +165,32 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
               >
                 {properyDetail.rooms &&
                   properyDetail.rooms.map(
-                    ({ id, type, description, price, image }, index) => (
+                    (
+                      { id, type, description, roomPrice: price, image },
+                      index,
+                    ) => (
                       <SwiperSlide
                         key={`${id}-${index}`}
                         className={cn(
                           '!flex !w-[50%] items-center justify-center',
                         )}
                       >
-                        <div className="relative h-80 w-full overflow-hidden rounded-xl opacity-50 transition-all duration-500 ease-in-out [.swiper-slide-active_&]:opacity-100">
-                          <Image
-                            className="-z-10 h-full w-full rounded-xl object-cover object-center brightness-75"
-                            src={`http://localhost:8000/rooms/${image}`}
-                            fill
-                            sizes="100%"
-                            alt={`slide-${index}`}
-                          />
-                          <div className="relative flex h-full w-full flex-row items-end p-6 opacity-0 transition-all [.swiper-slide-active__&]:opacity-100">
-                            <div className="flex h-full w-full flex-col justify-end gap-2">
-                              <p className="text-xl font-bold tracking-tight text-white md:text-2xl">
-                                Room {type}
-                              </p>
-                              <p className="text-white/80">{description}</p>
-
-                              <div className="flex flex-col gap-1 text-base font-semibold text-white md:flex-row md:items-center md:gap-4 md:text-base">
-                                <span>{formatCurrencyRp(price)}</span>
-                              </div>
-                            </div>
-                            <Button className="bg-gossamer-500 hover:bg-gossamer-500/90 rounded-full">
-                              Order
-                            </Button>
-                          </div>
-                        </div>
+                        <RoomCard
+                          id={id}
+                          type={type}
+                          description={description}
+                          price={price}
+                          image={image}
+                          onChange={({ amount, quantity }) => {
+                            handleRoomCardChange({
+                              id,
+                              amount,
+                              quantity,
+                              type,
+                              price,
+                            });
+                          }}
+                        />
                       </SwiperSlide>
                     ),
                   )}
@@ -160,6 +213,13 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
               </div>
             </div>
           </div>
+          {orderList.length > 0 && (
+            <BookingFloating
+              totalPay={totalPay}
+              orderList={orderList}
+              pId={params.id}
+            />
+          )}
         </>
       ) : (
         <div className="flex min-h-[calc(100svh-79px)] w-full items-center justify-center">
