@@ -14,7 +14,9 @@ import { formatNumberEn } from '@/lib/formatNumber';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { getPropertiesClientThunk } from '@/redux/slices/client/property-thunk';
 import { Loader2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 const Property = () => {
@@ -22,12 +24,18 @@ const Property = () => {
   const { properties, isLoading } = useAppSelector(
     (state) => state.propertiesClientSlice,
   );
+  const { data: session } = useSession();
+
+  const router = useRouter();
 
   useEffect(() => {
     dispatch(getPropertiesClientThunk());
   }, [dispatch]);
 
-  
+  if (session?.user.role === 'TENANT') {
+    return router.replace('/');
+  }
+
   return (
     <main className="min-h-svh pt-[78px]">
       {isLoading ? (
