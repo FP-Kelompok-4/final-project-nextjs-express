@@ -16,6 +16,7 @@ import { formatCurrencyRp } from '@/lib/formatNumber';
 import { useSession } from 'next-auth/react';
 import RoomCard from './_components/Room-Card';
 import BookingFloating from './_components/Booking-Floating';
+import { useRouter } from 'next/navigation';
 
 const DetailPage = ({ params }: { params: { id: string } }) => {
   const { data: session, update } = useSession();
@@ -33,6 +34,7 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
   const [totalPay, setTotalPay] = useState(0);
 
   const swiperRef = useRef<any>(null);
+  const router = useRouter();
 
   const handlePrev = () => {
     if (swiperRef.current && swiperRef.current.swiper) {
@@ -95,6 +97,10 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
     }
     setTotalPay(newTotalPay);
   }, [orderList]);
+
+  if (session?.user.role === 'TENANT') {
+    return router.replace('/');
+  }
 
   return (
     <main className="mt-[78px] flex min-h-svh flex-col gap-6 py-5 pb-24 sm:pb-5">
@@ -165,7 +171,10 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
               >
                 {properyDetail.rooms &&
                   properyDetail.rooms.map(
-                    ({ id, type, description, price, image }, index) => (
+                    (
+                      { id, type, description, roomPrice: price, image },
+                      index,
+                    ) => (
                       <SwiperSlide
                         key={`${id}-${index}`}
                         className={cn(

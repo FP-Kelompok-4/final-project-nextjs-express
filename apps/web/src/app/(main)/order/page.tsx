@@ -73,7 +73,7 @@ const OrderPage = () => {
             ) => (
               <div
                 key={`${id}-${index}`}
-                className="flex w-fit min-w-[550px] flex-col gap-2 rounded-lg border-[1px] px-4 py-2"
+                className="flex w-fit min-w-full flex-col gap-2 rounded-lg border-[1px] px-4 py-2 sm:min-w-[550px]"
               >
                 <div className="flex w-full items-center justify-between">
                   <p>{orderProperty.name}</p>
@@ -114,7 +114,7 @@ const OrderPage = () => {
                     ) : status === 'cancelled' ? (
                       'Cancelled'
                     ) : (
-                      <div className="flex gap-3">
+                      <div className="flex flex-col gap-3 items-center">
                         <p>Waiting for Payment</p>
                         <CountDown dateAt={new Date(expDateTime)} />
                       </div>

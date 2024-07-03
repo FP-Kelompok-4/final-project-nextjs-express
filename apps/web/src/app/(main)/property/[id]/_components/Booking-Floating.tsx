@@ -74,7 +74,11 @@ const BookingFloating = ({
 
     setDaysBooking(days);
 
-    onHandleDialogOpen(true);
+    if (session && session.user.role === "USER") {
+      onHandleDialogOpen(true);
+    } else {
+      router.push('/signin');
+    }
   };
 
   const onHandleDialogOpen = (open: boolean) => setIsDialogOpen(open);

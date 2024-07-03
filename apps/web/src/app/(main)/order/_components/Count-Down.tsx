@@ -37,26 +37,26 @@ const CountDown = ({ dateAt }: { dateAt: Date }) => {
   }, []);
 
   return (
-    <div className="flex text-black">
+    <div className="flex text-black text-xs">
       <div className="flex gap-2">
         <div className="flex gap-1">
-          <span className="time">{days}</span>
-          <span className="label">Days</span>
+          <span>{days}</span>
+          <span>Days</span>
         </div>
         <span className="divider">:</span>
         <div className="flex gap-1">
-          <span className="time">{hours}</span>
-          <span className="label">Hours</span>
+          <span>{hours}</span>
+          <span>Hours</span>
         </div>
         <span className="divider">:</span>
         <div className="flex gap-1">
-          <span className="time">{minutes}</span>
-          <span className="label">Minutes</span>
+          <span>{minutes}</span>
+          <span>Minutes</span>
         </div>
         <span className="divider">:</span>
         <div className="flex gap-1">
-          <span className="time">{seconds}</span>
-          <span className="label">Seconds</span>
+          <span>{seconds}</span>
+          <span>Seconds</span>
         </div>
       </div>
     </div>
