@@ -10,5 +10,5 @@ export const formatCurrencyRp = (data: number) => {
     maximumFractionDigits: 0
   }
 
-  return new Intl.NumberFormat("id-ID", options).format(data).replace(".", ",");
+  return new Intl.NumberFormat("id-ID", options).format(data);
 }

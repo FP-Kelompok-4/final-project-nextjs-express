@@ -1,6 +1,5 @@
 import { ResponseError } from '@/error/response-error';
 import { PropertyService } from '@/services/property.service';
-import { RoomService } from '@/services/room.service';
 import { UserService } from '@/services/user.service';
 import { NextFunction, Request, Response } from 'express';
 import {
@@ -12,17 +11,40 @@ import {
 } from 'models/property.model';
 
 export class PropertyController {
-  async getPropertiesForClient(req: Request, res: Response, next: NextFunction) {
+  async getPropertiesForClient(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const properties = await PropertyService.getPropertiesForClient();
 
       res.status(200).send({
         status: 'success',
-        data: properties
-      })
+        data: properties,
+      });
     } catch (e) {
-      next(e)
-    }    
+      next(e);
+    }
+  }
+
+  async getPropertyDetailForClient(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { pId: id } = req.params;
+
+      const property = await PropertyService.getPropertyForClient({ id });
+
+      res.status(200).send({
+        status: 'success',
+        data: property,
+      });
+    } catch (e) {
+      next(e);
+    }
   }
 
   async getProperty(req: Request, res: Response, next: NextFunction) {
@@ -124,6 +146,21 @@ export class PropertyController {
       res.status(200).send({
         status: 'success',
         data: property,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async getPropertyRooms(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.params;
+
+      const propertyRooms = await PropertyService.getpropertyRooms(userId);
+
+      res.status(200).send({
+        status: 'success',
+        data: propertyRooms,
       });
     } catch (e) {
       next(e);

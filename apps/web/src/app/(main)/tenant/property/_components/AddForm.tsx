@@ -249,7 +249,7 @@ const AddForm = ({
 
           <Button type="submit">Tambah Property</Button>
         </form>
-      </Form>{' '}
+      </Form>
       <Dialog open={isOpenDialog} onOpenChange={handleDialogChange}>
         <DialogPortal>
           <DialogClose asChild>

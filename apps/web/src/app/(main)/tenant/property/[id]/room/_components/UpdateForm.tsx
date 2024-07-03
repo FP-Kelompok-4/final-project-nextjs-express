@@ -26,6 +26,7 @@ import Cropper, { Area, Point } from 'react-easy-crop';
 import getCroppedImg from '@/app/(main)/profile/_utils/cropImage';
 import { X } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
+import { useRouter } from 'next/navigation';
 
 const UpdateForm = ({
   form,
@@ -36,6 +37,8 @@ const UpdateForm = ({
   onSubmit: (values: z.infer<typeof UpdateRoomSchema>) => void;
   imageUrl?: string;
 }) => {
+  const router = useRouter();
+
   const [isOpenDialog, setIsOpenDialog] = useState(false);
 
   const [newPhoto, setNewPhoto] = useState('');
@@ -55,7 +58,6 @@ const UpdateForm = ({
 
   const handleCropImage = async () => {
     const croppedImage = await getCroppedImg(newPhoto, croppedAreaPixels);
-
 
     if (croppedImage) {
       form.setValue('image', croppedImage);
@@ -179,7 +181,16 @@ const UpdateForm = ({
               </FormItem>
             )}
           />
-          <Button type="submit">Update Room</Button>
+          <div className="flex gap-3">
+            <Button
+              type="reset"
+              variant={'ghost'}
+              onClick={() => router.back()}
+            >
+              Cancel
+            </Button>
+            <Button type="submit">Update Room</Button>
+          </div>
         </form>
       </Form>
       <Dialog open={isOpenDialog} onOpenChange={handleDialogChange}>

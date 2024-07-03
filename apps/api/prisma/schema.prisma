@@ -75,10 +75,12 @@ model Room {
   createAt    DateTime @default(now())
   updateAt    DateTime @updatedAt
 
-  propertyId String      @map("property_id")
-  property   Property    @relation(fields: [propertyId], references: [id])
-  roomPrices RoomPrice?
-  orderRooms OrderRoom[]
+  propertyId         String             @map("property_id")
+  property           Property           @relation(fields: [propertyId], references: [id])
+  roomPrices         RoomPrice?
+  orderRooms         OrderRoom[]
+  roomAvailabilities RoomAvailability[]
+  specialPrices      SpecialPrice[]
 
   @@map("rooms")
 }
@@ -142,4 +144,27 @@ model VerificationToken {
   expires DateTime
 
   @@map("verificationTokens")
+}
+
+model RoomAvailability {
+  id       String   @id @default(uuid())
+  fromDate DateTime
+  toDate   DateTime
+
+  roomId String @map("room_id")
+  room   Room   @relation(fields: [roomId], references: [id])
+
+  @@map("roomAvailabilities")
+}
+
+model SpecialPrice {
+  id       String    @id @default(uuid())
+  price    Float
+  fromDate DateTime
+  toDate   DateTime?
+
+  roomId String @map("room_id")
+  room   Room   @relation(fields: [roomId], references: [id])
+
+  @@map("specialPrices")
 }
