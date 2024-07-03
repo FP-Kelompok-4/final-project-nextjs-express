@@ -23,6 +23,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from '@/components/ui/dialog';
+import { formatDistance } from 'date-fns';
 
 const OrderPage = () => {
   const { data: session, update } = useSession();
@@ -38,6 +39,14 @@ const OrderPage = () => {
   const haldleIsDialogOpen = (open: boolean) => {
     setIsOpenDialog(open);
   };
+
+  const sortedOrderList = orderList.slice().sort((a, b) => {
+    const createAtA = new Date(a.updateAt).getTime(); // Convert to timestamp
+    const createAtB = new Date(b.updateAt).getTime(); // Convert to timestamp
+
+    // Sort by descending order of createAt
+    return createAtB - createAtA;
+  });
 
   useEffect(() => {
     if (session && isLoadingGetBookings) {
@@ -55,7 +64,7 @@ const OrderPage = () => {
       {/* {JSON.stringify(orderList)} */}
       <div className="my-6 flex w-full flex-col items-center gap-3 px-6 md:px-10 xl:px-20">
         {orderList.length > 0 ? (
-          orderList.map(
+          sortedOrderList.map(
             (
               {
                 id,
@@ -68,6 +77,7 @@ const OrderPage = () => {
                 orderRooms,
                 urlPayment,
                 invoiceId,
+                updateAt,
               },
               index,
             ) => (
@@ -93,6 +103,12 @@ const OrderPage = () => {
                 <p className="text-sm font-semibold">
                   {formatCurrencyRp(totalPayment)}
                 </p>
+                <p className="text-xs tracking-tighter">
+                  order at:{' '}
+                  {formatDistance(new Date(updateAt), new Date(), {
+                    addSuffix: true,
+                  })}
+                </p>
 
                 <div className="flex w-full justify-end">
                   <div
@@ -114,7 +130,7 @@ const OrderPage = () => {
                     ) : status === 'cancelled' ? (
                       'Cancelled'
                     ) : (
-                      <div className="flex flex-col gap-3 items-center">
+                      <div className="flex flex-col items-center gap-3">
                         <p>Waiting for Payment</p>
                         <CountDown dateAt={new Date(expDateTime)} />
                       </div>

@@ -378,7 +378,7 @@ export class TransactionService {
       },
     });
 
-    if (!order) throw new Error('order does not exist.');
+    if (!order) throw new Error('Order does not exist.');
 
     const property = order.orderRooms[0].room.property;
     const id = order.id;

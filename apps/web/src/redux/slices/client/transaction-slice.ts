@@ -18,6 +18,8 @@ export type TOrderData = {
   userId: string;
   orderRooms: TOrderRoom[];
   orderProperty: TOrderProperty;
+  createAt: Date;
+  updateAt: Date;
 };
 
 export type TOrderProperty = {

@@ -42,6 +42,8 @@ export type OrderType = {
   checkOut: Date;
   orderProperty: OrderPropertyType;
   orderRooms: OrderRoomType[];
+  createAt: Date;
+  updateAt: Date;
 };
 
 export type OrderPropertyType = {
