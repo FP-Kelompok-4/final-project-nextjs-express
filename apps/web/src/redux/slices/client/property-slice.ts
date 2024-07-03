@@ -27,7 +27,7 @@ export type TRoomClient = {
   id: string;
   type: string;
   description: string;
-  price: number;
+  roomPrice: number;
   image: string;
 };
 

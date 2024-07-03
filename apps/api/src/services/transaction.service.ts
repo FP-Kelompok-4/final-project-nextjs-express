@@ -39,7 +39,10 @@ export class TransactionService {
       where: {
         id: { in: roomsOrd.map((data) => data.roomId) },
       },
-      include: { roomPrices: true },
+      include: {
+        roomPrices: true,
+        specialPrices: true,
+      },
     });
 
     if (!rooms) throw new Error('Room does not exist.');
@@ -54,18 +57,29 @@ export class TransactionService {
       },
     });
 
-    if (order) throw new Error('Finish the previious Order');
+    if (order) throw new Error('Finish the previous Order');
 
     let amount = 0;
     const line_items: LineItemAddDOKUPaymentRes[] = [];
 
-    rooms.forEach(({ id, type, roomPrices }) => {
+    const today = new Date();
+
+    rooms.forEach(({ id, type, roomPrices, specialPrices }) => {
       const quantity =
         roomsOrd.find((data) => data.roomId === id)?.quantity ?? 1;
 
-      console.log('TOTAL', dateMargin, roomPrices?.price, quantity);
+      let roomPrice = 0;
 
-      const roomPrice = roomPrices ? roomPrices.price * dateMargin : 0;
+      // Check if there's a special price applicable today
+      const specialPrice = specialPrices.find(
+        (sp) => sp.fromDate <= today && (!sp.toDate || sp.toDate >= today),
+      );
+
+      if (specialPrice) {
+        roomPrice = specialPrice.price * dateMargin;
+      } else if (roomPrices) {
+        roomPrice = roomPrices.price * dateMargin;
+      }
 
       amount += roomPrice * quantity;
 
@@ -104,11 +118,15 @@ export class TransactionService {
       },
     });
 
+    const requestId = generateRequestId();
+    const requestTimestamp = getCurrentTimestamp();
+    const signature = generateSignature(raw, requestId, requestTimestamp);
+
     const myHeaders = {
       'Client-Id': DokuVariablesData.Client_Id,
-      'Request-Id': DokuVariablesData.Request_Id,
-      'Request-Timestamp': DokuVariablesData.Request_Timestamp,
-      Signature: generateSignature(raw),
+      'Request-Id': requestId,
+      'Request-Timestamp': requestTimestamp,
+      Signature: signature,
       'Content-Type': 'application/json',
     };
 

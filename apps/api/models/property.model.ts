@@ -48,22 +48,31 @@ type GetPropertyRoomsRes = {
   rooms: Rooms[];
 } & Property;
 
+type SpecialPrice = {
+  price: number;
+  fromDate: Date;
+  toDate: Date | null;
+};
+
+type RoomPrice = {
+  price: number;
+};
+
 type TRooms = {
   id: string;
-  image: string;
-  description: string;
   type: string;
-  roomPrices: {
-    price: number;
-  } | null;
+  description: string;
+  image: string;
+  roomPrices: RoomPrice | null;
+  specialPrices: SpecialPrice[];
 };
 
 type PropertyRoomPrice = {
   id: string;
-  image: string;
   name: string;
   description: string;
   location: string;
+  image: string;
   rooms: TRooms[];
 };
 
@@ -102,21 +111,15 @@ export const toGetPropertyRoomsRes = (propertyRooms: GetPropertyRoomsRes[]) => {
   });
 };
 
-export const toPropertyRoomPriceRes = (property: PropertyRoomPrice[]) => {
-  return property.map(({ id, name, description, image, location, rooms }) => {
+export const toPropertyRoomPriceRes = (properties: PropertyRoomPrice[]) => {
+  return properties.map(({ id, name, description, image, location, rooms }) => {
     return {
       id,
       name,
       description,
       location,
       image,
-      price: rooms.map((v, i) => {
-        if (i === 0) {
-          return {
-            price: v.roomPrices?.price,
-          };
-        }
-      })[0]?.price,
+      price: rooms.map((v) => v.roomPrices?.price).filter((price) => price)[0],
     };
   });
 };
@@ -125,6 +128,8 @@ export const toGetDetailPropertyClientRes = (
   property: PropertyRoomPrice & { category: string },
 ) => {
   const { id, name, description, location, image, rooms, category } = property;
+  const today = new Date();
+
   return {
     id,
     name,
@@ -132,16 +137,17 @@ export const toGetDetailPropertyClientRes = (
     location,
     category,
     image,
-    rooms: [
-      ...rooms.map(({ id, type, description, image, roomPrices }) => {
-        return {
-          id,
-          type,
-          description,
-          image,
-          price: roomPrices ? roomPrices.price : 0,
-        };
-      }),
-    ],
+    rooms: rooms.map((room) => {
+      return {
+        id: room.id,
+        type: room.type,
+        description: room.description,
+        image: room.image,
+        roomPrice:
+          room.specialPrices?.find(
+            (sp) => sp.fromDate <= today && (!sp.toDate || sp.toDate >= today),
+          )?.price || room.roomPrices?.price,
+      };
+    }),
   };
 };
