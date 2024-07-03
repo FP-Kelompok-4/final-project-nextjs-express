@@ -165,7 +165,10 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
               >
                 {properyDetail.rooms &&
                   properyDetail.rooms.map(
-                    ({ id, type, description, price, image }, index) => (
+                    (
+                      { id, type, description, roomPrice: price, image },
+                      index,
+                    ) => (
                       <SwiperSlide
                         key={`${id}-${index}`}
                         className={cn(
