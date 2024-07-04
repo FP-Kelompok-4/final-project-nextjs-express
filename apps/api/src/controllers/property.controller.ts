@@ -5,6 +5,7 @@ import { NextFunction, Request, Response } from 'express';
 import {
   AddUPropertyReq,
   GetDetailPropertyReq,
+  GetPropertiesQuery,
   GetPropertiesReq,
   UpdatePropertyPar,
   UpdatePropertyReq,
@@ -17,11 +18,17 @@ export class PropertyController {
     next: NextFunction,
   ) {
     try {
-      const properties = await PropertyService.getPropertiesForClient();
+      const reqQuery = req.query as GetPropertiesQuery;
+
+      const {properties, totalPage, totalResult} = await PropertyService.getPropertiesForClient(reqQuery);
 
       res.status(200).send({
         status: 'success',
-        data: properties,
+        data: {
+          properties,
+          totalPage,
+          totalResult
+        }
       });
     } catch (e) {
       next(e);

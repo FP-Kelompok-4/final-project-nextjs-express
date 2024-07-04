@@ -1,8 +1,10 @@
 import { ResponseError } from '@/error/response-error';
 import prisma from '@/prisma';
+import { Prisma } from "@prisma/client";
 import {
   AddUPropertyReq,
   GetDetailPropertyReq,
+  GetPropertiesQuery,
   GetPropertiesReq,
   toAddPropertyRes,
   toDeletePropertyRes,
@@ -10,7 +12,6 @@ import {
   toGetDetailPropertyRes,
   toGetPropertiesRes,
   toGetPropertyRoomsRes,
-  toPropertyRoomPriceRes,
   UpdatePropertyPar,
   UpdatePropertyReq,
 } from 'models/property.model';
@@ -20,29 +21,69 @@ interface UpdatePropertyServiceProps
     UpdatePropertyPar {}
 
 export class PropertyService {
-  static async getPropertiesForClient() {
-    const properties = await prisma.property.findMany({
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        location: true,
-        image: true,
-        rooms: {
-          select: {
-            id: true,
-            type: true,
-            description: true,
-            image: true,
-            roomPrices: {
-              select: { price: true },
-            },
-          },
-        },
-      },
-    });
+  static async getPropertiesForClient(reqQuery: GetPropertiesQuery) {
+    let where = Prisma.sql``;
+    let orderBy = Prisma.sql`ORDER BY p.name ASC`;
+    const limit = 8;
+    const offset = reqQuery.page ? Number(reqQuery.page) * limit : 0;
 
-    return toPropertyRoomPriceRes(properties);
+    if (reqQuery.fromDate && reqQuery.toDate && reqQuery.name) {
+      where = Prisma.sql`WHERE ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.toDate} <= ra.toDate
+          AND p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`
+    }
+
+    if (reqQuery.fromDate && reqQuery.toDate && !reqQuery.name) {
+      where = Prisma.sql`WHERE  ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.toDate} <= ra.toDate`
+    }
+
+    if (reqQuery.fromDate && !reqQuery.toDate && !reqQuery.name) {
+      where = Prisma.sql`WHERE ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.fromDate} <= ra.toDate`
+    }
+
+    if (reqQuery.fromDate && !reqQuery.toDate && reqQuery.name) {
+      where = Prisma.sql`WHERE ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.fromDate} <= ra.toDate
+        AND p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`
+    }
+
+    if (!reqQuery.fromDate && !reqQuery.toDate && reqQuery.name) {
+      where = Prisma.sql`WHERE p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`
+    }
+
+    if (reqQuery.sortPrice === "termurah") {
+      orderBy = Prisma.sql`ORDER BY minPrice ASC`
+    }
+
+    if (reqQuery.sortPrice === "termahal") {
+      orderBy = Prisma.sql`ORDER BY minPrice DESC`
+    }
+
+    const properties = await prisma.$queryRaw`SELECT p.id, p.name, p.description,
+        p.location, p.image, MIN(rp.price) AS minPrice, MAX(rp.price) AS maxPrice
+        FROM properties p
+        INNER JOIN rooms r ON p.id=r.property_id
+        INNER JOIN roomPrices rp ON r.id=rp.room_id
+        INNER JOIN roomAvailabilities ra ON r.id=ra.room_id
+        ${where}
+        GROUP BY p.id
+        ${orderBy}
+        LIMIT ${limit} OFFSET ${offset}`
+
+    const countProperties = await prisma.$queryRaw`SELECT p.id, p.name, p.description,
+        p.location, p.image, MIN(rp.price) AS minPrice, MAX(rp.price) AS maxPrice
+        FROM properties p
+        INNER JOIN rooms r ON p.id=r.property_id
+        INNER JOIN roomPrices rp ON r.id=rp.room_id
+        INNER JOIN roomAvailabilities ra ON r.id=ra.room_id
+        ${where}
+        GROUP BY p.id` as any
+    
+    const totalPage = Math.ceil(countProperties.length/limit);
+
+    return {
+      properties,
+      totalPage,
+      totalResult: countProperties.length
+    };
   }
 
   static async getPropertyForClient(req: GetPropertiesReq) {

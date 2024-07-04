@@ -4,6 +4,14 @@ export type GetPropertiesReq = {
   id: string;
 };
 
+export type GetPropertiesQuery = {
+  fromDate?: string;
+  toDate?: string;
+  name?: string;
+  sortPrice?: string;
+  page?: string;
+}
+
 export type GetDetailPropertyReq = {
   id: string;
   pId: string;
@@ -102,24 +110,24 @@ export const toGetPropertyRoomsRes = (propertyRooms: GetPropertyRoomsRes[]) => {
   });
 };
 
-export const toPropertyRoomPriceRes = (property: PropertyRoomPrice[]) => {
-  return property.map(({ id, name, description, image, location, rooms }) => {
-    return {
-      id,
-      name,
-      description,
-      location,
-      image,
-      price: rooms.map((v, i) => {
-        if (i === 0) {
-          return {
-            price: v.roomPrices?.price,
-          };
-        }
-      })[0]?.price,
-    };
-  });
-};
+// export const toPropertyRoomPriceRes = (property: PropertyRoomPrice[]) => {
+//   return property.map(({ id, name, description, image, location, rooms }) => {
+//     return {
+//       id,
+//       name,
+//       description,
+//       location,
+//       image,
+//       price: rooms.map((v, i) => {
+//         if (i === 0) {
+//           return {
+//             price: v.roomPrices?.price,
+//           };
+//         }
+//       })[0]?.price,
+//     };
+//   });
+// };
 
 export const toGetDetailPropertyClientRes = (
   property: PropertyRoomPrice & { category: string },
