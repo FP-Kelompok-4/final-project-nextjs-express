@@ -13,14 +13,11 @@ import { Button } from '@/components/ui/button';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { getPropertyDetailClientThunk } from '@/redux/slices/client/property-thunk';
 import { formatCurrencyRp } from '@/lib/formatNumber';
-import { useSession } from 'next-auth/react';
 import RoomCard from './_components/Room-Card';
 import BookingFloating from './_components/Booking-Floating';
 import { useRouter } from 'next/navigation';
 
 const DetailPage = ({ params }: { params: { id: string } }) => {
-  const { data: session, update } = useSession();
-
   const [orderList, setOrderList] = useState<
     {
       id: string;
@@ -97,10 +94,6 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
     }
     setTotalPay(newTotalPay);
   }, [orderList]);
-
-  if (session?.user.role === 'TENANT') {
-    return router.replace('/');
-  }
 
   return (
     <main className="mt-[78px] flex min-h-svh flex-col gap-6 py-5 pb-24 sm:pb-5">
