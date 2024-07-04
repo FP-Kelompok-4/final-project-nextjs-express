@@ -1,12 +1,14 @@
-export const publicRoute: string[] = ['/'];
+export const userRoute: string[] = ['/property'];
 
-export const userRoute: string[] = [];
+export const userVerifiedRoute: string[] = ['/order'];
 
-export const bothRoute: string[] = ['/settings', '/profile'];
+export const bothVerifiedRoute: string[] = ['/settings', '/profile'];
 
 export const authRoute: string[] = ['/signup', '/signin', '/auth/error'];
 
 export const tenantRoute = '/tenant';
+
+export const tenantVerifiedRoute = ['/tenant/property', '/tenant/room-availability', '/tenant/special-price']
 
 export const verificationRoute = '/verification';
 

@@ -4,10 +4,17 @@ import axios from 'axios';
 import { CodeSquare } from 'lucide-react';
 
 export const getPropertiesClientThunk = createAsyncThunk(
-  'propertiesClient/getPropertiesClient',
-  async () => {
+  'properties/client',
+  async (reqQuery: {name: string | null; fromDate: string | null; toDate: string | null; sortPrice: string | null; page: string | null;}) => {
     try {
-      const res = await api.get('properties/client');
+      let {name, fromDate, toDate, sortPrice, page} = reqQuery;
+      if (!name) name = '';
+      if (!fromDate) fromDate = '';
+      if (!toDate) toDate = '';
+      if (!sortPrice) sortPrice = '';
+      if (!page) page = '';
+
+      const res = await api.get(`properties/client?name=${name}&fromDate=${fromDate}&toDate=${toDate}&sortPrice=${sortPrice}&page=${page}`);
 
       return { success: res.data.success, data: res.data.data };
     } catch (e) {

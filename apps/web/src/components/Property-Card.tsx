@@ -7,7 +7,7 @@ import Image from "next/image"
 const PropertyCard = (props: {data: TPropertiesClient}) => {
   const { data } = props;
   return (
-    <Card className="border-0">
+    <Card className="border-0 shadow-none">
       <CardHeader className="p-0 mb-3">
         <div className="relative aspect-[3/2.5] rounded-md overflow-hidden">
           <Image
@@ -38,7 +38,7 @@ const PropertyCard = (props: {data: TPropertiesClient}) => {
         </div>
         <div className="mt-1 flex gap-1">
           {/* <span className="line-through text-slate-500 font-semibold">{formatCurrencyRp(729000)}</span> */}
-          <span className="font-semibold">{formatCurrencyRp(data.price)}</span>
+          <span className="font-semibold">{formatCurrencyRp(data.minPrice)}</span>
           <span>night</span>
         </div>
       </CardContent>
