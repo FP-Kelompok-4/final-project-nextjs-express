@@ -141,6 +141,9 @@ export class TransactionService {
       { headers: myHeaders },
     );
 
+    console.log('SUCCESS----------------------------------', raw);
+
+
     const res: DOKURes = response.data;
     return {
       ...res,

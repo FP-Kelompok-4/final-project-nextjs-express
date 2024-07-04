@@ -175,6 +175,7 @@ export const cancelBookingsClientThunk = createAsyncThunk(
     try {
       const res = await api.patch(
         `transaction/booking/cancel/${userId}/${invoiceId}`,
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -209,13 +209,19 @@ const BookingFloating = ({
                   <p className="text-athens-gray-950 w-20 font-semibold">
                     Check In
                   </p>
-                  : {new Date(form.getValues().dateRange.from).toDateString()}{' '}
+                  :{' '}
+                  {form.getValues().dateRange
+                    ? new Date(form.getValues().dateRange.from).toDateString()
+                    : ''}{' '}
                 </p>
                 <p className="flex gap-2">
                   <p className="text-athens-gray-950 w-20 font-semibold">
                     Check Out
                   </p>
-                  : {new Date(form.getValues().dateRange.to).toDateString()}
+                  :{' '}
+                  {form.getValues().dateRange
+                    ? new Date(form.getValues().dateRange.to).toDateString()
+                    : ''}
                 </p>
               </DialogDescription>
 
