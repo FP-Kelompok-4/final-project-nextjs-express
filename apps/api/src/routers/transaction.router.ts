@@ -45,6 +45,12 @@ export class TransactionRouter {
       validateAddBooking,
       this.transactionController.addBoking,
     );
+
+    this.router.post(
+      '/checking',
+      validateAddBooking,
+      this.transactionController.checkBoking,
+    );
   }
 
   getRouter(): Router {

@@ -27,7 +27,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { addBookingClientThunk } from '@/redux/slices/client/transaction-thunk';
+import {
+  addBookingClientThunk,
+  checkBookingClientThunk,
+} from '@/redux/slices/client/transaction-thunk';
 import { useSession } from 'next-auth/react';
 import { TOrderData } from '@/redux/slices/client/transaction-slice';
 import { useToast } from '@/components/ui/use-toast';
@@ -59,9 +62,11 @@ const BookingFloating = ({
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
 
-  const { isLoadingAddBooking, orderList: orderListState } = useAppSelector(
-    (state) => state.transactionClientReducer,
-  );
+  const {
+    isLoadingAddBooking,
+    orderList: orderListState,
+    preOrderList,
+  } = useAppSelector((state) => state.transactionClientReducer);
 
   const form = useForm<z.infer<typeof BookingDateRangeSchema>>({
     resolver: zodResolver(BookingDateRangeSchema),
@@ -74,8 +79,38 @@ const BookingFloating = ({
 
     setDaysBooking(days);
 
-    if (session && session.user.role === "USER") {
-      onHandleDialogOpen(true);
+    if (session && session.user.role === 'USER') {
+      dispatch(
+        checkBookingClientThunk({
+          userId: session.user.id,
+          pId,
+          checkIn: new Date(form.getValues().dateRange.from),
+          checkOut: new Date(form.getValues().dateRange.to),
+          rooms: orderList.map(({ id: roomId, type, quantity }) => {
+            return {
+              roomId,
+              quantity,
+              type,
+            };
+          }),
+          token: session.user.accessToken!,
+        }),
+      ).then((data: any) => {
+        const result = data.payload.data;
+
+        toast({
+          variant: data.payload.error ? 'destructive' : 'default',
+          title: data.payload.error
+            ? JSON.stringify(data.payload.error)
+            : 'Success Check Order',
+        });
+
+        if (!data.payload.error) {
+          onHandleDialogOpen(true);
+
+          // onHandleDialogOpen(false);
+        }
+      });
     } else {
       router.push('/signin');
     }
@@ -169,8 +204,92 @@ const BookingFloating = ({
                 <DialogTitle>Konfirmasi</DialogTitle>
               </DialogHeader>
 
+              <DialogDescription className="flex flex-col gap-1">
+                <p className="flex gap-2">
+                  <p className="text-athens-gray-950 w-20 font-semibold">
+                    Check In
+                  </p>
+                  : {new Date(form.getValues().dateRange.from).toDateString()}{' '}
+                </p>
+                <p className="flex gap-2">
+                  <p className="text-athens-gray-950 w-20 font-semibold">
+                    Check Out
+                  </p>
+                  : {new Date(form.getValues().dateRange.to).toDateString()}
+                </p>
+              </DialogDescription>
+
               <div className="flex flex-col gap-3">
                 <div className="flex flex-col gap-1">
+                  {preOrderList &&
+                    preOrderList.line_items.map(
+                      (
+                        {
+                          id,
+                          name,
+                          specialPrice,
+                          originalPrice,
+                          quantity,
+                          price,
+                        },
+                        index,
+                      ) => (
+                        <div
+                          key={`${id}-${index}`}
+                          className="flex items-center justify-between rounded-md border-[1px] px-4 py-2"
+                        >
+                          <p className="text-xs font-semibold">{name}</p>
+                          <div className="flex items-center gap-1">
+                            <p
+                              className={cn(
+                                'inline-flex gap-2 text-xs font-semibold',
+                              )}
+                            >
+                              {specialPrice && (
+                                <span
+                                  className={cn(
+                                    'text-athens-gray-400',
+                                    specialPrice && 'line-through',
+                                  )}
+                                >
+                                  {formatCurrencyRp(originalPrice)}
+                                </span>
+                              )}
+                              <span className="text-athens-gray-950">
+                                {formatCurrencyRp(
+                                  specialPrice ?? originalPrice,
+                                )}
+                              </span>
+                            </p>
+                            <p className="text-athens-gray-400 text-xs font-semibold">
+                              x {quantity} kamar
+                            </p>
+                            <p className="text-athens-gray-400 text-xs font-semibold">
+                              x {daysBooking} hari
+                            </p>
+                            <p className="text-athens-gray-400 text-xs font-semibold">
+                              :
+                            </p>
+                            <p className="text-sm font-semibold">
+                              {formatCurrencyRp(price)}
+                            </p>
+                          </div>
+                        </div>
+                      ),
+                    )}
+
+                  <Separator orientation="horizontal" />
+
+                  <div className="flex items-center justify-end gap-1">
+                    <p className="text-lg font-bold">
+                      {formatCurrencyRp(
+                        preOrderList ? preOrderList.totalAmount : 0,
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                {/* <div className="flex flex-col gap-1">
                   {orderList.map(
                     ({ id, type, price, quantity, amount }, index) => (
                       <div
@@ -215,7 +334,7 @@ const BookingFloating = ({
                       {formatCurrencyRp(totalPay * daysBooking)}
                     </p>
                   </div>
-                </div>
+                </div> */}
               </div>
 
               <DialogFooter>
@@ -251,7 +370,7 @@ const BookingFloating = ({
                             : 'default',
                           title: data.payload.error
                             ? JSON.stringify(data.payload.error)
-                            : 'Success Add Order',
+                            : 'Success Check Order',
                         });
 
                         if (!data.payload.error) {

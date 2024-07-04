@@ -79,11 +79,11 @@ const RoomCard = ({
           <p className="text-white/80">{description}</p>
 
           <div className="flex flex-col gap-1 text-base font-semibold text-white md:flex-row md:items-center md:gap-4 md:text-base">
-            <span>{formatCurrencyRp(price)}</span>
+            <span>{formatCurrencyRp(price)} /day (normal price)</span>
           </div>
         </div>
         {isOrder ? (
-          <div className="flex w-full sm:w-fit items-center justify-center gap-2 rounded-md bg-white">
+          <div className="flex w-full items-center justify-center gap-2 rounded-md bg-white sm:w-fit">
             <Button
               className="aspect-square"
               variant={'ghost'}

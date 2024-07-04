@@ -13,6 +13,7 @@ import {
   CheckBokingPropertyReq,
   DOKUPaymentType,
   LineItem,
+  LineItemCheckBookingRes,
   toAddBokingProperty,
   toGetBokingsProperty,
 } from 'models/transaction.model';
@@ -62,23 +63,25 @@ export class TransactionService {
     let amount = 0;
     const line_items: LineItemAddDOKUPaymentRes[] = [];
 
-    const today = new Date();
-
     rooms.forEach(({ id, type, roomPrices, specialPrices }) => {
       const quantity =
         roomsOrd.find((data) => data.roomId === id)?.quantity ?? 1;
 
       let roomPrice = 0;
+      let originalPrice = roomPrices ? roomPrices.price : 0;
+      let applicableSpecialPrice = null;
 
-      // Check if there's a special price applicable today
-      const specialPrice = specialPrices.find(
-        (sp) => sp.fromDate <= today && (!sp.toDate || sp.toDate >= today),
+      // Check if there's a special price applicable for the date range
+      applicableSpecialPrice = specialPrices.find(
+        (sp) =>
+          new Date(sp.fromDate) <= new Date(checkIn) &&
+          (!sp.toDate || new Date(sp.toDate) >= new Date(checkOut)),
       );
 
-      if (specialPrice) {
-        roomPrice = specialPrice.price * dateMargin;
+      if (applicableSpecialPrice) {
+        roomPrice = applicableSpecialPrice.price * dateMargin;
       } else if (roomPrices) {
-        roomPrice = roomPrices.price * dateMargin;
+        roomPrice = originalPrice * dateMargin;
       }
 
       amount += roomPrice * quantity;
@@ -86,7 +89,7 @@ export class TransactionService {
       line_items.push({
         id: id,
         name: type,
-        price: roomPrice,
+        price: roomPrice, // Hanya harga sebelum dikalikan quantity, tapi sudah termasuk dateMargin
         quantity: quantity,
       });
     });
@@ -118,6 +121,8 @@ export class TransactionService {
       },
     });
 
+    console.log('RAW----------------------------------', raw);
+
     const requestId = generateRequestId();
     const requestTimestamp = getCurrentTimestamp();
     const signature = generateSignature(raw, requestId, requestTimestamp);
@@ -147,6 +152,98 @@ export class TransactionService {
         },
       },
     } as AddDOKUPaymentRes;
+  }
+
+  static async checkBookingPayment(req: AddDOKUPayment) {
+    const { userId, rooms: roomsOrd, checkIn, checkOut, pId } = req;
+    const dateMargin = countDaysInRange(new Date(checkIn), new Date(checkOut));
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+
+    if (!user) throw new Error('User does not exist.');
+
+    const rooms = await prisma.room.findMany({
+      where: {
+        id: { in: roomsOrd.map((data) => data.roomId) },
+      },
+      include: {
+        roomPrices: true,
+        specialPrices: true,
+        roomAvailabilities: true,
+      },
+    });
+
+    if (!rooms) throw new Error('Room does not exist.');
+
+    const order = await prisma.order.findFirst({
+      where: {
+        userId,
+        status: 'pending',
+        expDateTime: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (order) throw new Error('Finish the previous Order');
+
+    let amount = 0;
+    const line_items: LineItemCheckBookingRes[] = [];
+
+    rooms.forEach(
+      ({ id, type, roomPrices, specialPrices, roomAvailabilities }) => {
+        const quantity =
+          roomsOrd.find((data) => data.roomId === id)?.quantity ?? 1;
+
+        let roomPrice = 0;
+        let originalPrice = roomPrices ? roomPrices.price : 0;
+        let applicableSpecialPrice = null;
+
+        // Check if there's availability within the date range
+        const isAvailable = roomAvailabilities.some(
+          (availability) =>
+            new Date(availability.fromDate) <= new Date(checkIn) &&
+            new Date(availability.toDate) >= new Date(checkOut),
+        );
+
+        if (!isAvailable) {
+          throw new Error(
+            `Room with type ${type} is not available for the selected dates.`,
+          );
+        }
+
+        // Check if there's a special price applicable for the date range
+        applicableSpecialPrice = specialPrices.find(
+          (sp) =>
+            new Date(sp.fromDate) <= new Date(checkIn) &&
+            (!sp.toDate || new Date(sp.toDate) >= new Date(checkOut)),
+        );
+
+        if (applicableSpecialPrice) {
+          roomPrice = applicableSpecialPrice.price * dateMargin * quantity;
+        } else if (roomPrices) {
+          roomPrice = originalPrice * dateMargin * quantity;
+        }
+
+        amount += roomPrice;
+
+        line_items.push({
+          id: id,
+          name: type,
+          price: roomPrice,
+          originalPrice: originalPrice,
+          specialPrice: applicableSpecialPrice
+            ? applicableSpecialPrice.price
+            : null,
+          quantity: quantity,
+        });
+      },
+    );
+
+    return {
+      totalAmount: amount,
+      line_items,
+    };
   }
 
   static checkDOKUPayment = async (req: CheckBokingPropertyReq) => {

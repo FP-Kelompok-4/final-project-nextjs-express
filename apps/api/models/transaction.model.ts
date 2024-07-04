@@ -93,6 +93,15 @@ export type LineItem = {
   quantity: number;
 };
 
+export type LineItemCheckBookingRes = {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice: number;
+  specialPrice: number | null;
+  quantity: number;
+};
+
 export type Payment = {
   payment_due_date: number;
 };

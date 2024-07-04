@@ -65,6 +65,7 @@ type TRooms = {
   image: string;
   roomPrices: RoomPrice | null;
   specialPrices: SpecialPrice[];
+  roomAvailabilities: RoomAvailability[];
 };
 
 type PropertyRoomPrice = {
@@ -143,10 +144,9 @@ export const toGetDetailPropertyClientRes = (
         type: room.type,
         description: room.description,
         image: room.image,
-        roomPrice:
-          room.specialPrices?.find(
-            (sp) => sp.fromDate <= today && (!sp.toDate || sp.toDate >= today),
-          )?.price || room.roomPrices?.price,
+        roomPrice: room.roomPrices ? room.roomPrices.price : 0,
+        specialPrices: room.specialPrices,
+        roomAvailabilities: room.roomAvailabilities,
       };
     }),
   };

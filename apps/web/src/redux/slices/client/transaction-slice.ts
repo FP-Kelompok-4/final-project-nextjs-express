@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   addBookingClientThunk,
   cancelBookingsClientThunk,
+  checkBookingClientThunk,
   getBookingsClientThunk,
   updateBookingsClientThunk,
 } from './transaction-thunk';
@@ -40,13 +41,30 @@ export type TOrderRoom = {
   price: number;
 };
 
+export type TCheckBooking = {
+  totalAmount: number;
+  line_items: TLineItem[];
+};
+
+export type TLineItem = {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice: number;
+  specialPrice: number | null;
+  quantity: number;
+};
+
 type TInitialState = {
+  isLoadingCheckBooking: boolean;
   isLoadingAddBooking: boolean;
   isLoadingGetBookings: boolean;
   orderList: TOrderData[];
+  preOrderList?: TCheckBooking;
 };
 
 const initialState: TInitialState = {
+  isLoadingCheckBooking: false,
   isLoadingAddBooking: false,
   isLoadingGetBookings: true,
   orderList: [],
@@ -120,6 +138,19 @@ const transactionClientSlice = createSlice({
             });
 
       state.isLoadingGetBookings = false;
+    });
+
+    builder.addCase(checkBookingClientThunk.pending, (state) => {
+      state.isLoadingCheckBooking = true;
+      state.preOrderList = undefined;
+    });
+    builder.addCase(checkBookingClientThunk.fulfilled, (state, action) => {
+      if (action.payload)
+        state.preOrderList = action.payload.error
+          ? undefined
+          : action.payload.data;
+
+      state.isLoadingCheckBooking = false;
     });
   },
 });

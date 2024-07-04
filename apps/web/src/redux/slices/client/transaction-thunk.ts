@@ -58,6 +58,56 @@ export const addBookingClientThunk = createAsyncThunk(
   },
 );
 
+export const checkBookingClientThunk = createAsyncThunk(
+  'transactionClient/checkBookingClient',
+  async ({
+    userId,
+    pId,
+    checkIn,
+    checkOut,
+    rooms,
+    token,
+  }: {
+    userId: string;
+    pId: string;
+    checkIn: Date;
+    checkOut: Date;
+    rooms: {
+      roomId: string;
+      quantity: number;
+    }[];
+    token: string;
+  }) => {
+    try {
+      const res = await api.post(
+        `transaction/checking`,
+        {
+          userId,
+          pId,
+          checkIn,
+          checkOut,
+          rooms: rooms,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      console.log(res.data);
+
+      return { success: res.data.success, data: res.data.data };
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        return {
+          error: e.response?.data.message,
+        };
+      }
+    }
+  },
+);
+
 export const getBookingsClientThunk = createAsyncThunk(
   'transactionClient/getBookingsClient',
   async ({ userId, token }: { userId: string; token: string }) => {

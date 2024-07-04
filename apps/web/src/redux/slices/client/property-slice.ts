@@ -27,8 +27,26 @@ export type TRoomClient = {
   id: string;
   type: string;
   description: string;
-  roomPrice: number;
   image: string;
+  roomPrice: number;
+  specialPrices: SpecialPrice[];
+  roomAvailabilities: RoomAvailability[];
+};
+
+export type RoomAvailability = {
+  id: string;
+  fromDate: Date;
+  toDate: Date;
+  roomId: string;
+  price: number;
+};
+
+export type SpecialPrice = {
+  id: string;
+  fromDate: Date;
+  toDate: Date;
+  roomId: string;
+  price: number;
 };
 
 type TInitialState = {
