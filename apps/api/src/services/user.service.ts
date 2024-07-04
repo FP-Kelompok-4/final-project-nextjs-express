@@ -74,7 +74,10 @@ export class UserService {
     if (!user) throw new ResponseError(404, 'Email or password is wrong!');
 
     if (!req.password && user.password)
-      throw new ResponseError(400, 'Email or  password is wrong!');
+      throw new ResponseError(400, 'Email or password is wrong!');
+
+    if (req.password && !user.password)
+      throw new ResponseError(400, 'Your account is registered using Google. Please sign in with Google.')
 
     if (req.password && user.password) {
       const isPasswordValid = await bcrypt.compare(req.password, user.password);
