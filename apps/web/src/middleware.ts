@@ -38,7 +38,7 @@ export default auth(async function middleware(req) {
     isLoggedIn &&
     (session?.user.isVerified === true || session?.user.isVerified === false) &&
     session.user.role === 'TENANT' &&
-    (isUserRoute.length > 0 || isAuthRoute || isSuperAdminRoute)
+    (isUserRoute.length > 0 || isAuthRoute || isSuperAdminRoute || isUserVerifiedRoute)
   ) {
     return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_AS_TENANT, req.url));
   }
