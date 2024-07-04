@@ -23,8 +23,9 @@ import { formatNumberEn } from '@/lib/formatNumber';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { getPropertiesClientThunk } from '@/redux/slices/client/property-thunk';
 import { Loader2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -35,7 +36,6 @@ const Property = () => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [sortPrice, setSortPrice] = useState<string>("");
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const page = searchParams.get("page");
   const name = searchParams.get("name");
@@ -50,6 +50,7 @@ const Property = () => {
   const { properties, totalPage, totalResult, isLoading } = useAppSelector(
     (state) => state.propertiesClientSlice,
   );
+  const { data: session } = useSession();
 
   const handleOnOpenChange = (open: boolean) => {
     setOpenDialog(open);
@@ -98,6 +99,10 @@ const Property = () => {
     if (sortPriceP) setSortPrice(sortPriceP);
     dispatch(getPropertiesClientThunk({name, fromDate, toDate, sortPrice: sortPriceP, page}));
   }, [dispatch, searchParams]);
+  if (session?.user.role === 'TENANT') {
+    return router.replace('/');
+  }
+
   return (
     <main className="min-h-svh pt-[78px]">
       {isLoading ? (

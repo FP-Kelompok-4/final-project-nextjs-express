@@ -163,7 +163,7 @@ export class PropertyController {
     try {
       const { userId } = req.params;
 
-      const propertyRooms = await PropertyService.getpropertyRooms(userId);
+      const propertyRooms = await PropertyService.getPropertyRooms(userId);
 
       res.status(200).send({
         status: 'success',

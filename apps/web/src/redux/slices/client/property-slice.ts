@@ -28,7 +28,7 @@ export type TRoomClient = {
   id: string;
   type: string;
   description: string;
-  price: number;
+  roomPrice: number;
   image: string;
 };
 
@@ -57,9 +57,11 @@ const propertiesClientSlice = createSlice({
     });
     builder.addCase(getPropertiesClientThunk.fulfilled, (state, action) => {
       if (action.payload) {
-        state.properties = action.payload.data.properties;
-        state.totalPage = action.payload.data.totalPage;
-        state.totalResult = action.payload.data.totalResult;
+        if (!action.payload.error) {
+          state.properties = action.payload.data.properties;
+          state.totalPage = action.payload.data.totalPage;
+          state.totalResult = action.payload.data.totalResult;
+        }
       };
 
       state.isLoading = false;

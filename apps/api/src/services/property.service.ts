@@ -97,13 +97,14 @@ export class PropertyService {
         rooms: {
           include: {
             roomPrices: true,
+            specialPrices: true,
           },
         },
         propertyCategory: true,
       },
     });
 
-    if (!property) throw new ResponseError(404, 'Property is not exist.');
+    if (!property) throw new ResponseError(404, 'Property does not exist.');
 
     const {
       id: pId,
@@ -137,7 +138,7 @@ export class PropertyService {
       },
     });
 
-    if (!user) throw new ResponseError(404, 'User is not exist.');
+    if (!user) throw new ResponseError(404, 'User does not exist.');
 
     const property = await prisma.property.findMany({
       where: {
@@ -157,7 +158,7 @@ export class PropertyService {
       },
     });
 
-    if (!user) throw new ResponseError(404, 'User is not exist.');
+    if (!user) throw new ResponseError(404, 'User does not exist.');
 
     const property = await prisma.property.findUnique({
       where: {
@@ -166,7 +167,7 @@ export class PropertyService {
       },
     });
 
-    if (!property) throw new ResponseError(404, 'Property is not exist.');
+    if (!property) throw new ResponseError(404, 'Property does not exist.');
 
     return toGetDetailPropertyRes(property);
   }
@@ -178,7 +179,7 @@ export class PropertyService {
       },
     });
 
-    if (!user) throw new ResponseError(404, 'User is not exist.');
+    if (!user) throw new ResponseError(404, 'User does not exist.');
 
     const { name, description, location, propertyCategoryId, image } = req;
 
@@ -265,7 +266,7 @@ export class PropertyService {
     return toDeletePropertyRes(propertyD.id);
   }
 
-  static async getpropertyRooms(userId: string) {
+  static async getPropertyRooms(userId: string) {
     const propertyRooms = await prisma.property.findMany({
       include: {
         rooms: {

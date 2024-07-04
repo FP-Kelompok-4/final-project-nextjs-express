@@ -28,7 +28,7 @@ export const getPropertiesClientThunk = createAsyncThunk(
 );
 
 export const getPropertyDetailClientThunk = createAsyncThunk(
-  'propertyDetail/client',
+  'propertiesClient/getPropertyDetailClient',
   async ({ id }: { id: string }) => {
     try {
       const res = await api.get(`properties/client/${id}`);

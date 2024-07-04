@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   BedSingle,
+  BookA,
   Building2,
   DollarSign,
   LayoutDashboard,
@@ -84,6 +85,20 @@ const HeaderAccountDropdown = () => {
             </Link>
           </DropdownMenuGroup>
         )}
+        {session?.user.role === 'USER' && (
+          <>
+            <DropdownMenuGroup>
+              <Link href={'/order'}>
+                <DropdownMenuItem>
+                  <BookA className="mr-2 h-4 w-4" />
+                  <span>Booking Order</span>
+                </DropdownMenuItem>
+              </Link>
+           
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <DropdownMenuGroup>
           <Link href={'/profile'}>
             <DropdownMenuItem>
@@ -101,7 +116,7 @@ const HeaderAccountDropdown = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={async () => {
-            await signout()
+            await signout();
           }}
         >
           <LogOut className="mr-2 h-4 w-4" />
