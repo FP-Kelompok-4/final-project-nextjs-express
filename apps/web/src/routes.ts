@@ -8,7 +8,7 @@ export const authRoute: string[] = ['/signup', '/signin', '/auth/error'];
 
 export const tenantRoute = '/tenant';
 
-export const tenantVerifiedRoute = ['/tenant/property', '/tenant/room-availability', '/tenant/special-price']
+export const tenantVerifiedRoute = ['/tenant/property', '/tenant/room-availability', '/tenant/special-price', '/tenant/order']
 
 export const verificationRoute = '/verification';
 

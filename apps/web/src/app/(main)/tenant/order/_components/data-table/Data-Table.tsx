@@ -22,13 +22,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { TSpecialPrice } from "@/redux/slices/specialPrice-slice"
+import { TGetOrdersByUserId } from "@/redux/slices/orderTenant-slice"
 
-const SpecialPriceDataTable = ({
+const OrderDataTable = ({
   columns, data
 }: {
-  columns: ColumnDef<TSpecialPrice>[],
-  data: TSpecialPrice[]
+  columns: ColumnDef<TGetOrdersByUserId>[],
+  data: TGetOrdersByUserId[]
 }) => {
   const [sorting, setSorting] = React.useState<SortingState>([])
 
@@ -47,14 +47,22 @@ const SpecialPriceDataTable = ({
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex max-[768px]:flex-col items-center py-4 gap-2">
         <Input
-          placeholder="Find type room..."
-          value={(table.getColumn("type")?.getFilterValue() as string) ?? ""}
+          placeholder="Find name property..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("type")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="max-w-xs"
+        />
+        <Input
+          placeholder="Filter status..."
+          value={(table.getColumn("status")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("status")?.setFilterValue(event.target.value)
+          }
+          className="max-w-xs"
         />
       </div>
       <div className="rounded-md border">
@@ -132,4 +140,4 @@ const SpecialPriceDataTable = ({
   )
 }
 
-export default SpecialPriceDataTable
+export default OrderDataTable
