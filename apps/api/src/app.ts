@@ -20,6 +20,7 @@ import { RoomRouter } from './routers/room.router';
 import { RoomAvailabilityRouter } from './routers/roomAvailability.router';
 import { TransactionRouter } from './routers/transaction.router';
 import { SpecialPriceRouter } from './routers/specialPrice.router';
+import { OrderRouter } from "./routers/order.router";
 
 export default class App {
   private app: Express;
@@ -72,6 +73,7 @@ export default class App {
     const roomAvailabilityRouter = new RoomAvailabilityRouter();
     const transactionRouter = new TransactionRouter();
     const specialPriceRouter = new SpecialPriceRouter();
+    const orderRouter = new OrderRouter();
 
     this.app.get('/api/', (req: Request, res: Response) => {
       res.send(`Restful API is already !`);
@@ -86,6 +88,7 @@ export default class App {
     this.app.use('/api/room-availability', roomAvailabilityRouter.getRouter());
     this.app.use('/api/transaction', transactionRouter.getRouter());
     this.app.use('/api/special-price', specialPriceRouter.getRouter());
+    this.app.use('/api/order', orderRouter.getRouter());
   }
 
   public start(): void {
