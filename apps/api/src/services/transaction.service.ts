@@ -123,8 +123,6 @@ export class TransactionService {
       },
     });
 
-    console.log('RAW----------------------------------', raw);
-
     const requestId = generateRequestId();
     const requestTimestamp = getCurrentTimestamp();
     const signature = generateSignature(raw, requestId, requestTimestamp);
@@ -142,8 +140,6 @@ export class TransactionService {
       raw,
       { headers: myHeaders },
     );
-
-    console.log('SUCCESS----------------------------------', raw);
 
     const res: DOKURes = response.data;
     return {
