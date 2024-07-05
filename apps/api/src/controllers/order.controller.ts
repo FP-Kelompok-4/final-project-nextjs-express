@@ -15,4 +15,27 @@ export class OrderController{
       next(e)
     }
   }
+
+  async cancelBokingPropertyByTenant(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { tId: tenantId, uId: userId, iId: invoiceId } = req.params;
+
+      const book = await OrderService.cancelOrder({
+        userId,
+        tenantId,
+        invoiceId,
+      });
+
+      res.status(201).send({
+        data: book,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
 }

@@ -19,12 +19,6 @@ export type CheckBokingPropertyReq = {
   invoiceId: string;
 };
 
-export type CancelBokingPropertyByTenantReq = {
-  userId: string;
-  tenantId: string;
-  invoiceId: string;
-};
-
 export type DokuRoomBokingProperty = {
   roomId: string;
   quantity: number;
