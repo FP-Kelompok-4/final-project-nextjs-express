@@ -8,8 +8,8 @@ export const utcString = now.toISOString().slice(0, 19) + 'Z';
 
 export const DokuVariablesData = {
   Client_Id: 'BRN-0261-1701964375234',
-  Request_Id: requestId,
-  Request_Timestamp: utcString,
+  // Request_Id: requestId,
+  // Request_Timestamp: utcString,
   SecretKey: 'SK-l9ZHunRxx0vYrBPPOI15',
 };
 

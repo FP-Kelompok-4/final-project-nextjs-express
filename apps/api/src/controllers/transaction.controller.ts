@@ -50,6 +50,38 @@ export class TransactionController {
     }
   }
 
+  async checkBoking(req: Request, res: Response, next: NextFunction) {
+    try {
+      const request = req.body as AddBokingProperty;
+
+      const check =
+        await TransactionService.checkBookingPayment(request);
+
+      res.status(201).send({
+        data: check,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async cancelBokingProperty(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { uId: userId, iId: invoiceId } = req.params;
+
+      const book = await TransactionService.cancelBookingProperty({
+        userId,
+        invoiceId,
+      });
+
+      res.status(201).send({
+        data: book,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
   async checkBokingProperty(req: Request, res: Response, next: NextFunction) {
     try {
       const { uId: userId, iId: invoiceId } = req.params;

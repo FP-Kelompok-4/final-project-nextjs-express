@@ -98,6 +98,7 @@ export class PropertyService {
           include: {
             roomPrices: true,
             specialPrices: true,
+            roomAvailabilities: true
           },
         },
         propertyCategory: true,

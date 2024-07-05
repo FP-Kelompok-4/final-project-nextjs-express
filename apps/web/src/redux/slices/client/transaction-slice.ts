@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
   addBookingClientThunk,
+  cancelBookingsClientThunk,
+  checkBookingClientThunk,
   getBookingsClientThunk,
   updateBookingsClientThunk,
 } from './transaction-thunk';
@@ -17,6 +19,8 @@ export type TOrderData = {
   userId: string;
   orderRooms: TOrderRoom[];
   orderProperty: TOrderProperty;
+  createAt: Date;
+  updateAt: Date;
 };
 
 export type TOrderProperty = {
@@ -37,13 +41,30 @@ export type TOrderRoom = {
   price: number;
 };
 
+export type TCheckBooking = {
+  totalAmount: number;
+  line_items: TLineItem[];
+};
+
+export type TLineItem = {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice: number;
+  specialPrice: number | null;
+  quantity: number;
+};
+
 type TInitialState = {
+  isLoadingCheckBooking: boolean;
   isLoadingAddBooking: boolean;
   isLoadingGetBookings: boolean;
   orderList: TOrderData[];
+  preOrderList?: TCheckBooking;
 };
 
 const initialState: TInitialState = {
+  isLoadingCheckBooking: false,
   isLoadingAddBooking: false,
   isLoadingGetBookings: true,
   orderList: [],
@@ -97,6 +118,39 @@ const transactionClientSlice = createSlice({
             });
 
       state.isLoadingGetBookings = false;
+    });
+
+    builder.addCase(cancelBookingsClientThunk.pending, (state) => {
+      state.isLoadingGetBookings = true;
+    });
+    builder.addCase(cancelBookingsClientThunk.fulfilled, (state, action) => {
+      if (action.payload)
+        state.orderList = action.payload.error
+          ? state.orderList
+          : state.orderList.map((data) => {
+              if (action.payload)
+                if (action.payload.data.id === data.id)
+                  return {
+                    ...action.payload.data,
+                  };
+
+              return data;
+            });
+
+      state.isLoadingGetBookings = false;
+    });
+
+    builder.addCase(checkBookingClientThunk.pending, (state) => {
+      state.isLoadingCheckBooking = true;
+      state.preOrderList = undefined;
+    });
+    builder.addCase(checkBookingClientThunk.fulfilled, (state, action) => {
+      if (action.payload)
+        state.preOrderList = action.payload.error
+          ? undefined
+          : action.payload.data;
+
+      state.isLoadingCheckBooking = false;
     });
   },
 });

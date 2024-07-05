@@ -42,6 +42,8 @@ export type OrderType = {
   checkOut: Date;
   orderProperty: OrderPropertyType;
   orderRooms: OrderRoomType[];
+  createAt: Date;
+  updateAt: Date;
 };
 
 export type OrderPropertyType = {
@@ -88,6 +90,15 @@ export type Order = {
 export type LineItem = {
   name: string;
   price: number;
+  quantity: number;
+};
+
+export type LineItemCheckBookingRes = {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice: number;
+  specialPrice: number | null;
   quantity: number;
 };
 

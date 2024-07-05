@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import {
+  cancelBookingsClientThunk,
   getBookingsClientThunk,
   updateBookingsClientThunk,
 } from '@/redux/slices/client/transaction-thunk';
@@ -20,7 +21,9 @@ import {
   DialogTitle,
   DialogFooter,
   DialogTrigger,
+  DialogClose,
 } from '@/components/ui/dialog';
+import { formatDistance } from 'date-fns';
 
 const OrderPage = () => {
   const { data: session, update } = useSession();
@@ -36,6 +39,14 @@ const OrderPage = () => {
   const haldleIsDialogOpen = (open: boolean) => {
     setIsOpenDialog(open);
   };
+
+  const sortedOrderList = orderList.slice().sort((a, b) => {
+    const createAtA = new Date(a.updateAt).getTime(); // Convert to timestamp
+    const createAtB = new Date(b.updateAt).getTime(); // Convert to timestamp
+
+    // Sort by descending order of createAt
+    return createAtB - createAtA;
+  });
 
   useEffect(() => {
     if (session && isLoadingGetBookings) {
@@ -53,7 +64,7 @@ const OrderPage = () => {
       {/* {JSON.stringify(orderList)} */}
       <div className="my-6 flex w-full flex-col items-center gap-3 px-6 md:px-10 xl:px-20">
         {orderList.length > 0 ? (
-          orderList.map(
+          sortedOrderList.map(
             (
               {
                 id,
@@ -66,6 +77,7 @@ const OrderPage = () => {
                 orderRooms,
                 urlPayment,
                 invoiceId,
+                updateAt,
               },
               index,
             ) => (
@@ -91,6 +103,12 @@ const OrderPage = () => {
                 <p className="text-sm font-semibold">
                   {formatCurrencyRp(totalPayment)}
                 </p>
+                <p className="text-xs tracking-tighter">
+                  order at:{' '}
+                  {formatDistance(new Date(updateAt), new Date(), {
+                    addSuffix: true,
+                  })}
+                </p>
 
                 <div className="flex w-full justify-end">
                   <div
@@ -98,7 +116,9 @@ const OrderPage = () => {
                       'flex w-full items-center justify-center rounded-xl border-[1px] px-4 py-2',
                       status === 'pending' && new Date(expDateTime) < new Date()
                         ? 'border-red-700 text-red-700'
-                        : 'border-gossamer-600 text-gossamer-600',
+                        : status === 'cancelled'
+                          ? 'border-red-700 text-red-700'
+                          : 'border-gossamer-600 text-gossamer-600',
                       'text-sm font-bold',
                     )}
                   >
@@ -107,8 +127,10 @@ const OrderPage = () => {
                       'Expired'
                     ) : status === 'finished' ? (
                       'Finished'
+                    ) : status === 'cancelled' ? (
+                      'Cancelled'
                     ) : (
-                      <div className="flex flex-col gap-3 items-center">
+                      <div className="flex flex-col items-center gap-3">
                         <p>Waiting for Payment</p>
                         <CountDown dateAt={new Date(expDateTime)} />
                       </div>
@@ -119,15 +141,53 @@ const OrderPage = () => {
                 {status === 'pending' && new Date(expDateTime) > new Date() && (
                   <>
                     <div className="flex w-full justify-end">
-                      <Button
-                        className={cn(
-                          'flex w-full items-center justify-center rounded-xl border-[1px] px-4 py-2',
-                          'bg-red-600 text-white hover:bg-red-600/90',
-                          'text-sm font-bold',
-                        )}
-                      >
-                        Cancel Payment
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            className={cn(
+                              'flex w-full items-center justify-center rounded-xl border-[1px] px-4 py-2',
+                              'bg-red-600 text-white hover:bg-red-600/90',
+                              'text-sm font-bold',
+                            )}
+                          >
+                            Cancel Payment
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader className="gap-4">
+                            <DialogTitle>
+                              Apakah Anda benar-benar yakin?
+                            </DialogTitle>
+                            <DialogDescription>
+                              Tindakan ini tidak bisa dibatalkan. Tindakan ini
+                              akan membatalkan order anda secara permanen.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter>
+                            <DialogClose>
+                              <Button className="w-fit" variant={'ghost'}>
+                                Batal
+                              </Button>
+                            </DialogClose>
+
+                            <Button
+                              className="bg-gossamer-500 hover:bg-gossamer-500/90 w-fit"
+                              onClick={() => {
+                                session &&
+                                  dispatch(
+                                    cancelBookingsClientThunk({
+                                      userId: session.user.id,
+                                      invoiceId,
+                                      token: session.user.accessToken!,
+                                    }),
+                                  );
+                              }}
+                            >
+                              Yakin
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                     <div className="flex w-full justify-end">
                       <Button
