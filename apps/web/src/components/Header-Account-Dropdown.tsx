@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  NotebookText,
   Settings,
   User,
 } from 'lucide-react';
@@ -81,6 +82,12 @@ const HeaderAccountDropdown = () => {
               <DropdownMenuItem>
                 <DollarSign className="mr-2 h-4 w-4" />
                 <span>Special Price</span>
+              </DropdownMenuItem>
+            </Link>
+            <Link href={'/tenant/order'}>
+              <DropdownMenuItem>
+                <NotebookText className="mr-2 h-4 w-4" />
+                <span>Order</span>
               </DropdownMenuItem>
             </Link>
           </DropdownMenuGroup>

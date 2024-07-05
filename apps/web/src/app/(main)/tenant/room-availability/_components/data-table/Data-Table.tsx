@@ -49,7 +49,7 @@ const RoomAvailabilityDataTable = ({
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Fine type room..."
+          placeholder="Find type room..."
           value={(table.getColumn("type")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("type")?.setFilterValue(event.target.value)
