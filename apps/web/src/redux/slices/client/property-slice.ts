@@ -10,7 +10,8 @@ export type TPropertiesClient = {
   description: string;
   location: string;
   image: string;
-  price: number;
+  minPrice: number;
+  maxPrice: number;
 };
 
 export type TPropertyDetailClient = {
@@ -52,6 +53,8 @@ export type SpecialPrice = {
 type TInitialState = {
   properties: TPropertiesClient[];
   properyDetail?: TPropertyDetailClient;
+  totalPage?: number;
+  totalResult?: number;
   isLoading: boolean;
   isPropertyDetailLoading: boolean;
 };
@@ -71,10 +74,13 @@ const propertiesClientSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getPropertiesClientThunk.fulfilled, (state, action) => {
-      if (action.payload)
-        state.properties = action.payload.error
-          ? [...state.properties]
-          : action.payload.data;
+      if (action.payload) {
+        if (!action.payload.error) {
+          state.properties = action.payload.data.properties;
+          state.totalPage = action.payload.data.totalPage;
+          state.totalResult = action.payload.data.totalResult;
+        }
+      };
 
       state.isLoading = false;
     });
