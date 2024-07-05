@@ -10,6 +10,7 @@ import { timeStampString } from '@/utils/doku-utils/doku-config';
 import {
   AddBokingProperty,
   AddDOKUPayment,
+  CancelBokingPropertyByTenantReq,
   CheckBokingPropertyReq,
   DOKUPaymentType,
   LineItem,
@@ -142,7 +143,6 @@ export class TransactionService {
     );
 
     console.log('SUCCESS----------------------------------', raw);
-
 
     const res: DOKURes = response.data;
     return {
@@ -419,7 +419,7 @@ export class TransactionService {
         invoiceId,
       },
       data: {
-        status: 'finished',
+        status: 'confirming',
       },
       include: {
         orderRooms: {
@@ -493,6 +493,87 @@ export class TransactionService {
       },
       data: {
         status: 'cancelled',
+      },
+      include: {
+        orderRooms: {
+          include: { room: true },
+        },
+      },
+    });
+
+    return toAddBokingProperty({
+      ...updateorder,
+      orderProperty: {
+        ...property,
+        category: property.propertyCategory.name,
+      },
+      orderRooms: updateorder.orderRooms.map(
+        ({ id, room: { image, description, type }, quantity, price }) => ({
+          id,
+          image,
+          description,
+          type,
+          quantity,
+          price,
+        }),
+      ),
+    });
+  }
+
+  static async cancelBookingPropertyByTenant(
+    req: CancelBokingPropertyByTenantReq,
+  ) {
+    const { userId, tenantId, invoiceId } = req;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) throw new ResponseError(404, 'User does not exist.');
+
+    const tenant = await prisma.user.findUnique({
+      where: { id: tenantId },
+    });
+
+    if (!user) throw new ResponseError(404, 'Tenant does not exist.');
+
+    const order = await prisma.order.findFirst({
+      where: {
+        userId,
+        invoiceId,
+      },
+      include: {
+        orderRooms: {
+          include: {
+            room: {
+              include: {
+                property: {
+                  include: {
+                    propertyCategory: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) throw new Error('Order does not exist.');
+
+    const property = order.orderRooms[0].room.property;
+    const id = order.id;
+
+    if (!property) throw new ResponseError(404, 'Property does not exist.');
+
+    const updateorder = await prisma.order.update({
+      where: {
+        id,
+        userId,
+        invoiceId,
+      },
+      data: {
+        status: 'cancelled by tenant',
       },
       include: {
         orderRooms: {

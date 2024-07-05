@@ -3,6 +3,7 @@ import { verifyToken } from '@/middlewares/auth.middleware';
 import {
   validateAddBooking,
   validateGetBookings,
+  validateTenantUpdateBooking,
   validateUpdateBooking,
 } from '@/validation/transaction.validation';
 
@@ -50,6 +51,12 @@ export class TransactionRouter {
       '/checking',
       validateAddBooking,
       this.transactionController.checkBoking,
+    );
+
+    this.router.patch(
+      '/tenant/booking/cancel/:tId/:uId/:iId',
+      validateTenantUpdateBooking,
+      this.transactionController.cancelBokingPropertyByTenant,
     );
   }
 

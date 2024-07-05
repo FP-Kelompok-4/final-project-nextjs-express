@@ -54,8 +54,7 @@ export class TransactionController {
     try {
       const request = req.body as AddBokingProperty;
 
-      const check =
-        await TransactionService.checkBookingPayment(request);
+      const check = await TransactionService.checkBookingPayment(request);
 
       res.status(201).send({
         data: check,
@@ -71,6 +70,28 @@ export class TransactionController {
 
       const book = await TransactionService.cancelBookingProperty({
         userId,
+        invoiceId,
+      });
+
+      res.status(201).send({
+        data: book,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async cancelBokingPropertyByTenant(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { tId: tenantId, uId: userId, iId: invoiceId } = req.params;
+
+      const book = await TransactionService.cancelBookingPropertyByTenant({
+        userId,
+        tenantId,
         invoiceId,
       });
 
