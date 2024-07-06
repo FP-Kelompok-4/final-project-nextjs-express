@@ -1,6 +1,6 @@
 import { OrderController } from '@/controllers/order.controller';
 import { tenantGuard, verifyToken } from '@/middlewares/auth.middleware';
-import { validateTenantUpdateBooking } from "@/validation/transaction.validation";
+import { validateTenantUpdateBooking } from '@/validation/transaction.validation';
 import { Router } from 'express';
 
 export class OrderRouter {
@@ -23,6 +23,18 @@ export class OrderRouter {
       '/cancel/:tId/:uId/:iId',
       validateTenantUpdateBooking,
       this.orderController.cancelBokingPropertyByTenant,
+    );
+
+    this.router.patch(
+      '/accept/:tId/:uId/:iId',
+      validateTenantUpdateBooking,
+      this.orderController.acceptedBokingPropertyByTenant,
+    );
+
+    this.router.patch(
+      '/reject/:tId/:uId/:iId',
+      validateTenantUpdateBooking,
+      this.orderController.rejectedBokingPropertyByTenant,
     );
   }
 

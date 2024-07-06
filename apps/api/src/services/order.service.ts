@@ -122,4 +122,179 @@ export class OrderService {
       customerGender: user.gender,
     });
   }
+
+
+  static async rejectOrder(req: CancelOrderReq) {
+    const { userId, tenantId, invoiceId } = req;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) throw new ResponseError(404, 'User does not exist.');
+
+    const tenant = await prisma.user.findUnique({
+      where: { id: tenantId },
+    });
+
+    if (!tenant) throw new ResponseError(404, 'Tenant does not exist.');
+
+    const order = await prisma.order.findFirst({
+      where: {
+        userId,
+        invoiceId,
+      },
+      include: {
+        orderRooms: {
+          include: {
+            room: {
+              include: {
+                property: {
+                  include: {
+                    propertyCategory: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) throw new Error('Order does not exist.');
+
+    const property = order.orderRooms[0].room.property;
+    const id = order.id;
+
+    if (!property) throw new ResponseError(404, 'Property does not exist.');
+
+    const updateorder = await prisma.order.update({
+      where: {
+        id,
+        userId,
+        invoiceId,
+      },
+      data: {
+        status: 'rejected',
+      },
+      include: {
+        orderRooms: {
+          include: { room: true },
+        },
+      },
+    });
+
+    return toCancelOrderRes({
+      orderId: updateorder.id,
+      name: property.name,
+      propertyCategory: property.propertyCategory.name,
+      checkIn: updateorder.checkIn,
+      checkOut: updateorder.checkOut,
+      expDateTime: updateorder.expDateTime,
+      invoiceId: updateorder.invoiceId,
+      totalPayment: updateorder.totalPayment,
+      rooms: updateorder.orderRooms.map(
+        ({ orderId, price, quantity, room }) => {
+          return {
+            orderId,
+            quantity,
+            price,
+            type: room.type,
+          };
+        },
+      ),
+      status: updateorder.status,
+      customerId: user.id,
+      customerName: user.name,
+      customerEmail: user.email,
+      customerGender: user.gender,
+    });
+  }
+
+  static async acceptOrder(req: CancelOrderReq) {
+    const { userId, tenantId, invoiceId } = req;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) throw new ResponseError(404, 'User does not exist.');
+
+    const tenant = await prisma.user.findUnique({
+      where: { id: tenantId },
+    });
+
+    if (!tenant) throw new ResponseError(404, 'Tenant does not exist.');
+
+    const order = await prisma.order.findFirst({
+      where: {
+        userId,
+        invoiceId,
+      },
+      include: {
+        orderRooms: {
+          include: {
+            room: {
+              include: {
+                property: {
+                  include: {
+                    propertyCategory: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) throw new Error('Order does not exist.');
+
+    const property = order.orderRooms[0].room.property;
+    const id = order.id;
+
+    if (!property) throw new ResponseError(404, 'Property does not exist.');
+
+    const updateorder = await prisma.order.update({
+      where: {
+        id,
+        userId,
+        invoiceId,
+      },
+      data: {
+        status: 'finished',
+      },
+      include: {
+        orderRooms: {
+          include: { room: true },
+        },
+      },
+    });
+
+    return toCancelOrderRes({
+      orderId: updateorder.id,
+      name: property.name,
+      propertyCategory: property.propertyCategory.name,
+      checkIn: updateorder.checkIn,
+      checkOut: updateorder.checkOut,
+      expDateTime: updateorder.expDateTime,
+      invoiceId: updateorder.invoiceId,
+      totalPayment: updateorder.totalPayment,
+      rooms: updateorder.orderRooms.map(
+        ({ orderId, price, quantity, room }) => {
+          return {
+            orderId,
+            quantity,
+            price,
+            type: room.type,
+          };
+        },
+      ),
+      status: updateorder.status,
+      customerId: user.id,
+      customerName: user.name,
+      customerEmail: user.email,
+      customerGender: user.gender,
+    });
+  }
 }

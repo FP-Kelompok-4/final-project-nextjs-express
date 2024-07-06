@@ -48,10 +48,77 @@ export const cancelOrderByTenantThunk = createAsyncThunk(
         },
       );
 
-      console.log(tenantId, userId, invoiceId);
-      console.log(res.data.data);
-
       return { success: 'Success Cancel Order', data: res.data.data };
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        return {
+          error: e.response?.data.message,
+        };
+      }
+    }
+  },
+);
+
+export const rejectOrderByTenantThunk = createAsyncThunk(
+  'orderTenant/rejectOrderByTenant',
+  async ({
+    token,
+    tenantId,
+    userId,
+    invoiceId,
+  }: {
+    token: string;
+    tenantId: string;
+    userId: string;
+    invoiceId: string;
+  }) => {
+    try {
+      const res = await api.patch(
+        `order/reject/${tenantId}/${userId}/${invoiceId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      return { success: 'Success Reject Order', data: res.data.data };
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        return {
+          error: e.response?.data.message,
+        };
+      }
+    }
+  },
+);
+
+export const acceptOrderByTenantThunk = createAsyncThunk(
+  'orderTenant/acceptOrderByTenant',
+  async ({
+    token,
+    tenantId,
+    userId,
+    invoiceId,
+  }: {
+    token: string;
+    tenantId: string;
+    userId: string;
+    invoiceId: string;
+  }) => {
+    try {
+      const res = await api.patch(
+        `order/accept/${tenantId}/${userId}/${invoiceId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      return { success: 'Success Accept Order', data: res.data.data };
     } catch (e) {
       if (axios.isAxiosError(e)) {
         return {

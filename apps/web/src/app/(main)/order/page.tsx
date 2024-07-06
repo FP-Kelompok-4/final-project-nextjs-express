@@ -114,11 +114,12 @@ const OrderPage = () => {
                   <div
                     className={cn(
                       'flex w-full items-center justify-center rounded-xl border-[1px] px-4 py-2',
-                      status === 'pending' && new Date(expDateTime) < new Date()
+                      (status === 'pending' &&
+                        new Date(expDateTime) < new Date()) ||
+                        status === 'cancelled' ||
+                        status === 'rejected'
                         ? 'border-red-700 text-red-700'
-                        : status === 'cancelled'
-                          ? 'border-red-700 text-red-700'
-                          : 'border-gossamer-600 text-gossamer-600',
+                        : 'border-gossamer-600 text-gossamer-600',
                       'text-sm font-bold',
                     )}
                   >
@@ -129,6 +130,10 @@ const OrderPage = () => {
                       'Finished'
                     ) : status === 'cancelled' ? (
                       'Cancelled'
+                    ) : status === 'confirming' ? (
+                      'Confirming'
+                    ) : status === 'rejected' ? (
+                      'Rejected'
                     ) : (
                       <div className="flex flex-col items-center gap-3">
                         <p>Waiting for Payment</p>
