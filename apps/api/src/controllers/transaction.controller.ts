@@ -90,14 +90,25 @@ export class TransactionController {
         invoiceId,
       });
 
-      const book = await TransactionService.updateBookingProperty({
-        userId,
-        invoiceId,
-      });
+      if (order) {
+        const book = await TransactionService.updateBookingProperty({
+          userId,
+          invoiceId,
+        });
 
-      res.status(201).send({
-        data: book,
-      });
+        res.status(201).send({
+          data: book,
+        });
+      } else {
+        const book = await TransactionService.getBookingProperty({
+          userId,
+          invoiceId,
+        });
+
+        res.status(201).send({
+          data: book,
+        });
+      }
     } catch (e) {
       next(e);
     }

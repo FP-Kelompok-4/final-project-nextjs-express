@@ -287,7 +287,7 @@ export class TransactionService {
 
       return res;
     } catch (error) {
-      throw new Error(JSON.stringify(error));
+      return;
     }
   };
 
@@ -432,6 +432,62 @@ export class TransactionService {
         category: property.propertyCategory.name,
       },
       orderRooms: updateorder.orderRooms.map(
+        ({ id, room: { image, description, type }, quantity, price }) => ({
+          id,
+          image,
+          description,
+          type,
+          quantity,
+          price,
+        }),
+      ),
+    });
+  }
+
+  static async getBookingProperty(req: CheckBokingPropertyReq) {
+    const { userId, invoiceId } = req;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) throw new ResponseError(404, 'User does not exist.');
+
+    const order = await prisma.order.findFirst({
+      where: {
+        userId,
+        invoiceId,
+      },
+      include: {
+        orderRooms: {
+          include: {
+            room: {
+              include: {
+                property: {
+                  include: {
+                    propertyCategory: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) throw new Error('order does not exist.');
+
+    const property = order.orderRooms[0].room.property;
+
+    if (!property) throw new ResponseError(404, 'Property does not exist.');
+
+    return toAddBokingProperty({
+      ...order,
+      orderProperty: {
+        ...property,
+        category: property.propertyCategory.name,
+      },
+      orderRooms: order.orderRooms.map(
         ({ id, room: { image, description, type }, quantity, price }) => ({
           id,
           image,

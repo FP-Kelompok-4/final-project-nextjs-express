@@ -1,7 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
+  acceptOrderByTenantThunk,
   cancelOrderByTenantThunk,
   getOrderByUserId,
+  rejectOrderByTenantThunk,
 } from './orderTenant-thunk';
 
 type TGetRoomsByUserId = {
@@ -57,6 +59,46 @@ const orderTenantSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(cancelOrderByTenantThunk.fulfilled, (state, action) => {
+      if (action.payload)
+        state.orders = action.payload.error
+          ? state.orders
+          : state.orders.map((data) => {
+              if (action.payload)
+                if (action.payload.data.orderId === data.orderId)
+                  return {
+                    ...action.payload.data,
+                  };
+
+              return data;
+            });
+
+      state.isLoading = false;
+    });
+
+    builder.addCase(acceptOrderByTenantThunk.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(acceptOrderByTenantThunk.fulfilled, (state, action) => {
+      if (action.payload)
+        state.orders = action.payload.error
+          ? state.orders
+          : state.orders.map((data) => {
+              if (action.payload)
+                if (action.payload.data.orderId === data.orderId)
+                  return {
+                    ...action.payload.data,
+                  };
+
+              return data;
+            });
+
+      state.isLoading = false;
+    });
+
+    builder.addCase(rejectOrderByTenantThunk.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(rejectOrderByTenantThunk.fulfilled, (state, action) => {
       if (action.payload)
         state.orders = action.payload.error
           ? state.orders

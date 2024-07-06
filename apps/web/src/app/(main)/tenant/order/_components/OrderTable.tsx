@@ -1,6 +1,13 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, Ban, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import {
+  ArrowUpDown,
+  Ban,
+  Check,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -23,7 +30,10 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
-import { cancelOrderByTenantThunk } from '@/redux/slices/orderTenant-thunk';
+import {
+  acceptOrderByTenantThunk,
+  cancelOrderByTenantThunk,
+} from '@/redux/slices/orderTenant-thunk';
 import { useToast } from '@/components/ui/use-toast';
 
 const OrderTable = () => {
@@ -62,7 +72,6 @@ const OrderTable = () => {
     {
       accessorKey: 'invoiceId',
       header: 'Invoice Id',
-
     },
     {
       accessorKey: 'status',
@@ -231,6 +240,62 @@ const OrderTable = () => {
                     <span>Cancel</span>
                   </DropdownMenuItem>
                 )}
+              {roomAvaila.status === 'confirming' && (
+                <>
+                  <DropdownMenuItem
+                    className="text-gossamer-700 flex items-center gap-2"
+                    onClick={() => {
+                      if (session)
+                        dispatch(
+                          acceptOrderByTenantThunk({
+                            tenantId: session.user.id,
+                            userId: roomAvaila.customerId,
+                            invoiceId: roomAvaila.invoiceId,
+                            token: session.user.accessToken!,
+                          }),
+                        ).then((data: any) => {
+                          toast({
+                            variant: data.payload.error
+                              ? 'destructive'
+                              : 'default',
+                            title: data.payload.error
+                              ? data.payload.error
+                              : data.payload.success,
+                          });
+                        });
+                    }}
+                  >
+                    <Check size={16} />
+                    <span>Accept</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="flex items-center gap-2 text-red-700"
+                    onClick={() => {
+                      if (session)
+                        dispatch(
+                          cancelOrderByTenantThunk({
+                            tenantId: session.user.id,
+                            userId: roomAvaila.customerId,
+                            invoiceId: roomAvaila.invoiceId,
+                            token: session.user.accessToken!,
+                          }),
+                        ).then((data: any) => {
+                          toast({
+                            variant: data.payload.error
+                              ? 'destructive'
+                              : 'default',
+                            title: data.payload.error
+                              ? data.payload.error
+                              : data.payload.success,
+                          });
+                        });
+                    }}
+                  >
+                    <Ban size={16} />
+                    <span>Reject</span>
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );

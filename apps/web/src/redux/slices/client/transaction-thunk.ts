@@ -23,14 +23,6 @@ export const addBookingClientThunk = createAsyncThunk(
     token: string;
   }) => {
     try {
-      console.log({
-        userId,
-        pId,
-        checkIn,
-        checkOut,
-        rooms: JSON.stringify(rooms),
-      });
-
       const res = await api.post(
         `transaction/booking`,
         {
@@ -47,7 +39,7 @@ export const addBookingClientThunk = createAsyncThunk(
         },
       );
 
-      return { success: res.data.success, data: res.data.data };
+      return { success: 'Success Add Order', data: res.data.data };
     } catch (e) {
       if (axios.isAxiosError(e)) {
         return {
@@ -94,8 +86,6 @@ export const checkBookingClientThunk = createAsyncThunk(
           },
         },
       );
-
-      console.log(res.data);
 
       return { success: res.data.success, data: res.data.data };
     } catch (e) {
