@@ -5,8 +5,8 @@ import { Search } from 'lucide-react';
 import { Button } from '../ui/button';
 import { DatePickerWithRange } from '../Datepicker-range';
 import { cn } from '@/lib/utils';
-import { DateRange } from "react-day-picker";
-import { useRouter, useSearchParams } from "next/navigation";
+import { DateRange } from 'react-day-picker';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const FormSearchProperty = ({
   className,
@@ -18,15 +18,19 @@ const FormSearchProperty = ({
   const [name, setName] = React.useState<string | undefined>();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nameParam = searchParams.get("name");
-  const fromDateParam = searchParams.get("fromDate");
-  const toDateParam = searchParams.get("toDate");
+  const nameParam = searchParams.get('name');
+  const fromDateParam = searchParams.get('fromDate');
+  const toDateParam = searchParams.get('toDate');
 
   const handleOnSearch = () => {
     if (name && date?.from && date.to) {
-      router.push(`/property?name=${name}&fromDate=${date.from.toISOString()}&toDate=${date.to.toISOString()}`);
+      router.push(
+        `/property?name=${name}&fromDate=${date.from.toISOString()}&toDate=${date.to.toISOString()}`,
+      );
     } else if (!name && date?.from && date.to) {
-      router.push(`/property?fromDate=${date.from.toISOString()}&toDate=${date.to.toISOString()}`);
+      router.push(
+        `/property?fromDate=${date.from.toISOString()}&toDate=${date.to.toISOString()}`,
+      );
     } else if (name && date?.from && !date.to) {
       router.push(`/property?name=${name}&fromDate=${date.from.toISOString()}`);
     } else if (!name && date?.from && !date.to) {
@@ -36,13 +40,15 @@ const FormSearchProperty = ({
     } else {
       router.push(`/property`);
     }
-  }
+  };
 
   useEffect(() => {
     if (nameParam) setName(nameParam);
-    if (fromDateParam) setDate({from: new Date(fromDateParam)});
-    if (toDateParam) setDate({from: new Date(fromDateParam!), to: new Date(toDateParam)});
-  }, [])
+    if (fromDateParam) setDate({ from: new Date(fromDateParam) });
+    if (toDateParam)
+      setDate({ from: new Date(fromDateParam!), to: new Date(toDateParam) });
+  }, []);
+
   return (
     <div className={cn('', className)}>
       <Input
@@ -60,9 +66,10 @@ const FormSearchProperty = ({
         type="number"
       /> */}
       <div className="flex h-auto pr-2">
-        <Button 
+        <Button
           onClick={handleOnSearch}
-          className="bg-gossamer-500 hover:bg-gossamer-500/90 flex gap-1.5 rounded-full">
+          className="bg-gossamer-500 hover:bg-gossamer-500/90 flex gap-1.5 rounded-full"
+        >
           <Search size={16} />
           <span>Cari</span>
         </Button>
