@@ -58,3 +58,22 @@ export const validateUpdateBooking = [
     next();
   },
 ];
+
+export const validateTenantUpdateBooking = [
+  param('tId').trim().notEmpty().withMessage('Tenant Id is required'),
+  param('uId').trim().notEmpty().withMessage('User Id is required'),
+  param('iId').trim().notEmpty().withMessage('Invoice Id is required'),
+
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        status: 'fail',
+        message: errors.array(),
+      });
+    }
+
+    next();
+  },
+];

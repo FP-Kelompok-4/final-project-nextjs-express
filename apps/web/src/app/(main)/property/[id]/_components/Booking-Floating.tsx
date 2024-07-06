@@ -295,52 +295,6 @@ const BookingFloating = ({
                   </div>
                 </div>
 
-                {/* <div className="flex flex-col gap-1">
-                  {orderList.map(
-                    ({ id, type, price, quantity, amount }, index) => (
-                      <div
-                        key={`${id}-${index}`}
-                        className="flex items-center justify-between rounded-md border-[1px] px-4 py-2"
-                      >
-                        <p className="text-xs font-semibold">{type}</p>
-                        <div className="flex items-center gap-1">
-                          <p className="text-athens-gray-400 text-xs font-semibold">
-                            {formatCurrencyRp(price)}
-                          </p>
-                          <p className="text-athens-gray-400 text-xs font-semibold">
-                            x
-                          </p>
-                          <p className="text-athens-gray-400 text-xs font-semibold">
-                            {quantity}
-                          </p>
-                          <p className="text-athens-gray-400 text-xs font-semibold">
-                            :
-                          </p>
-                          <p className="text-sm font-semibold">
-                            {formatCurrencyRp(amount)}
-                          </p>
-                        </div>
-                      </div>
-                    ),
-                  )}
-                </div>
-                <div className="flex w-full flex-col items-end justify-end gap-2 pr-4">
-                  <div className="flex items-center gap-1">
-                    <p className="text-sm font-semibold">{daysBooking} days</p>
-                    <p className="text-athens-gray-400 text-xs font-semibold">
-                      x
-                    </p>
-                    <p className="text-sm font-semibold">
-                      {formatCurrencyRp(totalPay)}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <p className="text-lg font-bold">
-                      {formatCurrencyRp(totalPay * daysBooking)}
-                    </p>
-                  </div>
-                </div> */}
               </div>
 
               <DialogFooter>
@@ -376,7 +330,7 @@ const BookingFloating = ({
                             : 'default',
                           title: data.payload.error
                             ? JSON.stringify(data.payload.error)
-                            : 'Success Check Order',
+                            : 'Success Add Order',
                         });
 
                         if (!data.payload.error) {

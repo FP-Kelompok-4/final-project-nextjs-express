@@ -54,8 +54,7 @@ export class TransactionController {
     try {
       const request = req.body as AddBokingProperty;
 
-      const check =
-        await TransactionService.checkBookingPayment(request);
+      const check = await TransactionService.checkBookingPayment(request);
 
       res.status(201).send({
         data: check,
@@ -91,14 +90,25 @@ export class TransactionController {
         invoiceId,
       });
 
-      const book = await TransactionService.updateBookingProperty({
-        userId,
-        invoiceId,
-      });
+      if (order) {
+        const book = await TransactionService.updateBookingProperty({
+          userId,
+          invoiceId,
+        });
 
-      res.status(201).send({
-        data: book,
-      });
+        res.status(201).send({
+          data: book,
+        });
+      } else {
+        const book = await TransactionService.getBookingProperty({
+          userId,
+          invoiceId,
+        });
+
+        res.status(201).send({
+          data: book,
+        });
+      }
     } catch (e) {
       next(e);
     }
