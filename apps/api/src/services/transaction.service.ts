@@ -6,7 +6,7 @@ import {
 } from './../utils/doku-utils/doku-config';
 import { ResponseError } from '@/error/response-error';
 import prisma from '@/prisma';
-import { timeStampString } from '@/utils/doku-utils/doku-config';
+import { getCurrentTimeString } from '@/utils/doku-utils/doku-config';
 import {
   AddBokingProperty,
   AddDOKUPayment,
@@ -94,10 +94,12 @@ export class TransactionService {
       });
     });
 
+    const currentTimeString = getCurrentTimeString();
+
     const raw = JSON.stringify({
       order: {
         amount,
-        invoice_number: `INV-${timeStampString}`,
+        invoice_number: `INV-${currentTimeString}`,
         currency: 'IDR',
         session_id: 'SU5WFDferd561dfasfasdfae123c',
         callback_url: `http://localhost:3000/property/${pId}`,
@@ -121,8 +123,6 @@ export class TransactionService {
       },
     });
 
-    console.log('RAW----------------------------------', raw);
-
     const requestId = generateRequestId();
     const requestTimestamp = getCurrentTimestamp();
     const signature = generateSignature(raw, requestId, requestTimestamp);
@@ -140,9 +140,6 @@ export class TransactionService {
       raw,
       { headers: myHeaders },
     );
-
-    console.log('SUCCESS----------------------------------', raw);
-
 
     const res: DOKURes = response.data;
     return {
@@ -419,7 +416,7 @@ export class TransactionService {
         invoiceId,
       },
       data: {
-        status: 'finished',
+        status: 'confirming',
       },
       include: {
         orderRooms: {

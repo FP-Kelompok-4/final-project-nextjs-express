@@ -1,6 +1,7 @@
-import { OrderController } from "@/controllers/order.controller";
-import { tenantGuard, verifyToken } from "@/middlewares/auth.middleware";
-import { Router } from "express";
+import { OrderController } from '@/controllers/order.controller';
+import { tenantGuard, verifyToken } from '@/middlewares/auth.middleware';
+import { validateTenantUpdateBooking } from "@/validation/transaction.validation";
+import { Router } from 'express';
 
 export class OrderRouter {
   private router: Router;
@@ -14,11 +15,14 @@ export class OrderRouter {
 
   private initializeRouters(): void {
     this.router.use(verifyToken);
-    
+
     this.router.use(tenantGuard);
-    this.router.get(
-      '/:userId',
-      this.orderController.getOrdersByUserId
+    this.router.get('/:userId', this.orderController.getOrdersByUserId);
+
+    this.router.patch(
+      '/cancel/:tId/:uId/:iId',
+      validateTenantUpdateBooking,
+      this.orderController.cancelBokingPropertyByTenant,
     );
   }
 

@@ -54,8 +54,7 @@ export class TransactionController {
     try {
       const request = req.body as AddBokingProperty;
 
-      const check =
-        await TransactionService.checkBookingPayment(request);
+      const check = await TransactionService.checkBookingPayment(request);
 
       res.status(201).send({
         data: check,
