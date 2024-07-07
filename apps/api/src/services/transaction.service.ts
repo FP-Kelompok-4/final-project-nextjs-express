@@ -601,15 +601,13 @@ export class TransactionService {
 
     if (orders.length < 1) return toGetBokingsProperty([]);
 
-    const property = orders[0].orderRooms[0].room.property;
-
     return toGetBokingsProperty([
       ...orders.map((order) => {
         return {
           ...order,
           orderProperty: {
-            ...property,
-            category: property.propertyCategory.name,
+            ...order.orderRooms[0].room.property,
+            category: order.orderRooms[0].room.property.name,
           },
           orderRooms: order.orderRooms.map(
             ({ id, room: { image, description, type }, quantity, price }) => ({
