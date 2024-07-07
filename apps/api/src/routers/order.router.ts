@@ -15,6 +15,7 @@ export class OrderRouter {
 
   private initializeRouters(): void {
     this.router.use(verifyToken);
+    this.router.get('/detail/:orderId', this.orderController.getOrdersByClientOrderId)
 
     this.router.use(tenantGuard);
     this.router.get('/:userId', this.orderController.getOrdersByUserId);

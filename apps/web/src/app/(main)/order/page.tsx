@@ -24,6 +24,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { formatDistance } from 'date-fns';
+import Link from "next/link";
 
 const OrderPage = () => {
   const { data: session, update } = useSession();
@@ -249,6 +250,11 @@ const OrderPage = () => {
                     </div>
                   </>
                 )}
+                <Link className="w-full" href={`/order/${id}`}>
+                  <Button className="w-full rounded-xl" variant="outline">
+                    Detail Order
+                  </Button>
+                </Link>
               </div>
             ),
           )

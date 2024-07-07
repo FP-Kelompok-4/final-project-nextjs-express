@@ -1,15 +1,45 @@
 import { ResponseError } from '@/error/response-error';
 import prisma from '@/prisma';
+import { countDaysInRange } from "@/utils/date-utils";
 import { Prisma } from '@prisma/client';
 import {
   CancelOrderReq,
+  TGetOrdersByClientOrderId,
   TGetOrdersByUserId,
   TGetRoomsByUserId,
   toCancelOrderRes,
+  toGetOrdersByClientOrderIdRes,
   toGetOrdersByUserIdRes,
 } from 'models/order.model';
 
 export class OrderService {
+  static async getOrdersByClientOrderId(orderId: string) {
+    const orders = await prisma.$queryRaw`SELECT o.id as orderId, o.status, o.totalPayment,
+      o.checkIn, o.checkOut, o.createAt, o.expDateTime, p.name, p.id as propertyId
+      FROM orders o
+      INNER JOIN orderRooms ors ON o.id=ors.order_id
+      INNER JOIN rooms r ON ors.room_id=r.id
+      INNER JOIN properties p ON r.property_id=p.id
+      WHERE o.id=${orderId}
+      GROUP BY o.id, p.id` as TGetOrdersByClientOrderId[];
+
+    const countDay = countDaysInRange(new Date(orders[0].checkIn), new Date(orders[0].checkOut));
+    orders[0].totalDays = countDay;
+
+    const rooms = await prisma.$queryRaw`SELECT ors.quantity, ors.price as totalPrice, rp.price, r.type, r.image, sp.price as specialPrice
+      FROM orderRooms ors
+      INNER JOIN rooms r ON ors.room_id=r.id
+      LEFT JOIN (
+        SELECT price, room_id
+        FROM specialPrices
+        WHERE fromDate <= ${orders[0].checkIn} AND toDate >= ${orders[0].checkOut}
+      ) sp ON r.id=sp.room_id
+      INNER JOIN roomPrices rp ON r.id=rp.room_id
+      WHERE ors.order_id=${orders[0].orderId}` as TGetRoomsByUserId[];
+
+    return toGetOrdersByClientOrderIdRes({orders, rooms})
+  }
+
   static async getOrdersByUserId(userId: string) {
     const orders =
       (await prisma.$queryRaw`SELECT o.id as orderId, p.name, pc.name as propertyCategory,

@@ -19,6 +19,8 @@ export type TGetRoomsByUserId = {
   quantity: number;
   price: number;
   type: string;
+  specialPrice?: number | null;
+  totalPrice?: number;
 };
 
 export type CancelOrderReq = {
@@ -26,6 +28,19 @@ export type CancelOrderReq = {
   tenantId: string;
   invoiceId: string;
 };
+
+export type TGetOrdersByClientOrderId = {
+  orderId: string;
+  name: string;
+  status: string;
+  totalPayment: number;
+  checkIn: Date | string;
+  checkOut: Date | string;
+  createAt: Date | string;
+  expDateTime: Date | string;
+  propertyId: string;
+  totalDays: number;
+}
 
 // Transform function
 export const toGetOrdersByUserIdRes = ({
@@ -49,4 +64,17 @@ export const toCancelOrderRes = (
   return {
     order,
   };
+};
+
+export const toGetOrdersByClientOrderIdRes = ({
+  orders,
+  rooms,
+}: {
+  orders: TGetOrdersByClientOrderId[];
+  rooms: TGetRoomsByUserId[];
+}) => {
+  return {
+    ...orders[0],
+    rooms: rooms
+  }
 };
