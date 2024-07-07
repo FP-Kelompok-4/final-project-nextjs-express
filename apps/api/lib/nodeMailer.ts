@@ -26,7 +26,12 @@ export const templateRuleNodemailer = async (email: string) => {
     from: `"StayCation" <${GOOGLE_USER}>`,
     to: email,
     subject: 'House Rule',
-    html: `
+    html: `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule of House - StayCation</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -71,6 +76,8 @@ export const templateRuleNodemailer = async (email: string) => {
             color: #777;
         }
     </style>
+    </head>
+<body>    
     <div class="container">
         <div class="header">
             <h1>StayCation</h1>
@@ -95,6 +102,8 @@ export const templateRuleNodemailer = async (email: string) => {
             <p>&copy; 2024 StayCation. All rights reserved.</p>
         </div>
     </div>
+    </body>
+</html>
     `,
   });
 };
