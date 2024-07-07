@@ -20,7 +20,12 @@ import { RoomRouter } from './routers/room.router';
 import { RoomAvailabilityRouter } from './routers/roomAvailability.router';
 import { TransactionRouter } from './routers/transaction.router';
 import { SpecialPriceRouter } from './routers/specialPrice.router';
-import { OrderRouter } from "./routers/order.router";
+import { OrderRouter } from './routers/order.router';
+import cron from 'node-cron';
+import {
+  reminderRuleUtil,
+  updateExpiredBookingPayment,
+} from './utils/schedules-utils';
 
 export default class App {
   private app: Express;
@@ -91,9 +96,23 @@ export default class App {
     this.app.use('/api/order', orderRouter.getRouter());
   }
 
+  private schedule(): void {
+    cron.schedule('0 0 0 */1 * *', () => {
+      console.log('--------------------Run 1 second');
+
+      reminderRuleUtil();
+    });
+
+    cron.schedule('0 */1 * * * *', () => {
+      updateExpiredBookingPayment();
+    });
+  }
+
   public start(): void {
     this.app.listen(PORT, () => {
       console.log(`  ➜  [API] Local:   http://localhost:${PORT}/`);
     });
+
+    this.schedule();
   }
 }

@@ -271,8 +271,6 @@ export class OrderService {
       },
     });
 
-    templateRuleNodemailer(user.email);
-
     return toCancelOrderRes({
       orderId: updateorder.id,
       name: property.name,
