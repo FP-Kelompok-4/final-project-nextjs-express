@@ -78,7 +78,7 @@ const SecurityContent = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-[400px] space-y-6"
+        className="w-full space-y-6"
       >
         <FormField
           control={form.control}
@@ -87,7 +87,12 @@ const SecurityContent = () => {
             <FormItem>
               <FormLabel>Password Baru</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Password Baru" type="password" />
+                <Input
+                  {...field}
+                  placeholder="Password Baru"
+                  type="password"
+                  disabled={session?.user.provider === 'google'}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -103,6 +108,7 @@ const SecurityContent = () => {
                 <Input
                   {...field}
                   placeholder="Konfirmasi Password Baru"
+                  disabled={session?.user.provider === 'google'}
                   type="password"
                 />
               </FormControl>
@@ -113,6 +119,7 @@ const SecurityContent = () => {
         <Button
           type="submit"
           className="bg-gossamer-500 hover:bg-gossamer-500/90 w-fit"
+          disabled={session?.user.provider === 'google'}
         >
           Ubah Password
         </Button>
@@ -136,6 +143,7 @@ const SecurityContent = () => {
 
               <Button
                 className="bg-gossamer-500 hover:bg-gossamer-500/90 w-fit"
+                disabled={session?.user.provider === 'google'}
                 onClick={onSureClickHandler}
               >
                 Yakin

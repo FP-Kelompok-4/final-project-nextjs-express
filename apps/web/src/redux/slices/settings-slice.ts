@@ -1,6 +1,6 @@
 import { AccountSchema } from '@/schemas/account-schema';
 import { createSlice } from '@reduxjs/toolkit';
-import { changeUserpasswordThunk, getAccountThunk, updateAccountThunk } from './settings-thunk';
+import { changeUserpasswordThunk, checkEmailThunk, getAccountThunk, updateAccountThunk } from './settings-thunk';
 import { z } from 'zod';
 
 type InitialState = {
@@ -10,6 +10,7 @@ type InitialState = {
     gender?: string | undefined;
   };
   isAccountLoading: boolean;
+  isChangePasswordLoading: boolean;
 };
 
 const initialState: InitialState = {
@@ -19,6 +20,7 @@ const initialState: InitialState = {
     birthdate: undefined,
   },
   isAccountLoading: true,
+  isChangePasswordLoading: false,
 };
 
 const settingsSlice = createSlice({
@@ -49,6 +51,13 @@ const settingsSlice = createSlice({
     });
     builder.addCase(changeUserpasswordThunk.fulfilled, (state, action) => {
       state.isAccountLoading = false;
+    });
+
+    builder.addCase(checkEmailThunk.pending, (state) => {
+      state.isChangePasswordLoading = true;
+    });
+    builder.addCase(checkEmailThunk.fulfilled, (state, action) => {
+      state.isChangePasswordLoading = false;
     });
   },
 });

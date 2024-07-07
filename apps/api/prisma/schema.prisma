@@ -51,7 +51,7 @@ model Property {
 
   userId             String           @map("user_id")
   user               User             @relation(fields: [userId], references: [id])
-  propertyCategoryId Int              @unique
+  propertyCategoryId Int              @map("property_category_id")
   propertyCategory   PropertyCategory @relation(fields: [propertyCategoryId], references: [id])
   rooms              Room[]
 
@@ -75,20 +75,22 @@ model Room {
   createAt    DateTime @default(now())
   updateAt    DateTime @updatedAt
 
-  propertyId String      @map("property_id")
-  property   Property    @relation(fields: [propertyId], references: [id])
-  roomPrices RoomPrice[]
-  orderRooms OrderRoom[]
+  propertyId         String             @map("property_id")
+  property           Property           @relation(fields: [propertyId], references: [id])
+  roomPrices         RoomPrice?
+  orderRooms         OrderRoom[]
+  roomAvailabilities RoomAvailability[]
+  specialPrices      SpecialPrice[]
 
   @@map("rooms")
 }
 
 model RoomPrice {
   id    String   @id @default(uuid())
-  date  DateTime
+  date  DateTime @default(now())
   price Float
 
-  roomId String @map("room_id")
+  roomId String @unique @map("room_id")
   room   Room   @relation(fields: [roomId], references: [id])
 
   @@map("roomPrices")
@@ -99,6 +101,7 @@ model Order {
   expDateTime  DateTime
   status       String   @default("pending") @db.VarChar(100)
   totalPayment Float
+  invoiceId    String   @db.VarChar(255)
   urlPayment   String   @db.VarChar(255)
   checkIn      DateTime
   checkOut     DateTime
@@ -127,10 +130,12 @@ model Review {
 model OrderRoom {
   id String @id @default(uuid())
 
-  orderId String @map("order_id")
-  order   Order  @relation(fields: [orderId], references: [id])
-  roomId  String @map("room_id")
-  room    Room   @relation(fields: [roomId], references: [id])
+  orderId  String @map("order_id")
+  order    Order  @relation(fields: [orderId], references: [id])
+  roomId   String @map("room_id")
+  room     Room   @relation(fields: [roomId], references: [id])
+  quantity Int
+  price    Float
 
   @@map("orderRooms")
 }
@@ -142,4 +147,27 @@ model VerificationToken {
   expires DateTime
 
   @@map("verificationTokens")
+}
+
+model RoomAvailability {
+  id       String   @id @default(uuid())
+  fromDate DateTime
+  toDate   DateTime
+
+  roomId String @map("room_id")
+  room   Room   @relation(fields: [roomId], references: [id])
+
+  @@map("roomAvailabilities")
+}
+
+model SpecialPrice {
+  id       String    @id @default(uuid())
+  price    Float
+  fromDate DateTime
+  toDate   DateTime?
+
+  roomId String @map("room_id")
+  room   Room   @relation(fields: [roomId], references: [id])
+
+  @@map("specialPrices")
 }

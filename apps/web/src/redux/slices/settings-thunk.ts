@@ -54,3 +54,20 @@ export const changeUserpasswordThunk = createAsyncThunk(
     }
   },
 );
+
+export const checkEmailThunk = createAsyncThunk(
+  'settings/checkEmail',
+  async (input: { email: string }) => {
+    try {
+      const res = await api.post(`users/check-email/`, input);
+
+      return { success: 'Success Check Email!', data: res.data.data };
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        return {
+          error: e.response?.data.message,
+        };
+      }
+    }
+  },
+);

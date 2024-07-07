@@ -49,6 +49,7 @@ const SigninWrapper = () => {
         backButtonLabel="Don't have an account?"
         backButtonLink='/signup'
         showSocial
+        isLogin
       >
         <Form {...form}>
           <form

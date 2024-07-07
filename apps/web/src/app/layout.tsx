@@ -8,6 +8,7 @@ import ReduxProvider from '@/redux/provider';
 import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/auth';
 import AlertNotVerified from '@/components/Alert-Not-Verified';
+import { Toaster as ToasterSooner } from '@/components/ui/sonner';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -26,9 +27,8 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('font-sans antialiased', inter.variable)}>
-        <ReduxProvider>
-          <SessionProvider session={session}>{children}</SessionProvider>
-        </ReduxProvider>
+        <ReduxProvider>{children}</ReduxProvider>
+        <ToasterSooner />
       </body>
     </html>
   );

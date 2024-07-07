@@ -8,8 +8,6 @@ import {
   toUpdateAccountUserRes,
   GetUserReq,
   toUserRes,
-  GetAccountUserReq,
-  toAccountUserRes,
   UpdateUserToNotVerifiedAndPasswordReq,
   UpdateImageUserReq,
 } from 'models/user.model';
@@ -76,7 +74,10 @@ export class UserService {
     if (!user) throw new ResponseError(404, 'Email or password is wrong!');
 
     if (!req.password && user.password)
-      throw new ResponseError(400, 'Email or  password is wrong!');
+      throw new ResponseError(400, 'Email or password is wrong!');
+
+    if (req.password && !user.password)
+      throw new ResponseError(400, 'Your account is registered using Google. Please sign in with Google.')
 
     if (req.password && user.password) {
       const isPasswordValid = await bcrypt.compare(req.password, user.password);
@@ -107,6 +108,27 @@ export class UserService {
     });
 
     if (!user) throw new ResponseError(404, 'User is not exist.');
+  }
+
+  static async verifyUserById(req: { id: string }) {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.id,
+      },
+    });
+
+    if (!user) throw new ResponseError(404, 'User is not exist.');
+  }
+
+  static async verifyUserCredentialByEmail(req: { email: string }) {
+    const user = await prisma.user.findUnique({
+      where: {
+        email: req.email,
+      },
+    });
+
+    if (user?.provider === 'google')
+      throw new ResponseError(401, 'User is google provider.');
   }
 
   static async getAccountUserById(id: string) {

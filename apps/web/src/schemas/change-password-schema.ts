@@ -19,8 +19,7 @@ export const ChangePasswordSchema = z
       .regex(/[0-9]/, { message: 'Contain at least one number.' })
       .trim(),
   })
-  .partial()
   .refine((data) => data.password === data.password_confirm, {
-    message: "password tidak cocok",
+    message: 'password tidak cocok',
     path: ['password_confirm'],
   });
