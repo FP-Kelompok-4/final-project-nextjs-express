@@ -1,6 +1,7 @@
 import { ResponseError } from '@/error/response-error';
 import prisma from '@/prisma';
 import { Prisma } from '@prisma/client';
+import { templateRuleNodemailer } from 'lib/nodeMailer';
 import {
   CancelOrderReq,
   TGetOrdersByUserId,
@@ -122,7 +123,6 @@ export class OrderService {
       customerGender: user.gender,
     });
   }
-
 
   static async rejectOrder(req: CancelOrderReq) {
     const { userId, tenantId, invoiceId } = req;

@@ -3,6 +3,7 @@ import {
   BedSingle,
   BookA,
   Building2,
+  Calendar,
   DollarSign,
   LayoutDashboard,
   LogOut,
@@ -88,6 +89,12 @@ const HeaderAccountDropdown = () => {
               <DropdownMenuItem>
                 <NotebookText className="mr-2 h-4 w-4" />
                 <span>Order</span>
+              </DropdownMenuItem>
+            </Link>
+            <Link href={'/tenant/calendar'}>
+              <DropdownMenuItem>
+                <Calendar className="mr-2 h-4 w-4" />
+                <span>Calendar</span>
               </DropdownMenuItem>
             </Link>
           </DropdownMenuGroup>

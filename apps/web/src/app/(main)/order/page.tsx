@@ -126,6 +126,8 @@ const OrderPage = () => {
                     {status === 'pending' &&
                     new Date(expDateTime) < new Date() ? (
                       'Expired'
+                    ) : status === 'expired' ? (
+                      'Expired'
                     ) : status === 'finished' ? (
                       'Finished'
                     ) : status === 'cancelled' ? (

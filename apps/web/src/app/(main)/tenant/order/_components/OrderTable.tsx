@@ -87,10 +87,12 @@ const OrderTable = () => {
                 ? 'text-gossamer-600'
                 : order.status === 'cancelled'
                   ? 'text-red-700'
-                  : order.status === 'pending' &&
-                      new Date(order.expDateTime) < new Date()
+                  : order.status === 'expired'
                     ? 'text-yellow-700'
-                    : 'text-yellow-500',
+                    : order.status === 'pending' &&
+                        new Date(order.expDateTime) < new Date()
+                      ? 'text-yellow-700'
+                      : 'text-yellow-500',
             )}
           >
             {order.status === 'pending' &&
