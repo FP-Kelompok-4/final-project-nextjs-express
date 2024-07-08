@@ -24,6 +24,7 @@ import { OrderRouter } from './routers/order.router';
 import cron from 'node-cron';
 import {
   reminderRuleUtil,
+  updateConfirmingBookingPayment,
   updateExpiredBookingPayment,
 } from './utils/schedules-utils';
 
@@ -98,13 +99,13 @@ export default class App {
 
   private schedule(): void {
     cron.schedule('0 0 0 */1 * *', () => {
-      console.log('--------------------Run 1 second');
-
       reminderRuleUtil();
     });
 
     cron.schedule('0 */1 * * * *', () => {
       updateExpiredBookingPayment();
+
+      updateConfirmingBookingPayment();
     });
   }
 
