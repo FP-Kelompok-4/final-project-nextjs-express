@@ -12,7 +12,6 @@ import { Navigation } from 'swiper/modules';
 import { Button } from '@/components/ui/button';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { getPropertyDetailClientThunk } from '@/redux/slices/client/property-thunk';
-import { formatCurrencyRp } from '@/lib/formatNumber';
 import RoomCard from './_components/Room-Card';
 import BookingFloating from './_components/Booking-Floating';
 import { useRouter } from 'next/navigation';

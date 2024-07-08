@@ -39,7 +39,7 @@ const PropertyCard = (props: {data: TPropertiesClient}) => {
         <div className="mt-1 flex gap-1">
           {/* <span className="line-through text-slate-500 font-semibold">{formatCurrencyRp(729000)}</span> */}
           <span className="font-semibold">{formatCurrencyRp(data.minPrice)}</span>
-          <span>night</span>
+          <span>/ day</span>
         </div>
       </CardContent>
     </Card>
