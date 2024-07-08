@@ -12,10 +12,13 @@ import { useSession } from "next-auth/react"
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect } from 'react'
+import DialogReview from "./_components/Dialog-Review";
+import { Button } from "@/components/ui/button";
 
 const DetailOrder = ({ params }: { params: { id: string } }) => {
   const {data: session} = useSession();
   const { orderDetail, isLoading } = useAppSelector((state) => state.orderClientReducer)
+  const { refetch } = useAppSelector((state) => state.reviewReducer)
   const dispatch = useAppDispatch();
   const { id } = params;
 
@@ -25,7 +28,7 @@ const DetailOrder = ({ params }: { params: { id: string } }) => {
         token: session.user.accessToken!,
         orderId: id
       }))
-  }, [])
+  }, [refetch])
   return (
     <main className="min-h-svh w-full pt-[78px]">
       {isLoading ? (
@@ -38,16 +41,18 @@ const DetailOrder = ({ params }: { params: { id: string } }) => {
             <span 
               className={cn(
                 'font-semibold',
-                (orderDetail.status === 'pending' &&
-                  new Date(orderDetail.expDateTime) < new Date()) ||
-                  orderDetail.status === 'cancelled' ||
-                  orderDetail.status === 'rejected'
-                  ? 'border-red-700 text-red-700'
-                  : 'border-gossamer-600 text-gossamer-600'
+                orderDetail.status === 'pending'
+                  ? 'text-yellow-500'
+                  : orderDetail.status === 'cancelled' ||
+                  orderDetail.status === 'rejected' ||
+                  orderDetail.status === 'expired'
+                  ? 'text-red-700'
+                  : 'text-gossamer-600'
               )}
             >
-              {orderDetail.status === 'pending' &&
-              new Date(orderDetail.expDateTime) < new Date() ? (
+              {orderDetail.status === 'pending' ? (
+                'Pending'
+              ) : orderDetail.status === 'expired' ? (
                 'Expired'
               ) : orderDetail.status === 'finished' ? (
                 'Finished'
@@ -143,6 +148,11 @@ const DetailOrder = ({ params }: { params: { id: string } }) => {
               <span>{formatCurrencyRp(orderDetail.totalPayment)}</span>
             </div>
           </div>
+          {(!orderDetail.reviewId && orderDetail.status === "finished") ? (
+            <DialogReview orderId={orderDetail.orderId} allowed={!!(orderDetail.checkIn <= new Date())} />
+          ):(
+            ""
+          )}
         </div>
       )}
     </main>

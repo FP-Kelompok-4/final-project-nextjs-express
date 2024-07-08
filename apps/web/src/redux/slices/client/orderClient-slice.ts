@@ -21,6 +21,7 @@ type TGetOrdersByClientOrderId = {
   expDateTime: Date | string;
   propertyId: string;
   totalDays: number;
+  reviewId: string | null;
   rooms: TRooms[]
 }
 
