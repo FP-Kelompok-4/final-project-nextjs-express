@@ -513,6 +513,7 @@ export class TransactionService {
       where: {
         userId,
         invoiceId,
+        status: 'pending',
       },
       include: {
         orderRooms: {
@@ -531,7 +532,7 @@ export class TransactionService {
       },
     });
 
-    if (!order) throw new Error('Order does not exist.');
+    if (!order) throw new Error('Order does not exist or paid');
 
     const property = order.orderRooms[0].room.property;
     const id = order.id;
