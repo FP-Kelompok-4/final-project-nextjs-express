@@ -1,22 +1,7 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import {
-  ArrowUpDown,
-  Ban,
-  Check,
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-} from 'lucide-react';
-
+import { ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import RoomAvailabilityDataTable from './data-table/Data-Table';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { format } from 'date-fns';
@@ -30,18 +15,11 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
-import {
-  acceptOrderByTenantThunk,
-  cancelOrderByTenantThunk,
-} from '@/redux/slices/orderTenant-thunk';
 import { useToast } from '@/components/ui/use-toast';
+import ActionsDropdown from './Actions-Dropdown';
 
 const OrderTable = () => {
   const { orders } = useAppSelector((state) => state.orderTenantReducer);
-
-  const { data: session } = useSession();
-  const dispatch = useAppDispatch();
-  const { toast } = useToast();
 
   const columns: ColumnDef<TGetOrdersByUserId>[] = [
     {
@@ -203,104 +181,7 @@ const OrderTable = () => {
       cell: ({ row }) => {
         const roomAvaila = row.original;
 
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              {roomAvaila.status === 'pending' &&
-                new Date(roomAvaila.expDateTime) > new Date() && (
-                  <DropdownMenuItem
-                    className="flex items-center gap-2"
-                    onClick={() => {
-                      if (session)
-                        dispatch(
-                          cancelOrderByTenantThunk({
-                            tenantId: session.user.id,
-                            userId: roomAvaila.customerId,
-                            invoiceId: roomAvaila.invoiceId,
-                            token: session.user.accessToken!,
-                          }),
-                        ).then((data: any) => {
-                          toast({
-                            variant: data.payload.error
-                              ? 'destructive'
-                              : 'default',
-                            title: data.payload.error
-                              ? data.payload.error
-                              : data.payload.success,
-                          });
-                        });
-                    }}
-                  >
-                    <Ban size={16} />
-                    <span>Cancel</span>
-                  </DropdownMenuItem>
-                )}
-              {roomAvaila.status === 'confirming' && (
-                <>
-                  <DropdownMenuItem
-                    className="text-gossamer-700 flex items-center gap-2"
-                    onClick={() => {
-                      if (session)
-                        dispatch(
-                          acceptOrderByTenantThunk({
-                            tenantId: session.user.id,
-                            userId: roomAvaila.customerId,
-                            invoiceId: roomAvaila.invoiceId,
-                            token: session.user.accessToken!,
-                          }),
-                        ).then((data: any) => {
-                          toast({
-                            variant: data.payload.error
-                              ? 'destructive'
-                              : 'default',
-                            title: data.payload.error
-                              ? data.payload.error
-                              : data.payload.success,
-                          });
-                        });
-                    }}
-                  >
-                    <Check size={16} />
-                    <span>Accept</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="flex items-center gap-2 text-red-700"
-                    onClick={() => {
-                      if (session)
-                        dispatch(
-                          cancelOrderByTenantThunk({
-                            tenantId: session.user.id,
-                            userId: roomAvaila.customerId,
-                            invoiceId: roomAvaila.invoiceId,
-                            token: session.user.accessToken!,
-                          }),
-                        ).then((data: any) => {
-                          toast({
-                            variant: data.payload.error
-                              ? 'destructive'
-                              : 'default',
-                            title: data.payload.error
-                              ? data.payload.error
-                              : data.payload.success,
-                          });
-                        });
-                    }}
-                  >
-                    <Ban size={16} />
-                    <span>Reject</span>
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
+        return <ActionsDropdown roomAvaila={roomAvaila} />;
       },
     },
   ];

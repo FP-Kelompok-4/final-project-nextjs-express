@@ -49,3 +49,28 @@ export const updateExpiredBookingPayment = async () => {
     });
   }
 };
+
+export const updateConfirmingBookingPayment = async () => {
+  const orders = await prisma.order.findMany({
+    where: {
+      status: 'pending',
+      expDateTime: {
+        gt: new Date(),
+      },
+    },
+  });
+
+  if (orders.length > 0) {
+    // await prisma.order.updateMany({
+    //   where: {
+    //     status: 'pending',
+    //     expDateTime: {
+    //       lt: new Date(),
+    //     },
+    //   },
+    //   data: {
+    //     status: 'expired',
+    //   },
+    // });
+  }
+};

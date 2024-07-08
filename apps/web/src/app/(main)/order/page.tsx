@@ -61,7 +61,6 @@ const OrderPage = () => {
 
   return (
     <main className="min-h-svh w-full pt-[78px]">
-      {/* {JSON.stringify(orderList)} */}
       <div className="my-6 flex w-full flex-col items-center gap-3 px-6 md:px-10 xl:px-20">
         {orderList.length > 0 ? (
           sortedOrderList.map(
@@ -117,6 +116,7 @@ const OrderPage = () => {
                       (status === 'pending' &&
                         new Date(expDateTime) < new Date()) ||
                         status === 'cancelled' ||
+                        status === 'expired' ||
                         status === 'rejected'
                         ? 'border-red-700 text-red-700'
                         : 'border-gossamer-600 text-gossamer-600',
