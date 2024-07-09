@@ -117,9 +117,11 @@ model Order {
 }
 
 model Review {
-  id      String @id @default(uuid())
-  point   Float
-  comment String @db.Text
+  id       String   @id @default(uuid())
+  point    Float
+  comment  String   @db.Text
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
 
   orderId String @unique @map("order_id")
   order   Order  @relation(fields: [orderId], references: [id])
