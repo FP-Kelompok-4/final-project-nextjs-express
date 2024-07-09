@@ -15,8 +15,11 @@ import { getPropertyDetailClientThunk } from '@/redux/slices/client/property-thu
 import RoomCard from './_components/Room-Card';
 import BookingFloating from './_components/Booking-Floating';
 import { useRouter } from 'next/navigation';
-import CardComment from "@/components/Card-Comment";
-import { getReviewsByPropertyId } from "@/redux/slices/client/review-thunk";
+import CardComment from '@/components/Card-Comment';
+import { getReviewsByPropertyId } from '@/redux/slices/client/review-thunk';
+import DetailHeader from './_components/DetailHeader';
+import DetailRooms from './_components/DetailRooms';
+import DetailReviews from './_components/DetailReviews';
 
 const DetailPage = ({ params }: { params: { id: string } }) => {
   const [orderList, setOrderList] = useState<
@@ -51,14 +54,14 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
     (state) => state.propertiesClientSlice,
   );
   const { propertyReviews, isLoading: isLoadingComment } = useAppSelector(
-    (state) => state.reviewReducer
+    (state) => state.reviewReducer,
   );
   const points = propertyReviews.map((pr) => pr.point);
   const rating = points.length > 0 ? points.reduce((t, c) => t + c) / 2 : '';
 
   useEffect(() => {
     dispatch(getPropertyDetailClientThunk({ id: params.id }));
-    dispatch(getReviewsByPropertyId(params.id))
+    dispatch(getReviewsByPropertyId(params.id));
   }, [params]);
 
   const handleRoomCardChange = ({
@@ -108,167 +111,30 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
         <div className="flex min-h-[calc(100svh-79px)] w-full items-center justify-center">
           <Loader2 size={50} className="animate-spin" />
         </div>
-      ):(
+      ) : (
         <>
           {properyDetail ? (
             <>
-              <div className="px-6 md:px-10 xl:px-20">
-                <div className="relative flex h-80 w-full flex-col gap-5 overflow-hidden rounded-xl md:h-96 md:gap-14">
-                  <Image
-                    className="-z-10 h-full w-full object-cover object-center brightness-75"
-                    src={`http://localhost:8000/properties/${properyDetail.image}`}
-                    fill
-                    priority
-                    alt="hero"
-                  />
-                </div>
-              </div>
-    
-              <div className="flex w-full flex-col gap-4 px-6 md:px-10 xl:px-20">
-                <p className="text-athens-gray-950 w-fit text-wrap text-3xl font-bold tracking-tight md:text-center">
-                  {properyDetail.name}
-                </p>
-    
-                <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-                  <div className="flex flex-row items-center gap-3">
-                    <div className="bg-athens-gray-950 rounded-full px-6 py-2 text-white">
-                      {properyDetail.category}
-                    </div>
-                    <div className="border-athens-gray-950 text-athens-gray-950 rounded-full border-[1px] px-6 py-2">
-                      {properyDetail.location}
-                    </div>
-                  </div>
-    
-                  {points.length > 0 ? (
-                    <div className="flex flex-row items-center gap-1">
-                      <div className="flex items-center gap-1">
-                        <Star className="text-yellow-400" size={18} />
-                        <span className="font-semibold text-slate-950">{rating}</span>
-                      </div>
-                      <span className="font-semibold text-slate-950"> · {points.length} reviews</span>
-                    </div>
-                  ):(
-                    <span className="font-semibold">News</span>
-                  )}
-                </div>
-                <Separator orientation="horizontal" />
-    
-                <div className="flex flex-row gap-3">
-                  <p className="text-athens-gray-500 text-wrap text-lg font-normal tracking-tight md:text-center">
-                    {properyDetail.description}
-                  </p>
-                </div>
-    
-                <Separator orientation="horizontal" />
-              </div>
-    
-              <div className="flex flex-col gap-6 px-6 md:px-10 xl:px-20">
-                <div className="flex w-full flex-col gap-4">
-                  <p className="text-athens-gray-950 text-2xl font-bold tracking-tight">
-                    Rooms
-                  </p>
-                </div>
-                <div className="group/navigation relative">
-                  <Swiper
-                    className="!h-full !w-full rounded-xl"
-                    ref={swiperRef}
-                    spaceBetween={16}
-                    slidesPerView={'auto'}
-                    centeredSlidesBounds
-                    centeredSlides
-                    modules={[Navigation]}
-                    onSlideChange={() => {}}
-                    onSwiper={(swiper) => {}}
-                  >
-                    {properyDetail.rooms &&
-                      properyDetail.rooms.map(
-                        (
-                          { id, type, description, roomPrice: price, image },
-                          index,
-                        ) => (
-                          <SwiperSlide
-                            key={`${id}-${index}`}
-                            className={cn(
-                              '!flex !w-[50%] items-center justify-center',
-                            )}
-                          >
-                            <RoomCard
-                              id={id}
-                              type={type}
-                              description={description}
-                              price={price}
-                              image={image}
-                              onChange={({ amount, quantity }) => {
-                                handleRoomCardChange({
-                                  id,
-                                  amount,
-                                  quantity,
-                                  type,
-                                  price,
-                                });
-                              }}
-                            />
-                          </SwiperSlide>
-                        ),
-                      )}
-                  </Swiper>
-                  <div className="absolute -left-6 top-1/2 z-20 -translate-y-1/2 opacity-0 transition-all ease-in-out group-hover/navigation:opacity-100">
-                    <Button
-                      className="z-10 aspect-square w-fit rounded-full p-0"
-                      onClick={() => handlePrev()}
-                    >
-                      <ArrowLeft size={16} />
-                    </Button>
-                  </div>
-                  <div className="absolute -right-6 top-1/2 z-20 -translate-y-1/2 opacity-0 transition-all ease-in-out group-hover/navigation:opacity-100">
-                    <Button
-                      className="z-10 aspect-square w-fit rounded-full p-0"
-                      onClick={() => handleNext()}
-                    >
-                      <ArrowRight size={16} />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-    
-              <div className="px-6 md:px-10 xl:px-20">
-                <div className="flex justify-between">
-                  <p className="text-athens-gray-950 text-2xl font-bold tracking-tight">Reviews</p>
-                  {rating && (
-                    <div className="flex gap-1 items-end">
-                      <div className="flex gap-1 items-center text-2xl font-bold">
-                        <Star className="text-yellow-400" size={24} />
-                        <span className="text-athens-gray-950 leading-6">{rating}</span>
-                      </div>
-                      <span className="text-sm text-gray-600">/ 5.0</span>
-                    </div>
-                  )}
-                </div>
-                <div className="mt-5 px-3 flex flex-col gap-4">
-                  {isLoadingComment ? (
-                    <div className="min-h-10 w-full">
-                      <Loader2 size={50} className="animate-spin" />
-                    </div>
-                  ):(
-                    <>
-                      {propertyReviews.length > 0 ? (
-                        <>
-                          {propertyReviews.map((pr, i) => (
-                            <>
-                              {i > 0 && <Separator />}
-                              <CardComment data={pr} />
-                            </>
-                          ))}
-                        </>
-                      ):(
-                        <div className="min-h-32 w-full flex justify-center items-center">
-                          <span className="text-xl font-semibold text-athens-gray-950">There are no reviews yet</span>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
+              <DetailHeader
+                property={properyDetail}
+                rating={rating}
+                points={points}
+              />
+
+              <DetailRooms
+                swiperRef={swiperRef}
+                rooms={properyDetail.rooms}
+                handleRoomCardChange={handleRoomCardChange}
+                handlePrev={handlePrev}
+                handleNext={handleNext}
+              />
+
+              <DetailReviews
+                propertyReviews={propertyReviews}
+                isLoadingComment={isLoadingComment}
+                rating={rating}
+              />
+
               {orderList.length > 0 && (
                 <BookingFloating
                   totalPay={totalPay}
@@ -279,7 +145,9 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
             </>
           ) : (
             <div className="flex min-h-[calc(100svh-79px)] w-full items-center justify-center">
-              <h2 className="text-xl font-semibold">Opps. Property not found.</h2>
+              <h2 className="text-xl font-semibold">
+                Opps. Property not found.
+              </h2>
             </div>
           )}
         </>

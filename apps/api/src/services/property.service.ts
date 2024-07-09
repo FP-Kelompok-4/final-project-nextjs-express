@@ -12,9 +12,11 @@ import {
   toGetDetailPropertyRes,
   toGetPropertiesRes,
   toGetPropertyRoomsRes,
+  toGetThreeTopPropertyClientRes,
   UpdatePropertyPar,
   UpdatePropertyReq,
 } from 'models/property.model';
+import { ReviewService } from './review.service';
 
 interface UpdatePropertyServiceProps
   extends UpdatePropertyReq,
@@ -57,7 +59,8 @@ export class PropertyService {
       orderBy = Prisma.sql`ORDER BY minPrice DESC`;
     }
 
-    const properties = await prisma.$queryRaw`SELECT p.id, p.name, p.description,
+    const properties =
+      await prisma.$queryRaw`SELECT p.id, p.name, p.description,
         p.location, p.image, MIN(rp.price) AS minPrice, MAX(rp.price) AS maxPrice,
         AVG(rv.point) as rating
         FROM properties p
@@ -287,13 +290,9 @@ export class PropertyService {
                 id: true,
                 name: true,
                 location: true,
+                image: true,
               },
             },
-          },
-        },
-        order: {
-          include: {
-            review: true,
           },
         },
       },
@@ -304,20 +303,53 @@ export class PropertyService {
 
     // Filter to get top 3 rooms with distinct properties
     const uniquePropertyRooms = [];
-    const propertyIds = new Set();
+    const propertyIds: string[] = [];
 
     for (const orderRoom of orderRooms) {
       const propertyId = orderRoom.room.property.id;
-      if (!propertyIds.has(propertyId)) {
-        uniquePropertyRooms.push(orderRoom);
-        propertyIds.add(propertyId);
+      if (!propertyIds.includes(propertyId)) {
+        const propertyReviews =
+          await ReviewService.getReviewsByPropertyId(propertyId);
+
+        const points = propertyReviews.map((pr) => pr.point);
+        const rating =
+          points.length > 0
+            ? points.reduce((t, c) => t + c) / points.length
+            : 0;
+
+        uniquePropertyRooms.push({
+          ...orderRoom,
+          review: points.length,
+          rating,
+        });
+
+        propertyIds.push(propertyId);
       }
       if (uniquePropertyRooms.length >= 3) {
         break;
       }
     }
 
-    return uniquePropertyRooms;
+    return toGetThreeTopPropertyClientRes([
+      ...uniquePropertyRooms.map(
+        ({
+          room: {
+            property: { id, name, location, image },
+          },
+          rating,
+          review,
+        }) => {
+          return {
+            id,
+            name,
+            location,
+            image,
+            rating,
+            review,
+          };
+        },
+      ),
+    ]);
   }
 
   static async getPropertyRooms(userId: string) {
@@ -341,9 +373,9 @@ export class PropertyService {
 
   static async verifyPropertyById(id: string) {
     const property = await prisma.property.findUnique({
-      where: {id}
+      where: { id },
     });
 
-    if (!property) throw new ResponseError(404, 'Property not found.')
+    if (!property) throw new ResponseError(404, 'Property not found.');
   }
 }

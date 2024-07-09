@@ -19,7 +19,6 @@ export type TPropertiesClient = {
 export type TThreeTopProperties = {
   id: string;
   name: string;
-  description: string;
   location: string;
   image: string;
   rating: number;
@@ -121,11 +120,11 @@ const propertiesClientSlice = createSlice({
       getThreeTopPropertyClientThunk.fulfilled,
       (state, action) => {
         if (action.payload) {
-          state.properyDetail = action.payload.data;
-        } else {
-          state.properyDetail = undefined;
+          state.threeTopProperties =
+            action.payload.error || !action.payload.data
+              ? state.threeTopProperties
+              : action.payload.data;
         }
-
         state.isThreeTopPropertyLoading = false;
       },
     );

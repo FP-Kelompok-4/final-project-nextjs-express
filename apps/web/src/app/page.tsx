@@ -11,7 +11,7 @@ const Home = async () => {
 
   return (
     <MainLayout>
-      <main className="relative mb-10 flex flex-col gap-10 pt-[78px]">
+      <main className="relative mb-10 flex min-h-svh flex-col gap-10 pt-[78px]">
         <Hero />
         <ListTopRateProperty />
       </main>

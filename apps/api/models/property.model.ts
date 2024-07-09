@@ -10,7 +10,7 @@ export type GetPropertiesQuery = {
   name?: string;
   sortPrice?: string;
   page?: string;
-}
+};
 
 export type GetDetailPropertyReq = {
   id: string;
@@ -83,6 +83,15 @@ type PropertyRoomPrice = {
   location: string;
   image: string;
   rooms: TRooms[];
+};
+
+type TopThreePropertyRoomPrice = {
+  id: string;
+  name: string;
+  location: string;
+  image: string;
+  rating: number;
+  review: number;
 };
 
 export const toGetPropertiesRes = (property: AddUPropertyRes[]) => {
@@ -164,4 +173,10 @@ export const toGetDetailPropertyClientRes = (
       };
     }),
   };
+};
+
+export const toGetThreeTopPropertyClientRes = (
+  properties: TopThreePropertyRoomPrice[],
+) => {
+  return properties;
 };
