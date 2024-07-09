@@ -149,7 +149,7 @@ const DetailOrder = ({ params }: { params: { id: string } }) => {
             </div>
           </div>
           {(!orderDetail.reviewId && orderDetail.status === "finished") ? (
-            <DialogReview orderId={orderDetail.orderId} allowed={!!(orderDetail.checkIn <= new Date())} />
+            <DialogReview orderId={orderDetail.orderId} allowed={new Date(orderDetail.checkIn) <= new Date()} />
           ):(
             ""
           )}

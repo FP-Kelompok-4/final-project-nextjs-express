@@ -15,7 +15,7 @@ export const postReview = createAsyncThunk(
         },
       });
 
-      return { success: "Success add review", data: res.data.data };
+      return { success: "Thank you for your review :)", data: res.data.data };
     } catch (e) {
       if (axios.isAxiosError(e)) {
         return {
