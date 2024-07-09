@@ -26,6 +26,7 @@ export class PropertyRouter {
   }
 
   private initializeRoutes(): void {
+    this.router.get('/client/top-property', this.propertyController.getThreeTopProperty);
     this.router.get('/client', this.propertyController.getPropertiesForClient);
     this.router.get('/client/:pId', this.propertyController.getPropertyDetailForClient);
 

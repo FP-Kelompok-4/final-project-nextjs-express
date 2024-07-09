@@ -1,6 +1,6 @@
 import { ResponseError } from '@/error/response-error';
 import prisma from '@/prisma';
-import { Prisma } from "@prisma/client";
+import { Prisma } from '@prisma/client';
 import {
   AddUPropertyReq,
   GetDetailPropertyReq,
@@ -12,9 +12,11 @@ import {
   toGetDetailPropertyRes,
   toGetPropertiesRes,
   toGetPropertyRoomsRes,
+  toGetThreeTopPropertyClientRes,
   UpdatePropertyPar,
   UpdatePropertyReq,
 } from 'models/property.model';
+import { ReviewService } from './review.service';
 
 interface UpdatePropertyServiceProps
   extends UpdatePropertyReq,
@@ -29,35 +31,36 @@ export class PropertyService {
 
     if (reqQuery.fromDate && reqQuery.toDate && reqQuery.name) {
       where = Prisma.sql`WHERE ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.toDate} <= ra.toDate
-          AND p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`
+          AND p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`;
     }
 
     if (reqQuery.fromDate && reqQuery.toDate && !reqQuery.name) {
-      where = Prisma.sql`WHERE  ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.toDate} <= ra.toDate`
+      where = Prisma.sql`WHERE  ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.toDate} <= ra.toDate`;
     }
 
     if (reqQuery.fromDate && !reqQuery.toDate && !reqQuery.name) {
-      where = Prisma.sql`WHERE ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.fromDate} <= ra.toDate`
+      where = Prisma.sql`WHERE ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.fromDate} <= ra.toDate`;
     }
 
     if (reqQuery.fromDate && !reqQuery.toDate && reqQuery.name) {
       where = Prisma.sql`WHERE ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.fromDate} <= ra.toDate
-        AND p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`
+        AND p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`;
     }
 
     if (!reqQuery.fromDate && !reqQuery.toDate && reqQuery.name) {
-      where = Prisma.sql`WHERE p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`
+      where = Prisma.sql`WHERE p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`;
     }
 
-    if (reqQuery.sortPrice === "termurah") {
-      orderBy = Prisma.sql`ORDER BY minPrice ASC`
+    if (reqQuery.sortPrice === 'termurah') {
+      orderBy = Prisma.sql`ORDER BY minPrice ASC`;
     }
 
-    if (reqQuery.sortPrice === "termahal") {
-      orderBy = Prisma.sql`ORDER BY minPrice DESC`
+    if (reqQuery.sortPrice === 'termahal') {
+      orderBy = Prisma.sql`ORDER BY minPrice DESC`;
     }
 
-    const properties = await prisma.$queryRaw`SELECT p.id, p.name, p.description,
+    const properties =
+      await prisma.$queryRaw`SELECT p.id, p.name, p.description,
         p.location, p.image, MIN(rp.price) AS minPrice, MAX(rp.price) AS maxPrice,
         AVG(rv.point) as rating
         FROM properties p
@@ -70,23 +73,24 @@ export class PropertyService {
         ${where}
         GROUP BY p.id
         ${orderBy}
-        LIMIT ${limit} OFFSET ${offset}`
+        LIMIT ${limit} OFFSET ${offset}`;
 
-    const countProperties = await prisma.$queryRaw`SELECT p.id, p.name, p.description,
+    const countProperties =
+      (await prisma.$queryRaw`SELECT p.id, p.name, p.description,
         p.location, p.image, MIN(rp.price) AS minPrice, MAX(rp.price) AS maxPrice
         FROM properties p
         INNER JOIN rooms r ON p.id=r.property_id
         INNER JOIN roomPrices rp ON r.id=rp.room_id
         INNER JOIN roomAvailabilities ra ON r.id=ra.room_id
         ${where}
-        GROUP BY p.id` as any
-    
-    const totalPage = Math.ceil(countProperties.length/limit);
+        GROUP BY p.id`) as any;
+
+    const totalPage = Math.ceil(countProperties.length / limit);
 
     return {
       properties,
       totalPage,
-      totalResult: countProperties.length
+      totalResult: countProperties.length,
     };
   }
 
@@ -102,7 +106,7 @@ export class PropertyService {
           include: {
             roomPrices: true,
             specialPrices: true,
-            roomAvailabilities: true
+            roomAvailabilities: true,
           },
         },
         propertyCategory: true,
@@ -271,6 +275,83 @@ export class PropertyService {
     return toDeletePropertyRes(propertyD.id);
   }
 
+  static async getThreeTopProperty() {
+    const orderRooms = await prisma.orderRoom.findMany({
+      select: {
+        id: true,
+        roomId: true,
+        quantity: true,
+        room: {
+          select: {
+            id: true,
+            type: true,
+            property: {
+              select: {
+                id: true,
+                name: true,
+                location: true,
+                image: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        quantity: 'desc',
+      },
+    });
+
+    // Filter to get top 3 rooms with distinct properties
+    const uniquePropertyRooms = [];
+    const propertyIds: string[] = [];
+
+    for (const orderRoom of orderRooms) {
+      const propertyId = orderRoom.room.property.id;
+      if (!propertyIds.includes(propertyId)) {
+        const propertyReviews =
+          await ReviewService.getReviewsByPropertyId(propertyId);
+
+        const points = propertyReviews.map((pr) => pr.point);
+        const rating =
+          points.length > 0
+            ? points.reduce((t, c) => t + c) / points.length
+            : 0;
+
+        uniquePropertyRooms.push({
+          ...orderRoom,
+          review: points.length,
+          rating,
+        });
+
+        propertyIds.push(propertyId);
+      }
+      if (uniquePropertyRooms.length >= 3) {
+        break;
+      }
+    }
+
+    return toGetThreeTopPropertyClientRes([
+      ...uniquePropertyRooms.map(
+        ({
+          room: {
+            property: { id, name, location, image },
+          },
+          rating,
+          review,
+        }) => {
+          return {
+            id,
+            name,
+            location,
+            image,
+            rating,
+            review,
+          };
+        },
+      ),
+    ]);
+  }
+
   static async getPropertyRooms(userId: string) {
     const propertyRooms = await prisma.property.findMany({
       include: {
@@ -292,9 +373,9 @@ export class PropertyService {
 
   static async verifyPropertyById(id: string) {
     const property = await prisma.property.findUnique({
-      where: {id}
+      where: { id },
     });
 
-    if (!property) throw new ResponseError(404, 'Property not found.')
+    if (!property) throw new ResponseError(404, 'Property not found.');
   }
 }

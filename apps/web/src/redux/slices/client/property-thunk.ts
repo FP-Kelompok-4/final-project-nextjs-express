@@ -43,3 +43,20 @@ export const getPropertyDetailClientThunk = createAsyncThunk(
     }
   },
 );
+
+export const getThreeTopPropertyClientThunk = createAsyncThunk(
+  'propertiesClient/getThreeTopPropertyClient',
+  async () => {
+    try {
+      const res = await api.get(`properties/client/top-property`);
+
+      return { success: res.data.success, data: res.data.data };
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        return {
+          error: e.response?.data.message,
+        };
+      }
+    }
+  },
+);
