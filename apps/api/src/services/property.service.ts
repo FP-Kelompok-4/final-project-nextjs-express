@@ -58,11 +58,15 @@ export class PropertyService {
     }
 
     const properties = await prisma.$queryRaw`SELECT p.id, p.name, p.description,
-        p.location, p.image, MIN(rp.price) AS minPrice, MAX(rp.price) AS maxPrice
+        p.location, p.image, MIN(rp.price) AS minPrice, MAX(rp.price) AS maxPrice,
+        AVG(rv.point) as rating
         FROM properties p
         INNER JOIN rooms r ON p.id=r.property_id
         INNER JOIN roomPrices rp ON r.id=rp.room_id
         INNER JOIN roomAvailabilities ra ON r.id=ra.room_id
+        LEFT JOIN orderRooms odr ON r.id=odr.room_id
+        LEFT JOIN orders o ON odr.order_id=o.id
+        LEFT JOIN reviews rv ON o.id=rv.order_id
         ${where}
         GROUP BY p.id
         ${orderBy}
