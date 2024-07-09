@@ -14,6 +14,11 @@ export class ReviewRouter{
   }
 
   private initializeRouters(): void {
+    this.router.get(
+      '/property/:propertyId',
+      this.reviewController.getReviewsByPropertyId
+    );
+
     this.router.use(verifyToken);
     this.router.post(
       '/',

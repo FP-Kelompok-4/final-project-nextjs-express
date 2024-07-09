@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import { ArrowLeft, ArrowRight, Star } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, Star } from 'lucide-react';
 import { Navigation } from 'swiper/modules';
 import { Button } from '@/components/ui/button';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
@@ -15,6 +15,8 @@ import { getPropertyDetailClientThunk } from '@/redux/slices/client/property-thu
 import RoomCard from './_components/Room-Card';
 import BookingFloating from './_components/Booking-Floating';
 import { useRouter } from 'next/navigation';
+import CardComment from "@/components/Card-Comment";
+import { getReviewsByPropertyId } from "@/redux/slices/client/review-thunk";
 
 const DetailPage = ({ params }: { params: { id: string } }) => {
   const [orderList, setOrderList] = useState<
@@ -48,9 +50,15 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
   const { properyDetail, isPropertyDetailLoading } = useAppSelector(
     (state) => state.propertiesClientSlice,
   );
+  const { propertyReviews, isLoading: isLoadingComment } = useAppSelector(
+    (state) => state.reviewReducer
+  );
+  const points = propertyReviews.map((pr) => pr.point);
+  const rating = points.length > 0 ? points.reduce((t, c) => t + c) / 2 : '';
 
   useEffect(() => {
     dispatch(getPropertyDetailClientThunk({ id: params.id }));
+    dispatch(getReviewsByPropertyId(params.id))
   }, [params]);
 
   const handleRoomCardChange = ({
@@ -125,12 +133,15 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
                 </div>
               </div>
 
-              <div className="flex flex-row items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <Star size={16} /> <span>4</span>
+              {points.length > 0 && (
+                <div className="flex flex-row items-center gap-1">
+                  <div className="flex items-center gap-1">
+                    <Star className="text-yellow-400" size={18} />
+                    <span>{rating}</span>
+                  </div>
+                  <span className="text-gray-500">({points.length})</span>
                 </div>
-                <span>(12 review)</span>
-              </div>
+              )}
             </div>
             <Separator orientation="horizontal" />
 
@@ -209,6 +220,45 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
                   <ArrowRight size={16} />
                 </Button>
               </div>
+            </div>
+          </div>
+
+          <div className="px-6 md:px-10 xl:px-20">
+            <div className="flex justify-between">
+              <p className="text-athens-gray-800 text-2xl font-bold tracking-tight">Reviews</p>
+              {rating && (
+                <div className="flex gap-1 items-end">
+                  <div className="flex gap-1 items-center text-2xl font-bold">
+                    <Star className="text-yellow-400" size={24} />
+                    <span className="text-athens-gray-800 leading-6">{rating}</span>
+                  </div>
+                  <span className="text-sm text-gray-500">/ 5.0</span>
+                </div>
+              )}
+            </div>
+            <div className="mt-5 px-3 flex flex-col gap-4">
+              {isLoadingComment ? (
+                <div className="min-h-10 w-full">
+                  <Loader2 size={50} className="animate-spin" />
+                </div>
+              ):(
+                <>
+                  {propertyReviews.length > 0 ? (
+                    <>
+                      {propertyReviews.map((pr, i) => (
+                        <>
+                          {i > 0 && <Separator />}
+                          <CardComment data={pr} />
+                        </>
+                      ))}
+                    </>
+                  ):(
+                    <div className="min-h-32 w-full flex justify-center items-center">
+                      <span className="text-xl font-semibold text-athens-gray-800">There are no reviews yet</span>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
           {orderList.length > 0 && (

@@ -285,4 +285,12 @@ export class PropertyService {
 
     return toGetPropertyRoomsRes(propertyRooms);
   }
+
+  static async verifyPropertyById(id: string) {
+    const property = await prisma.property.findUnique({
+      where: {id}
+    });
+
+    if (!property) throw new ResponseError(404, 'Property not found.')
+  }
 }

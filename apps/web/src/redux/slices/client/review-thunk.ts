@@ -25,3 +25,20 @@ export const postReview = createAsyncThunk(
     }
   },
 );
+
+export const getReviewsByPropertyId = createAsyncThunk(
+  'review/property/get',
+  async (propertyId: string) => {
+    try {
+      const res = await api.get(`review/property/${propertyId}`);
+
+      return { success: "Success get comment property", data: res.data.data };
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        return {
+          error: e.response?.data.message,
+        };
+      }
+    }
+  },
+);
