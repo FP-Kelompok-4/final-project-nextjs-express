@@ -13,6 +13,7 @@ export type TPropertiesClient = {
   image: string;
   minPrice: number;
   maxPrice: number;
+  rating: number | null;
 };
 
 export type TThreeTopProperties = {

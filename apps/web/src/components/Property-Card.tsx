@@ -26,8 +26,14 @@ const PropertyCard = (props: {data: TPropertiesClient}) => {
         <div className="flex gap-2">
           <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis font-semibold">{data.name}</span>
           <div className="flex gap-1 items-center">
-            <Star size={14} />
-            <span className="flex-1">5.0 (5)</span>
+            {data.rating ? (
+              <>
+                <Star className="text-yellow-500" size={14} />
+                <span className="flex-1">{data.rating}</span>
+              </>
+            ):(
+              <span>News</span>
+            )}
           </div>
         </div>
         <div className="flex">

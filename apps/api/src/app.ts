@@ -9,7 +9,6 @@ import express, {
 import path from 'path';
 import cors from 'cors';
 import { PORT } from './config';
-import { SampleRouter } from './routers/sample.router';
 import { ResponseError } from './error/response-error';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UserRouter } from './routers/user.router';
@@ -27,6 +26,7 @@ import {
   updateConfirmingBookingPayment,
   updateExpiredBookingPayment,
 } from './utils/schedules-utils';
+import { ReviewRouter } from "./routers/review.router";
 
 export default class App {
   private app: Express;
@@ -70,7 +70,6 @@ export default class App {
   }
 
   private routes(): void {
-    const sampleRouter = new SampleRouter();
     const userRouter = new UserRouter();
     const verificationToken = new VerificationTokenRouter();
     const propertyRouter = new PropertyRouter();
@@ -80,12 +79,12 @@ export default class App {
     const transactionRouter = new TransactionRouter();
     const specialPriceRouter = new SpecialPriceRouter();
     const orderRouter = new OrderRouter();
+    const reviewRouter = new ReviewRouter();
 
     this.app.get('/api/', (req: Request, res: Response) => {
       res.send(`Restful API is already !`);
     });
 
-    this.app.use('/api/samples', sampleRouter.getRouter());
     this.app.use('/api/users', userRouter.getRouter());
     this.app.use('/api/verification-token', verificationToken.getRouter());
     this.app.use('/api/properties', propertyRouter.getRouter());
@@ -95,6 +94,7 @@ export default class App {
     this.app.use('/api/transaction', transactionRouter.getRouter());
     this.app.use('/api/special-price', specialPriceRouter.getRouter());
     this.app.use('/api/order', orderRouter.getRouter());
+    this.app.use('/api/review', reviewRouter.getRouter());
   }
 
   private schedule(): void {
