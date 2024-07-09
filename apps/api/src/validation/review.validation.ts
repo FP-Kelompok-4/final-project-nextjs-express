@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 
-export const validateCreateSample = [
-  body('name').trim().notEmpty().withMessage('Name is required'),
-  body('code').trim().notEmpty().withMessage('Code is required').isNumeric().withMessage('Code contains only number characters'),
+export const validatePostReview = [
+  body('orderId').trim().notEmpty().withMessage('Order Id is required'),
+  body('point').trim().notEmpty().withMessage('Point is required'),
+  body('comment').trim().notEmpty().withMessage('Comment is required'),
 
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
@@ -11,10 +12,10 @@ export const validateCreateSample = [
     if (!errors.isEmpty()) {
       return res.status(400).send({
         status: 'fail',
-        message: errors.array()
-      })
+        message: errors.array(),
+      });
     }
 
     next();
-  }
-]
+  },
+];

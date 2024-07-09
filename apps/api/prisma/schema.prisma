@@ -10,16 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Sample {
-  id        String   @id @default(cuid())
-  name      String
-  code      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("samples") // if you want to use snake_case format
-}
-
 model User {
   id         String    @id @default(uuid())
   name       String    @db.VarChar(255)
@@ -117,9 +107,11 @@ model Order {
 }
 
 model Review {
-  id      String @id @default(uuid())
-  point   Float
-  comment String @db.Text
+  id       String   @id @default(uuid())
+  point    Float
+  comment  String   @db.Text
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
 
   orderId String @unique @map("order_id")
   order   Order  @relation(fields: [orderId], references: [id])
