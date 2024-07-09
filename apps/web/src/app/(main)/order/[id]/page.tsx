@@ -67,15 +67,15 @@ const DetailOrder = ({ params }: { params: { id: string } }) => {
             <Separator className="my-3" />
             <div className="flex flex-col md:flex-row gap-2 md:justify-between text-sm">
               <span>Tanggal Pemesanan</span>
-              <span>{format(orderDetail.createAt, "dd MMM yyyy, p", { locale: locale.id })}</span>
+              <span>{orderDetail.createAt && format(orderDetail.createAt, "dd MMM yyyy, p", { locale: locale.id })}</span>
             </div>
             <div className="mt-2 flex flex-col md:flex-row gap-2 md:justify-between text-sm">
               <span>Check In</span>
-              <span>{format(orderDetail.checkIn, "EEE, dd MMM yyyy", { locale: locale.id })}</span>
+              <span>{orderDetail.checkIn && format(orderDetail.checkIn, "EEE, dd MMM yyyy", { locale: locale.id })}</span>
             </div>
             <div className="mt-2 flex flex-col md:flex-row gap-2 md:justify-between text-sm">
               <span>Check Out</span>
-              <span>{format(orderDetail.checkOut, "EEE, dd MMM yyyy", { locale: locale.id })}</span>
+              <span>{orderDetail.checkOut && format(orderDetail.checkOut, "EEE, dd MMM yyyy", { locale: locale.id })}</span>
             </div>
           </div>
           <div className="mt-2 py-4 px-3 w-full border rounded-lg">
