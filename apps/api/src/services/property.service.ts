@@ -1,6 +1,6 @@
 import { ResponseError } from '@/error/response-error';
 import prisma from '@/prisma';
-import { Prisma } from "@prisma/client";
+import { Prisma } from '@prisma/client';
 import {
   AddUPropertyReq,
   GetDetailPropertyReq,
@@ -29,35 +29,36 @@ export class PropertyService {
 
     if (reqQuery.fromDate && reqQuery.toDate && reqQuery.name) {
       where = Prisma.sql`WHERE ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.toDate} <= ra.toDate
-          AND p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`
+          AND p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`;
     }
 
     if (reqQuery.fromDate && reqQuery.toDate && !reqQuery.name) {
-      where = Prisma.sql`WHERE  ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.toDate} <= ra.toDate`
+      where = Prisma.sql`WHERE  ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.toDate} <= ra.toDate`;
     }
 
     if (reqQuery.fromDate && !reqQuery.toDate && !reqQuery.name) {
-      where = Prisma.sql`WHERE ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.fromDate} <= ra.toDate`
+      where = Prisma.sql`WHERE ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.fromDate} <= ra.toDate`;
     }
 
     if (reqQuery.fromDate && !reqQuery.toDate && reqQuery.name) {
       where = Prisma.sql`WHERE ${reqQuery.fromDate} >= ra.fromDate AND ${reqQuery.fromDate} <= ra.toDate
-        AND p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`
+        AND p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`;
     }
 
     if (!reqQuery.fromDate && !reqQuery.toDate && reqQuery.name) {
-      where = Prisma.sql`WHERE p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`
+      where = Prisma.sql`WHERE p.name LIKE CONCAT('%', ${reqQuery.name}, '%')`;
     }
 
-    if (reqQuery.sortPrice === "termurah") {
-      orderBy = Prisma.sql`ORDER BY minPrice ASC`
+    if (reqQuery.sortPrice === 'termurah') {
+      orderBy = Prisma.sql`ORDER BY minPrice ASC`;
     }
 
-    if (reqQuery.sortPrice === "termahal") {
-      orderBy = Prisma.sql`ORDER BY minPrice DESC`
+    if (reqQuery.sortPrice === 'termahal') {
+      orderBy = Prisma.sql`ORDER BY minPrice DESC`;
     }
 
-    const properties = await prisma.$queryRaw`SELECT p.id, p.name, p.description,
+    const properties =
+      await prisma.$queryRaw`SELECT p.id, p.name, p.description,
         p.location, p.image, MIN(rp.price) AS minPrice, MAX(rp.price) AS maxPrice
         FROM properties p
         INNER JOIN rooms r ON p.id=r.property_id
@@ -66,23 +67,24 @@ export class PropertyService {
         ${where}
         GROUP BY p.id
         ${orderBy}
-        LIMIT ${limit} OFFSET ${offset}`
+        LIMIT ${limit} OFFSET ${offset}`;
 
-    const countProperties = await prisma.$queryRaw`SELECT p.id, p.name, p.description,
+    const countProperties =
+      (await prisma.$queryRaw`SELECT p.id, p.name, p.description,
         p.location, p.image, MIN(rp.price) AS minPrice, MAX(rp.price) AS maxPrice
         FROM properties p
         INNER JOIN rooms r ON p.id=r.property_id
         INNER JOIN roomPrices rp ON r.id=rp.room_id
         INNER JOIN roomAvailabilities ra ON r.id=ra.room_id
         ${where}
-        GROUP BY p.id` as any
-    
-    const totalPage = Math.ceil(countProperties.length/limit);
+        GROUP BY p.id`) as any;
+
+    const totalPage = Math.ceil(countProperties.length / limit);
 
     return {
       properties,
       totalPage,
-      totalResult: countProperties.length
+      totalResult: countProperties.length,
     };
   }
 
@@ -98,7 +100,7 @@ export class PropertyService {
           include: {
             roomPrices: true,
             specialPrices: true,
-            roomAvailabilities: true
+            roomAvailabilities: true,
           },
         },
         propertyCategory: true,
@@ -265,6 +267,54 @@ export class PropertyService {
     });
 
     return toDeletePropertyRes(propertyD.id);
+  }
+
+  static async getThreeTopProperty() {
+    const orderRooms = await prisma.orderRoom.findMany({
+      select: {
+        id: true,
+        roomId: true,
+        quantity: true,
+        room: {
+          select: {
+            id: true,
+            type: true,
+            property: {
+              select: {
+                id: true,
+                name: true,
+                location: true,
+              },
+            },
+          },
+        },
+        order: {
+          include: {
+            review: true,
+          },
+        },
+      },
+      orderBy: {
+        quantity: 'desc',
+      },
+    });
+
+    // Filter to get top 3 rooms with distinct properties
+    const uniquePropertyRooms = [];
+    const propertyIds = new Set();
+
+    for (const orderRoom of orderRooms) {
+      const propertyId = orderRoom.room.property.id;
+      if (!propertyIds.has(propertyId)) {
+        uniquePropertyRooms.push(orderRoom);
+        propertyIds.add(propertyId);
+      }
+      if (uniquePropertyRooms.length >= 3) {
+        break;
+      }
+    }
+
+    return uniquePropertyRooms;
   }
 
   static async getPropertyRooms(userId: string) {

@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   getPropertiesClientThunk,
   getPropertyDetailClientThunk,
+  getThreeTopPropertyClientThunk,
 } from './property-thunk';
 
 export type TPropertiesClient = {
@@ -12,6 +13,16 @@ export type TPropertiesClient = {
   image: string;
   minPrice: number;
   maxPrice: number;
+};
+
+export type TThreeTopProperties = {
+  id: string;
+  name: string;
+  description: string;
+  location: string;
+  image: string;
+  rating: number;
+  review: number;
 };
 
 export type TPropertyDetailClient = {
@@ -52,17 +63,21 @@ export type SpecialPrice = {
 
 type TInitialState = {
   properties: TPropertiesClient[];
+  threeTopProperties: TThreeTopProperties[];
   properyDetail?: TPropertyDetailClient;
   totalPage?: number;
   totalResult?: number;
   isLoading: boolean;
   isPropertyDetailLoading: boolean;
+  isThreeTopPropertyLoading: boolean;
 };
 
 const initialState: TInitialState = {
   properties: [],
+  threeTopProperties: [],
   isLoading: true,
   isPropertyDetailLoading: true,
+  isThreeTopPropertyLoading: true,
 };
 
 const propertiesClientSlice = createSlice({
@@ -80,7 +95,7 @@ const propertiesClientSlice = createSlice({
           state.totalPage = action.payload.data.totalPage;
           state.totalResult = action.payload.data.totalResult;
         }
-      };
+      }
 
       state.isLoading = false;
     });
@@ -97,6 +112,22 @@ const propertiesClientSlice = createSlice({
 
       state.isPropertyDetailLoading = false;
     });
+
+    builder.addCase(getThreeTopPropertyClientThunk.pending, (state) => {
+      state.isThreeTopPropertyLoading = true;
+    });
+    builder.addCase(
+      getThreeTopPropertyClientThunk.fulfilled,
+      (state, action) => {
+        if (action.payload) {
+          state.properyDetail = action.payload.data;
+        } else {
+          state.properyDetail = undefined;
+        }
+
+        state.isThreeTopPropertyLoading = false;
+      },
+    );
   },
 });
 

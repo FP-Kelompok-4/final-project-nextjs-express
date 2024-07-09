@@ -20,15 +20,16 @@ export class PropertyController {
     try {
       const reqQuery = req.query as GetPropertiesQuery;
 
-      const {properties, totalPage, totalResult} = await PropertyService.getPropertiesForClient(reqQuery);
+      const { properties, totalPage, totalResult } =
+        await PropertyService.getPropertiesForClient(reqQuery);
 
       res.status(200).send({
         status: 'success',
         data: {
           properties,
           totalPage,
-          totalResult
-        }
+          totalResult,
+        },
       });
     } catch (e) {
       next(e);
@@ -164,6 +165,19 @@ export class PropertyController {
       const { userId } = req.params;
 
       const propertyRooms = await PropertyService.getPropertyRooms(userId);
+
+      res.status(200).send({
+        status: 'success',
+        data: propertyRooms,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async getThreeTopProperty(req: Request, res: Response, next: NextFunction) {
+    try {
+      const propertyRooms = await PropertyService.getThreeTopProperty();
 
       res.status(200).send({
         status: 'success',
