@@ -161,6 +161,24 @@ export class RoomService {
       },
     });
 
+    await prisma.specialPrice.deleteMany({
+      where: {
+        roomId: rId,
+      },
+    });
+
+    await prisma.roomAvailability.deleteMany({
+      where: {
+        roomId: rId,
+      },
+    });
+
+    await prisma.orderRoom.deleteMany({
+      where: {
+        roomId: rId,
+      },
+    });
+
     const room = await prisma.room.delete({
       where: {
         id: rId,
@@ -173,9 +191,9 @@ export class RoomService {
 
   static async verifyRoomById(id: string) {
     const room = await prisma.room.findUnique({
-      where: { id }
+      where: { id },
     });
 
-    if (!room) throw new ResponseError(404, "Room not found");
+    if (!room) throw new ResponseError(404, 'Room not found');
   }
 }
