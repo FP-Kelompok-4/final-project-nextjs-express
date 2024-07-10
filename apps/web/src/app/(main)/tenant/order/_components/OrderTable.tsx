@@ -2,7 +2,7 @@ import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import RoomAvailabilityDataTable from './data-table/Data-Table';
+import OrderDataTable from './data-table/Data-Table';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { format } from 'date-fns';
 import { TGetOrdersByUserId } from '@/redux/slices/orderTenant-slice';
@@ -188,7 +188,7 @@ const OrderTable = () => {
 
   return (
     <>
-      <RoomAvailabilityDataTable columns={columns} data={orders} />
+      <OrderDataTable columns={columns} data={orders} />
     </>
   );
 };
