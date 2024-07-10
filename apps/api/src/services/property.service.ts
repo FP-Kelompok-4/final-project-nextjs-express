@@ -248,9 +248,27 @@ export class PropertyService {
       },
     });
 
-    // Delete all RoomPrice records related to the rooms
+    // Delete all RoomPrice, RoomAvailability, and records related to the rooms
     for (const room of roomsR) {
       await prisma.roomPrice.deleteMany({
+        where: {
+          roomId: room.id,
+        },
+      });
+
+      await prisma.roomAvailability.deleteMany({
+        where: {
+          roomId: room.id,
+        },
+      });
+
+      await prisma.specialPrice.deleteMany({
+        where: {
+          roomId: room.id,
+        },
+      });
+
+      await prisma.orderRoom.deleteMany({
         where: {
           roomId: room.id,
         },
