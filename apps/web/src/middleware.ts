@@ -23,8 +23,6 @@ export default auth(async function middleware(req) {
 
   const session = await authSession();
 
-  console.log('MIDDLEWARE: ', session);
-
   const isUserRoute = userRoute.filter((v) => nextUrl.pathname.startsWith(v));
   const isBothVerifiedRoute = bothVerifiedRoute.includes(nextUrl.pathname);
   const isAuthRoute = authRoute.includes(nextUrl.pathname);

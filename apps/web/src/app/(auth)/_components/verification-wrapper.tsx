@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import CardWrapper from "../_components/card-wrapper"
 import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/axios";
@@ -11,11 +11,11 @@ const VerificationWrapper = () => {
   const [error, setError] = useState();
   const [success, setSucccess] = useState();
   const searchParams = useSearchParams();
-
   const token = searchParams.get("token");
+  const ref = useRef<boolean>(false);
 
-  const onSubmit = useCallback(async () => {
-    if (!success && !error) {
+  useEffect(() => {
+    if (token && session?.user && !ref.current){
       api.post("users/verification-by-token", { token })
         .then((res) => {
           setSucccess(res.data);
@@ -24,12 +24,10 @@ const VerificationWrapper = () => {
         .catch((e) => {
           setError(e.response.data.message);
         })
+
+      ref.current = true;
     }
-  }, [token]);
-        
-  useEffect(() => {
-    onSubmit();
-  }, [onSubmit]);
+  }, []);
 
   return (
     <main className="min-h-svh px-8 flex justify-center items-center">

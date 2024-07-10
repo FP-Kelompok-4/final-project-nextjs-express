@@ -10,6 +10,7 @@ import specialPriceReducer from './slices/specialPrice-slice';
 import orderTenantReducer from "./slices/orderTenant-slice";
 import orderClientReducer from "./slices/client/orderClient-slice";
 import reviewReducer from "./slices/client/review-slice";
+import salesReportReducer from "./slices/salesReport-slice";
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     orderTenantReducer,
     orderClientReducer,
     reviewReducer,
+    salesReportReducer,
   },
 });
 

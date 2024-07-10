@@ -27,6 +27,7 @@ import {
   updateExpiredBookingPayment,
 } from './utils/schedules-utils';
 import { ReviewRouter } from "./routers/review.router";
+import { SalesReportRouter } from "./routers/salesReport.router";
 
 export default class App {
   private app: Express;
@@ -80,6 +81,7 @@ export default class App {
     const specialPriceRouter = new SpecialPriceRouter();
     const orderRouter = new OrderRouter();
     const reviewRouter = new ReviewRouter();
+    const salesReportRouter = new SalesReportRouter();
 
     this.app.get('/api/', (req: Request, res: Response) => {
       res.send(`Restful API is already !`);
@@ -95,6 +97,7 @@ export default class App {
     this.app.use('/api/special-price', specialPriceRouter.getRouter());
     this.app.use('/api/order', orderRouter.getRouter());
     this.app.use('/api/review', reviewRouter.getRouter());
+    this.app.use('/api/sales-report', salesReportRouter.getRouter());
   }
 
   private schedule(): void {
