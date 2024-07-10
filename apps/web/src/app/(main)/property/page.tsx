@@ -93,7 +93,7 @@ const Property = () => {
         </div>
       ) : (
         <>
-          {properties ? (
+          {properties.length > 0 ? (
             <>
               <div className="mb-12 px-6 md:px-10 xl:px-20">
                 <div className="my-6 flex justify-between">
