@@ -276,37 +276,35 @@ export class PropertyService {
   }
 
   static async getThreeTopProperty() {
-    const orderRooms = await prisma.orderRoom.findMany({
-      select: {
-        id: true,
-        roomId: true,
-        quantity: true,
-        room: {
-          select: {
-            id: true,
-            type: true,
-            property: {
-              select: {
-                id: true,
-                name: true,
-                location: true,
-                image: true,
-              },
-            },
+    // Fetch all properties with their rooms and orderRooms
+    const propertiesWithOrderRooms = await prisma.property.findMany({
+      include: {
+        rooms: {
+          include: {
+            orderRooms: true,
           },
         },
       },
-      orderBy: {
-        quantity: 'desc',
-      },
     });
 
-    // Filter to get top 3 rooms with distinct properties
+    // Sort properties based on the quantity of orderRooms
+    const sortedProperties = propertiesWithOrderRooms
+      .map((property) => {
+        const orderRoomsCount = property.rooms.reduce(
+          (count, room) => count + room.orderRooms.length,
+          0,
+        );
+        return { ...property, orderRoomsCount };
+      })
+      .sort((a, b) => b.orderRoomsCount - a.orderRoomsCount);
+
+    // Ensure at least 3 properties are included
+    const topProperties = sortedProperties.slice(0, 3);
     const uniquePropertyRooms = [];
     const propertyIds: string[] = [];
 
-    for (const orderRoom of orderRooms) {
-      const propertyId = orderRoom.room.property.id;
+    for (const property of topProperties) {
+      const propertyId = property.id;
       if (!propertyIds.includes(propertyId)) {
         const propertyReviews =
           await ReviewService.getReviewsByPropertyId(propertyId);
@@ -318,38 +316,65 @@ export class PropertyService {
             : 0;
 
         uniquePropertyRooms.push({
-          ...orderRoom,
+          ...property,
           review: points.length,
           rating,
         });
 
         propertyIds.push(propertyId);
       }
-      if (uniquePropertyRooms.length >= 3) {
-        break;
+    }
+
+    // If there are less than 3 unique properties, fill with properties without orderRooms
+    if (uniquePropertyRooms.length < 3) {
+      const propertiesWithoutOrderRooms = await prisma.property.findMany({
+        where: {
+          rooms: {
+            none: {
+              orderRooms: {
+                some: {},
+              },
+            },
+          },
+        },
+        take: 3 - uniquePropertyRooms.length,
+      });
+
+      for (const property of propertiesWithoutOrderRooms) {
+        const propertyId = property.id;
+        const propertyReviews =
+          await ReviewService.getReviewsByPropertyId(propertyId);
+
+        const points = propertyReviews.map((pr) => pr.point);
+        const rating =
+          points.length > 0
+            ? points.reduce((t, c) => t + c) / points.length
+            : 0;
+
+        uniquePropertyRooms.push({
+          ...property,
+          review: points.length,
+          rating,
+        });
+
+        if (uniquePropertyRooms.length >= 3) {
+          break;
+        }
       }
     }
 
-    return toGetThreeTopPropertyClientRes([
-      ...uniquePropertyRooms.map(
-        ({
-          room: {
-            property: { id, name, location, image },
-          },
+    return toGetThreeTopPropertyClientRes(
+      uniquePropertyRooms.map(
+        ({ id, name, location, image, rating, review }) => ({
+          id,
+          name,
+          location,
+          image,
           rating,
           review,
-        }) => {
-          return {
-            id,
-            name,
-            location,
-            image,
-            rating,
-            review,
-          };
-        },
+        }),
       ),
-    ]);
+    );
   }
 
   static async getPropertyRooms(userId: string) {

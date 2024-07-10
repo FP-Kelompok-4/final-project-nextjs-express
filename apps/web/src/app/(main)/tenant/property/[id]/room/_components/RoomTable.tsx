@@ -189,54 +189,50 @@ const RoomTable = ({ pId }: { pId: string }) => {
     <div>
       <DataTable columns={columns} data={rooms} />
       <Dialog open={isOpenDialog.isOpen} onOpenChange={onOpenChangeDialog}>
-              
-                <DialogContent>
-                  <DialogHeader className="gap-4">
-                    <DialogTitle>Apakah Anda benar-benar yakin?</DialogTitle>
-                    <DialogDescription>
-                      Tindakan ini tidak bisa dibatalkan. Tindakan ini akan
-                      menghapus data anda secara permanen.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <DialogClose>
-                      <Button className="w-fit" variant={'ghost'}>
-                        Batal
-                      </Button>
-                    </DialogClose>
+        <DialogContent>
+          <DialogHeader className="gap-4">
+            <DialogTitle>Apakah Anda benar-benar yakin?</DialogTitle>
+            <DialogDescription>
+              Tindakan ini tidak bisa dibatalkan. Tindakan ini akan menghapus
+              data anda secara permanen.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose>
+              <Button className="w-fit" variant={'ghost'}>
+                Batal
+              </Button>
+            </DialogClose>
 
-                    <Button
-                      className="bg-gossamer-500 hover:bg-gossamer-500/90 w-fit"
-                      disabled={session?.user.provider === 'google'}
-                      onClick={() =>
-                        dispatch(
-                          deleteTenantDetailRoomThunk({
-                            id: session?.user.id!,
-                            token: session?.user.accessToken!,
-                            pId,
-                            rId: isOpenDialog.rId,
-                          }),
-                        ).then((data: any) => {
-                          toast({
-                            variant: data.payload.error
-                              ? 'destructive'
-                              : 'default',
-                            title: data.payload.error
-                              ? data.payload.error
-                              : data.payload.success,
-                          });
+            <Button
+              className="bg-gossamer-500 hover:bg-gossamer-500/90 w-fit"
+              disabled={session?.user.provider === 'google'}
+              onClick={() =>
+                dispatch(
+                  deleteTenantDetailRoomThunk({
+                    id: session?.user.id!,
+                    token: session?.user.accessToken!,
+                    pId,
+                    rId: isOpenDialog.rId,
+                  }),
+                ).then((data: any) => {
+                  toast({
+                    variant: data.payload.error ? 'destructive' : 'default',
+                    title: data.payload.error
+                      ? data.payload.error
+                      : data.payload.success,
+                  });
 
-                          route.refresh();
-                          onOpenChangeDialog(false);
-
-                        })
-                      }
-                    >
-                      Yakin
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                  route.refresh();
+                  onOpenChangeDialog(false);
+                })
+              }
+            >
+              Yakin
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
