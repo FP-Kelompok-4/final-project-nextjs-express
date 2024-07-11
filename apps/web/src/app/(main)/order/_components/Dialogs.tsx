@@ -31,7 +31,7 @@ interface DialogLinkPaymentProps {
 const DialogCancelPayment = ({ session, invoiceId, dispatch }: DialogProps) => (
   <Dialog>
     <DialogTrigger asChild>
-      <Button className="bg-red-600 text-white hover:bg-red-600/90">
+      <Button className="w-full bg-red-600 text-white hover:bg-red-600/90">
         Cancel Payment
       </Button>
     </DialogTrigger>
@@ -73,7 +73,7 @@ const DialogCheckPaymentStatus = ({
   dispatch,
 }: DialogProps) => (
   <Button
-    className="bg-gossamer-600 hover:bg-gossamer-600/90 text-white"
+    className="bg-gossamer-600 hover:bg-gossamer-600/90 w-full text-white"
     onClick={() => {
       session &&
         dispatch(
@@ -96,7 +96,7 @@ const DialogLinkPayment = ({
 }: DialogLinkPaymentProps) => (
   <Dialog open={isOpenDialog} onOpenChange={handleIsDialogOpen}>
     <DialogTrigger asChild>
-      <Button className="bg-gossamer-600 hover:bg-gossamer-600/90 text-white">
+      <Button className="bg-gossamer-600 hover:bg-gossamer-600/90 w-full text-white">
         Link Payment
       </Button>
     </DialogTrigger>
