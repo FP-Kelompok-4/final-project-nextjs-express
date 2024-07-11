@@ -1,7 +1,7 @@
-import { RoomService } from "@/services/room.service";
-import { SpecialPriceService } from "@/services/specialPrice.service";
+import { RoomService } from "../services/room.service";
+import { SpecialPriceService } from "../services/specialPrice.service";
 import { NextFunction, Request, Response } from "express";
-import { AddSpecialPriceReq, UpdateSpecialPriceReq } from "models/specialPrice.modal";
+import { AddSpecialPriceReq, UpdateSpecialPriceReq } from "../../models/specialPrice.modal";
 
 export class SpecialPriceController {
   async getSpecialPricesByUserId(req: Request, res: Response, next: NextFunction) {

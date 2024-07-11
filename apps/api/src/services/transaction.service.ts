@@ -4,9 +4,9 @@ import {
   generateRequestId,
   getCurrentTimestamp,
 } from './../utils/doku-utils/doku-config';
-import { ResponseError } from '@/error/response-error';
-import prisma from '@/prisma';
-import { getCurrentTimeString } from '@/utils/doku-utils/doku-config';
+import { ResponseError } from '../error/response-error';
+import prisma from '../prisma';
+import { getCurrentTimeString } from '../utils/doku-utils/doku-config';
 import {
   AddBokingProperty,
   AddDOKUPayment,
@@ -16,16 +16,16 @@ import {
   LineItemCheckBookingRes,
   toAddBokingProperty,
   toGetBokingsProperty,
-} from 'models/transaction.model';
+} from '../../models/transaction.model';
 import axios from 'axios';
-import { generateSignature } from '@/utils/doku-utils/doku-utils';
+import { generateSignature } from '../utils/doku-utils/doku-utils';
 import {
   AddDOKUPaymentRes,
   DOKUCheckRes,
   DOKURes,
   LineItemAddDOKUPaymentRes,
-} from '@/utils/doku-utils/doku-model';
-import { countDaysInRange } from '@/utils/date-utils';
+} from '../utils/doku-utils/doku-model';
+import { countDaysInRange } from '../utils/date-utils';
 
 export class TransactionService {
   static async addDOKUPayment(req: AddDOKUPayment) {

@@ -1,8 +1,7 @@
-import { TOKEN_SECRET_KEY } from "@/config";
-import { ResponseError } from "@/error/response-error";
-import { User } from "@/types/express";
+import { ResponseError } from "../error/response-error";
+import { User } from "../types/express";
 import { NextFunction, Request, Response } from "express";
-import TokenManager from "lib/tokenManager";
+import TokenManager from "../../lib/tokenManager";
 
 export const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   try {

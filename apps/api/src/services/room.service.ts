@@ -1,5 +1,5 @@
-import { ResponseError } from '@/error/response-error';
-import prisma from '@/prisma';
+import { ResponseError } from '../error/response-error';
+import prisma from '../prisma';
 import {
   AddRoomPar,
   AddRoomReq,
@@ -12,7 +12,7 @@ import {
   toGetRoomsRes,
   UpdateRoomPar,
   UpdateRoomReq,
-} from 'models/room.model';
+} from '../../models/room.model';
 
 interface UpdateRoomServiceProps extends UpdateRoomReq, UpdateRoomPar {}
 

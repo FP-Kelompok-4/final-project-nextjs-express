@@ -1,5 +1,5 @@
-import { ResponseError } from '@/error/response-error';
-import prisma from '@/prisma';
+import { ResponseError } from '../error/response-error';
+import prisma from '../prisma';
 import bcrypt from 'bcrypt';
 import {
   AddUserReq,
@@ -10,7 +10,7 @@ import {
   toUserRes,
   UpdateUserToNotVerifiedAndPasswordReq,
   UpdateImageUserReq,
-} from 'models/user.model';
+} from '../../models/user.model';
 
 export class UserService {
   static async addUser(req: AddUserReq) {

@@ -1,7 +1,7 @@
-import { RoomService } from "@/services/room.service";
-import { RoomAvailabilityService } from "@/services/roomAvailability.service";
+import { RoomService } from "../services/room.service";
+import { RoomAvailabilityService } from "../services/roomAvailability.service";
 import { NextFunction, Request, Response } from "express";
-import { AddRoomAvailabilityReq, UpdateRoomAvailabilityReq } from "models/roomAvailability.model";
+import { AddRoomAvailabilityReq, UpdateRoomAvailabilityReq } from "../../models/roomAvailability.model";
 
 export class RoomAvailabilityController {
   async getRoomAvailabilitiresByUserId(req: Request, res: Response, next: NextFunction) {

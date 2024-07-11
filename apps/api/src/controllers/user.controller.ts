@@ -1,8 +1,8 @@
-import { ResponseError } from '@/error/response-error';
-import { UserService } from '@/services/user.service';
-import { VerificationTokenService } from '@/services/verificationToken.service';
+import { ResponseError } from '../error/response-error';
+import { UserService } from '../services/user.service';
+import { VerificationTokenService } from '../services/verificationToken.service';
 import { NextFunction, Request, Response } from 'express';
-import TokenManager from "lib/tokenManager";
+import TokenManager from "../../lib/tokenManager";
 import {
   AddUserReq,
   UpdateAccountUserReq,

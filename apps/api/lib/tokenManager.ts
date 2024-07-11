@@ -1,4 +1,4 @@
-import { TOKEN_SECRET_KEY } from '@/config';
+import { TOKEN_SECRET_KEY } from '../src/config';
 import { User } from "@/types/express";
 import { sign, verify } from 'jsonwebtoken'
 

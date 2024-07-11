@@ -1,14 +1,14 @@
-import { PropertyController } from '@/controllers/property.controller';
-import { PropertyCategoryController } from '@/controllers/propertyCategory.controller';
-import { verifyToken } from '@/middlewares/auth.middleware';
-import { uploaderSingle } from '@/middlewares/upload-single';
+import { PropertyController } from '../controllers/property.controller';
+import { PropertyCategoryController } from '../controllers/propertyCategory.controller';
+import { verifyToken } from '../middlewares/auth.middleware';
+import { uploaderSingle } from '../middlewares/upload-single';
 import {
   validatAddProperty,
   validateDeleteProperty,
   validateUpdateProperty,
   validatGetProperties,
   validatGetPropertyDetail,
-} from '@/validation/property.valiadtion';
+} from '../validation/property.valiadtion';
 
 import { Router } from 'express';
 

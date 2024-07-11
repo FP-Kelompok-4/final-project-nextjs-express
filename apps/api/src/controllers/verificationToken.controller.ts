@@ -1,7 +1,7 @@
-import { UserService } from "@/services/user.service";
-import { VerificationTokenService } from "@/services/verificationToken.service";
+import { UserService } from "../services/user.service";
+import { VerificationTokenService } from "../services/verificationToken.service";
 import { NextFunction, Request, Response } from "express";
-import { templateNodemailer, transporter } from "lib/nodeMailer";
+import { templateNodemailer, transporter } from "../../lib/nodeMailer";
 
 export class VerificationTokenController {
   async postVerificationTokenByEmail(req: Request, res: Response, next: NextFunction) {

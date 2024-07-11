@@ -1,5 +1,5 @@
-import { ResponseError } from "@/error/response-error";
-import prisma from "@/prisma";
+import { ResponseError } from "../error/response-error";
+import prisma from "../prisma";
 import { v4 as uuidv4 } from "uuid";
 
 export class VerificationTokenService {

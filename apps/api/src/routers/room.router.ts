@@ -1,13 +1,13 @@
-import { RoomController } from '@/controllers/room.controller';
-import { verifyToken } from '@/middlewares/auth.middleware';
-import { uploaderSingle } from '@/middlewares/upload-single';
+import { RoomController } from '../controllers/room.controller';
+import { verifyToken } from '../middlewares/auth.middleware';
+import { uploaderSingle } from '../middlewares/upload-single';
 import {
   validatAddRoom,
   validateDeleteRoom,
   validateUpdateRoom,
   validatGetRooms,
   validatGetRoomDetail,
-} from '@/validation/room.validation';
+} from '../validation/room.validation';
 
 import { Router } from 'express';
 

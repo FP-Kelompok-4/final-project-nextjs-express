@@ -1,5 +1,5 @@
-import { ResponseError } from "@/error/response-error";
-import prisma from "@/prisma";
+import { ResponseError } from "../error/response-error";
+import prisma from "../prisma";
 
 export class PropertyCategoryService {
   static async getPropertyCategory() {

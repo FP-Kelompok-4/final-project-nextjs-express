@@ -1,10 +1,10 @@
-import { TransactionController } from '@/controllers/transaction.controller';
-import { verifyToken } from '@/middlewares/auth.middleware';
+import { TransactionController } from '../controllers/transaction.controller';
+import { verifyToken } from '../middlewares/auth.middleware';
 import {
   validateAddBooking,
   validateGetBookings,
   validateUpdateBooking,
-} from '@/validation/transaction.validation';
+} from '../validation/transaction.validation';
 
 import { Router } from 'express';
 

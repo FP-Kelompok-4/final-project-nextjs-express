@@ -1,4 +1,4 @@
-import { PropertyCategoryService } from "@/services/propertyCategory.service";
+import { PropertyCategoryService } from "../services/propertyCategory.service";
 import { NextFunction, Request, Response } from "express";
 
 export class PropertyCategoryController {

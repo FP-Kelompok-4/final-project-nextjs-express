@@ -1,8 +1,7 @@
-import { ResponseError } from '@/error/response-error';
-import prisma from '@/prisma';
-import { countDaysInRange } from "@/utils/date-utils";
+import { ResponseError } from '../error/response-error';
+import prisma from '../prisma';
+import { countDaysInRange } from "../utils/date-utils";
 import { Prisma } from '@prisma/client';
-import { templateRuleNodemailer } from 'lib/nodeMailer';
 import {
   CancelOrderReq,
   TGetOrdersByClientOrderId,
@@ -11,7 +10,7 @@ import {
   toCancelOrderRes,
   toGetOrdersByClientOrderIdRes,
   toGetOrdersByUserIdRes,
-} from 'models/order.model';
+} from '../../models/order.model';
 
 export class OrderService {
   static async getOrdersByClientOrderId(orderId: string) {

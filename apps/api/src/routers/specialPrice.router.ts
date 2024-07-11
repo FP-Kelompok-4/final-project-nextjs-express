@@ -1,6 +1,6 @@
-import { SpecialPriceController } from "@/controllers/specialPrice.controller";
-import { tenantGuard, verifyToken } from "@/middlewares/auth.middleware";
-import { validatePatchSpecialPrice, validatePostSpecialPrice } from "@/validation/specialPrice.validation";
+import { SpecialPriceController } from "../controllers/specialPrice.controller";
+import { tenantGuard, verifyToken } from "../middlewares/auth.middleware";
+import { validatePatchSpecialPrice, validatePostSpecialPrice } from "../validation/specialPrice.validation";
 import { Router } from "express";
 
 export class SpecialPriceRouter {

@@ -1,6 +1,6 @@
-import { OrderController } from '@/controllers/order.controller';
-import { tenantGuard, verifyToken } from '@/middlewares/auth.middleware';
-import { validateTenantUpdateBooking } from '@/validation/transaction.validation';
+import { OrderController } from '../controllers/order.controller';
+import { tenantGuard, verifyToken } from '../middlewares/auth.middleware';
+import { validateTenantUpdateBooking } from '../validation/transaction.validation';
 import { Router } from 'express';
 
 export class OrderRouter {

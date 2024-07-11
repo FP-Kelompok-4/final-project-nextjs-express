@@ -1,8 +1,7 @@
-import { ResponseError } from '@/error/response-error';
-import { TransactionService } from '@/services/transaction.service';
-import { AddDOKUPaymentRes, DOKURes } from '@/utils/doku-utils/doku-model';
+import { TransactionService } from '../services/transaction.service';
+import { AddDOKUPaymentRes, DOKURes } from '../utils/doku-utils/doku-model';
 import { NextFunction, Request, Response } from 'express';
-import { AddBokingProperty } from 'models/transaction.model';
+import { AddBokingProperty } from '../../models/transaction.model';
 
 export class TransactionController {
   async addBoking(req: Request, res: Response, next: NextFunction) {

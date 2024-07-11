@@ -1,5 +1,5 @@
-import { VerificationTokenController } from "@/controllers/verificationToken.controller";
-import { validatePostVerificationToken } from "@/validation/verificationToken.validation";
+import { VerificationTokenController } from "../controllers/verificationToken.controller";
+import { validatePostVerificationToken } from "../validation/verificationToken.validation";
 import { Router } from 'express';
 
 export class VerificationTokenRouter {

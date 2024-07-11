@@ -1,6 +1,10 @@
-import { ResponseError } from "@/error/response-error";
-import prisma from "@/prisma";
-import { AddSpecialPriceReq, GetSpecialPriceRes, UpdateSpecialPriceReq } from "models/specialPrice.modal";
+import { ResponseError } from "../error/response-error";
+import prisma from "../prisma";
+import {
+  AddSpecialPriceReq,
+  GetSpecialPriceRes,
+  UpdateSpecialPriceReq
+} from "../../models/specialPrice.modal";
 
 export class SpecialPriceService {
   static async getSpecialPricesByUserId(userId: string) {

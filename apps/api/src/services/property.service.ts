@@ -1,5 +1,5 @@
-import { ResponseError } from '@/error/response-error';
-import prisma from '@/prisma';
+import { ResponseError } from '../error/response-error';
+import prisma from '../prisma';
 import { Prisma } from '@prisma/client';
 import {
   AddUPropertyReq,
@@ -15,7 +15,7 @@ import {
   toGetThreeTopPropertyClientRes,
   UpdatePropertyPar,
   UpdatePropertyReq,
-} from 'models/property.model';
+} from '../../models/property.model';
 import { ReviewService } from './review.service';
 
 interface UpdatePropertyServiceProps

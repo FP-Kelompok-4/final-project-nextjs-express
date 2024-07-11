@@ -1,6 +1,6 @@
-import { RoomAvailabilityController } from "@/controllers/roomAvailability.controller";
-import { tenantGuard, verifyToken } from "@/middlewares/auth.middleware";
-import { validatePatchRoomAvailability, validatePostRoomAvailability } from "@/validation/roomAvailability.validatioin";
+import { RoomAvailabilityController } from "../controllers/roomAvailability.controller";
+import { tenantGuard, verifyToken } from "../middlewares/auth.middleware";
+import { validatePatchRoomAvailability, validatePostRoomAvailability } from "../validation/roomAvailability.validatioin";
 import { Router } from "express";
 
 export class RoomAvailabilityRouter {

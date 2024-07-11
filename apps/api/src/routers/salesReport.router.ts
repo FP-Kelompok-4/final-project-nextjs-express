@@ -1,5 +1,5 @@
-import { SalesReportController } from "@/controllers/salesReport.contoller";
-import { tenantGuard, verifyToken } from "@/middlewares/auth.middleware";
+import { SalesReportController } from "../controllers/salesReport.contoller";
+import { tenantGuard, verifyToken } from "../middlewares/auth.middleware";
 import { Router } from "express";
 
 export class SalesReportRouter {

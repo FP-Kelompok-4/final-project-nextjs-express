@@ -1,5 +1,5 @@
-import prisma from "@/prisma";
-import { TSalesReportPropertyByUserId } from "models/salesReport.model";
+import prisma from "../prisma";
+import { TSalesReportPropertyByUserId } from "../../models/salesReport.model";
 
 export class SalesReportService {
   static async getSalesReportPropertiesByUserId(id: string) {

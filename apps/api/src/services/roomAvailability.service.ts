@@ -1,6 +1,10 @@
-import { ResponseError } from "@/error/response-error";
-import prisma from "@/prisma";
-import { AddRoomAvailabilityReq, GetRoomAvailabilityRes, UpdateRoomAvailabilityReq } from "models/roomAvailability.model";
+import { ResponseError } from "../error/response-error";
+import prisma from "../prisma";
+import {
+  AddRoomAvailabilityReq,
+  GetRoomAvailabilityRes,
+  UpdateRoomAvailabilityReq
+} from "../../models/roomAvailability.model";
 
 export class RoomAvailabilityService {
   static async getRoomAvailabilitiesByUserId(userId: string) {

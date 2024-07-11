@@ -1,6 +1,6 @@
-import { ResponseError } from '@/error/response-error';
-import { PropertyService } from '@/services/property.service';
-import { UserService } from '@/services/user.service';
+import { ResponseError } from '../error/response-error';
+import { PropertyService } from '../services/property.service';
+import { UserService } from '../services/user.service';
 import { NextFunction, Request, Response } from 'express';
 import {
   AddUPropertyReq,

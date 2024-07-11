@@ -1,6 +1,6 @@
-import { ResponseError } from '@/error/response-error';
-import { RoomService } from '@/services/room.service';
-import { UserService } from '@/services/user.service';
+import { ResponseError } from '../error/response-error';
+import { RoomService } from '../services/room.service';
+import { UserService } from '../services/user.service';
 import { NextFunction, Request, Response } from 'express';
 import {
   AddRoomPar,
@@ -10,7 +10,7 @@ import {
   GetRoomsPar,
   UpdateRoomPar,
   UpdateRoomReq,
-} from 'models/room.model';
+} from '../../models/room.model';
 
 export class RoomController {
   async getRooms(req: Request, res: Response, next: NextFunction) {

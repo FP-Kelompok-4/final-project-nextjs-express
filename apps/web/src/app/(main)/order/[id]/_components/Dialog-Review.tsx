@@ -64,7 +64,12 @@ const DialogReview = ({
   return (
     <Dialog open={openDialog} onOpenChange={handleOnOpenChange}>
       <DialogTrigger className="w-full" asChild>
-        <Button onClick={() => setOpenDialog(true)} className="mt-2" variant="outline">Review</Button>
+        <button
+          onClick={() => setOpenDialog(true)}
+          className="mt-2 text-gossamer-600 hover:bg-gossamer-100 w-full rounded-xl border-[1px] px-4 py-2 text-sm font-bold"
+        >
+          Review
+        </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

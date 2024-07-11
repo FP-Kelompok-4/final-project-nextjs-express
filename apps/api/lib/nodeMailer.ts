@@ -1,4 +1,4 @@
-import { GOOGLE_PASSWORD, GOOGLE_USER } from '@/config';
+import { GOOGLE_PASSWORD, GOOGLE_USER } from '../src/config';
 import nodemailer from 'nodemailer';
 
 export const transporter = nodemailer.createTransport({

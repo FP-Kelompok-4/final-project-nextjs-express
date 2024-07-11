@@ -1,6 +1,6 @@
-import { ReviewController } from "@/controllers/review.controller";
-import { verifyToken } from "@/middlewares/auth.middleware";
-import { validatePostReview } from "@/validation/review.validation";
+import { ReviewController } from "../controllers/review.controller";
+import { verifyToken } from "../middlewares/auth.middleware";
+import { validatePostReview } from "../validation/review.validation";
 import { Router } from "express";
 
 export class ReviewRouter{

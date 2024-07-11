@@ -1,4 +1,4 @@
-import { OrderService } from '@/services/order.service';
+import { OrderService } from '../services/order.service';
 import { NextFunction, Request, Response } from 'express';
 
 export class OrderController {

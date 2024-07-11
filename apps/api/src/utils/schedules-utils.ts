@@ -1,7 +1,7 @@
-import prisma from '@/prisma';
-import { TransactionService } from '@/services/transaction.service';
+import prisma from '../prisma';
+import { TransactionService } from '../services/transaction.service';
 import { addDays } from 'date-fns';
-import { templateRuleNodemailer } from 'lib/nodeMailer';
+import { templateRuleNodemailer } from '../../lib/nodeMailer';
 
 export const reminderRuleUtil = async () => {
   const orders = await prisma.order.findMany({

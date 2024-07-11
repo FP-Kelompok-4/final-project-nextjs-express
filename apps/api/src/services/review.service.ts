@@ -1,6 +1,6 @@
-import prisma from "@/prisma";
+import prisma from "../prisma";
 import { Prisma } from "@prisma/client";
-import { AddReviewReq, TGetOrderRooms, TGetReviewsByPropertyId, toGetReviewsByPropertyIdRes } from "models/review.model";
+import { AddReviewReq, TGetOrderRooms, TGetReviewsByPropertyId, toGetReviewsByPropertyIdRes } from "../../models/review.model";
 
 export class ReviewService {
   static async addReview(req: AddReviewReq) {

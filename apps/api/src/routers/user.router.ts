@@ -1,5 +1,5 @@
-import { UserController } from '@/controllers/user.controller';
-import { uploaderSingle } from '@/middlewares/upload-single';
+import { UserController } from '../controllers/user.controller';
+import { uploaderSingle } from '../middlewares/upload-single';
 import {
   validatePostUser,
   validateGetUser,
@@ -9,7 +9,7 @@ import {
   validateUpdateUserNotVerifiedAndPasswordByEmail,
   validateUpdateImage,
   validateCheckEmail,
-} from '@/validation/user.validation';
+} from '../validation/user.validation';
 import { Router } from 'express';
 
 export class UserRouter {

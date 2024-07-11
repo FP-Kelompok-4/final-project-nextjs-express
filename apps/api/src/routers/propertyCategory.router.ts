@@ -1,6 +1,6 @@
-import { PropertyCategoryController } from "@/controllers/propertyCategory.controller";
-import { superAdminGuard, verifyToken } from "@/middlewares/auth.middleware";
-import { validatePostPropertyCategory } from "@/validation/propertyCategory.validation";
+import { PropertyCategoryController } from "../controllers/propertyCategory.controller";
+import { superAdminGuard, verifyToken } from "../middlewares/auth.middleware";
+import { validatePostPropertyCategory } from "../validation/propertyCategory.validation";
 import { Router } from "express";
 
 export class PropertyCategoryRouter {

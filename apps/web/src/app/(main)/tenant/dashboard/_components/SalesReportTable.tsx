@@ -52,7 +52,7 @@ const SalesReportTable = () => {
       accessorKey: 'type',
       header: 'Type Room',
       cell: ({ row }) => (
-        <div>{formatCurrencyRp(row.getValue('type'))}</div>
+        <div className="capitalize">{row.getValue('type')}</div>
       ),
     },
     {
